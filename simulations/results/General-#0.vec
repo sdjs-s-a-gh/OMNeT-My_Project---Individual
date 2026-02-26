@@ -1,0 +1,1857 @@
+version 3
+run General-0-20260226-16:29:41-11493
+attr configname General
+attr datetime 20260226-16:29:41
+attr datetimef 20260226-162941
+attr experiment General
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvarsd ""
+attr iterationvarsf ""
+attr measurement ""
+attr network ResourceNetwork
+attr processid 11493
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+config image-path ../../../default_workspace/inet-4.5.4/images
+config description "Simple sim where two nodes communicate wirelessly."
+config network ResourceNetwork
+config sim-time-limit 60s
+config *.*.ipv4.arp.typename GlobalArp
+config *.hostA.numApps 1
+config *.hostA*.app[0].typename TrafficGenerator
+config *.hostA*.app[0].destAddresses "\"edgeServer\""
+config *.hostA*.app[0].destPort 5000
+config *.hostA*.app[0].messageLength 1024B
+config *.hostA*.app[0].sendInterval exponential(12ms)
+config *.hostA*.app[0].packetName "\"TaskData\""
+config *.hostA*.app[0].minRequiredCPUCycles 200
+config *.hostA*.app[0].maxRequiredCPUCycles 1000
+config *.hostA*.app[0].minDeadlineLatency 1
+config *.hostA*.app[0].maxDeadlineLatency 10
+config *.mdMobilePhone.numApps 1
+config *.mdMobilePhone.app[0].typename TrafficGenerator
+config *.mdMobilePhone.app[0].destAddresses "\"edgeServer\""
+config *.mdMobilePhone.app[0].destPort 5000
+config *.mdMobilePhone.app[0].messageLength 1024B
+config *.mdMobilePhone.app[0].sendInterval exponential(12ms)
+config *.mdMobilePhone.app[0].packetName "\"TaskData\""
+config *.mdMobilePhone.app[0].minRequiredCPUCycles 100
+config *.mdMobilePhone.app[0].maxRequiredCPUCycles 200
+config *.mdMobilePhone.app[0].minDeadlineLatency 20
+config *.mdMobilePhone.app[0].maxDeadlineLatency 30
+config *.edgeServer*.numApps 1
+config *.edgeServer*.app[0].typename ResourceAllocatorApp
+config *.edgeServer*.app[0].localPort 5000
+config *.host*.wlan[0].typename AckingWirelessInterface
+config *.host*.wlan[0].mac.useAck false
+config *.host*.wlan[0].mac.fullDuplex false
+config *.host*.wlan[0].radio.transmitter.communicationRange 500m
+config *.host*.wlan[0].mac.headerLength 23B
+config *.mdMobilePhone.wlan[0].typename AckingWirelessInterface
+config *.mdMobilePhone.wlan[0].mac.useAck false
+config *.mdMobilePhone.wlan[0].mac.fullDuplex false
+config *.mdMobilePhone.wlan[0].radio.transmitter.communicationRange 500m
+config *.mdMobilePhone.wlan[0].mac.headerLength 23B
+config *.baseStation.forwarding true
+config *.baseStation*.wlan[0].typename AckingWirelessInterface
+config *.baseStation*.wlan[0].mac.useAck false
+config *.baseStation*.wlan[0].mac.fullDuplex false
+config *.baseStation*.wlan[0].radio.transmitter.communicationRange 500m
+config *.baseStation*.wlan[0].mac.headerLength 23B
+config *.host*.**.bitrate 1Mbps
+config *.baseStation*.wlan[0].bitrate 1Mbps
+config *.mdMobilePhone.wlan[0].bitrate 1Mbps
+config **.radio.displayCommunicationRange true
+config *.visualizer.mediumVisualizer.displaySignals true
+config *.visualizer.physicalLinkVisualizer.displayLinks true
+config *.visualizer.physicalLinkVisualizer.packetFilter "\"TaskData\""
+config *.visualizer.mobilityVisualizer.displayVelocities true
+config *.visualizer.mobilityVisualizer.displayMovementTrails true
+config *.hostA.mobility.typename LinearMobility
+config *.hostA.mobility.speed 12mps
+config *.hostA.mobility.initialMovementHeading 200deg
+
+vector 0 ResourceNetwork.hostA.lo[0].lo rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, packetBytes"
+vector 1 ResourceNetwork.hostA.lo[0].lo passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToUpper
+attr title "packets passed to higher layer, packetBytes"
+vector 2 ResourceNetwork.hostA.lo[0] packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drops: interface down, packetBytes"
+vector 3 ResourceNetwork.hostA.lo[0] packetDropNoCarrier:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoCarrier(packetDropped)
+attr title "packet drops: no carrier, packetBytes"
+vector 4 ResourceNetwork.hostA.wlan[0].queue queueLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "warmup(atomic(constant0(packetPushEnded) + count(packetPushStarted) - count(packetPulled) - count(packetRemoved) - count(packetDropped)))"
+attr title "queue length"
+attr unit pk
+vector 5 ResourceNetwork.hostA.wlan[0].queue queueBitLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "warmup(atomic(constant0(packetPushEnded) + sum(packetLength(packetPushStarted)) - sum(packetLength(packetPulled)) - sum(packetLength(packetRemoved)) - sum(packetLength(packetDropped))))"
+attr title "queue bit length"
+attr unit b
+vector 6 ResourceNetwork.hostA.wlan[0].queue queueingTime:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source queueingTime(packetPulled)
+attr title "queueing times"
+attr unit s
+vector 7 ResourceNetwork.hostA.wlan[0].queue incomingPacketLengths:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetPushStarted)
+attr title "incoming packet lengths"
+attr unit b
+vector 8 ResourceNetwork.hostA.wlan[0].queue incomingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(packetPushStarted)
+attr title "incoming datarate"
+attr unit bps
+vector 9 ResourceNetwork.hostA.wlan[0].queue outgoingPacketLengths:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetPulled)
+attr title "outgoing packet lengths"
+attr unit b
+vector 10 ResourceNetwork.hostA.wlan[0].queue outgoingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(packetPulled)
+attr title "outgoing datarate"
+attr unit bps
+vector 11 ResourceNetwork.hostA.wlan[0].queue droppedPacketLengthsQueueOverflow:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetDropReasonIsQueueOverflow(packetDropped))
+attr title "dropped packet lengths: queue overflow"
+attr unit b
+vector 12 ResourceNetwork.hostA.wlan[0].queue flowQueueingTime:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source queueingTime(demuxFlow(packetPulled))
+attr title "flow queueing times"
+attr unit s
+vector 13 ResourceNetwork.hostA.wlan[0].queue flowIncomingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(flowPacketLength(demuxFlow(packetPushStarted)))
+attr title "flow specific incoming data rate"
+attr unit bps
+vector 14 ResourceNetwork.hostA.wlan[0].queue flowOutgoingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(flowPacketLength(demuxFlow(packetPulled)))
+attr title "flow specific outgoing data rate"
+attr unit bps
+vector 15 ResourceNetwork.hostA.wlan[0].mac passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToUpper
+attr title "packets passed to higher layer, packetBytes"
+vector 16 ResourceNetwork.hostA.wlan[0].mac sentDownPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToLower
+attr title "packets sent to lower layer, packetBytes"
+vector 17 ResourceNetwork.hostA.wlan[0].mac rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, packetBytes"
+vector 18 ResourceNetwork.hostA.wlan[0].mac rcvdPkFromLl:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceivedFromLower
+attr title "packets received from lower layer, packetBytes"
+vector 19 ResourceNetwork.hostA.wlan[0].mac packetDropIncorrectlyReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, packetBytes"
+vector 20 ResourceNetwork.hostA.wlan[0].mac packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, packetBytes"
+vector 21 ResourceNetwork.hostA.wlan[0].mac packetDropNotAddressedToUs:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, packetBytes"
+vector 22 ResourceNetwork.hostA.wlan[0].radio radioMode:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source radioModeChanged
+attr title "Radio mode"
+vector 23 ResourceNetwork.hostA.wlan[0].radio receptionState:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source receptionStateChanged
+attr title "Radio reception state"
+vector 24 ResourceNetwork.hostA.wlan[0].radio transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source transmissionStateChanged
+attr title "Radio transmission state"
+vector 25 ResourceNetwork.hostA.wlan[0] packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drops: interface down, packetBytes"
+vector 26 ResourceNetwork.hostA.wlan[0] packetDropNoCarrier:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoCarrier(packetDropped)
+attr title "packet drops: no carrier, packetBytes"
+vector 27 ResourceNetwork.hostA.ipv4.ip packetDropAddressResolutionFailed:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsAddressResolutionFailed(packetDropped)
+attr title "packet drop: address resolution failed, packetBytes"
+vector 28 ResourceNetwork.hostA.ipv4.ip packetDropHopLimitReached:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsHopLimitReached(packetDropped)
+attr title "packet drop: hop limit reached, packetBytes"
+vector 29 ResourceNetwork.hostA.ipv4.ip packetDropForwardingDisabled:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsForwardingDisabled(packetDropped)
+attr title "packet drop: forwarding disabled, packetBytes"
+vector 30 ResourceNetwork.hostA.ipv4.ip packetDropNoInterfaceFound:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoInterfaceFound(packetDropped)
+attr title "packet drop: no interface found, packetBytes"
+vector 31 ResourceNetwork.hostA.ipv4.ip packetDropNoRouteFound:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoRouteFound(packetDropped)
+attr title "packet drop: no route found, packetBytes"
+vector 32 ResourceNetwork.hostA.ipv4.ip packetDropUndefined:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsUndefined(packetDropped)
+attr title "packet drop: undefined, packetBytes"
+vector 33 ResourceNetwork.hostA.udp packetSent:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSent
+attr title "packets sent, packetBytes"
+vector 34 ResourceNetwork.hostA.udp packetReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceived
+attr title "packets received, packetBytes"
+vector 35 ResourceNetwork.hostA.udp passedUpPk:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetSentToUpper
+attr title "packets passed up, count"
+vector 36 ResourceNetwork.hostA.udp droppedPkWrongPort:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsNoPortFound(packetDropped)
+attr title "packets dropped (wrong port), count"
+vector 37 ResourceNetwork.hostA.udp droppedPkBadChecksum:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packets dropped (checksum error), count"
+vector 38 ResourceNetwork.hostA.app[0] packetReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceived
+attr title "packets received, packetBytes"
+vector 39 ResourceNetwork.hostA.app[0] throughput:vector ETV
+attr recordingmode vector
+attr source throughput(packetReceived)
+attr title throughput
+attr unit bps
+vector 40 ResourceNetwork.hostA.app[0] packetSent:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSent
+attr title "packets sent, packetBytes"
+vector 41 ResourceNetwork.hostA.app[0] rcvdPkLifetime:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source dataAge(packetReceived)
+attr title "received packet lifetime"
+attr unit s
+vector 42 ResourceNetwork.hostA.app[0] rcvdPkSeqNo:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source appPkSeqNo(packetReceived)
+attr title "received packet sequence number"
+vector 43 ResourceNetwork.mdMobilePhone.lo[0].lo rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, packetBytes"
+vector 44 ResourceNetwork.mdMobilePhone.lo[0].lo passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToUpper
+attr title "packets passed to higher layer, packetBytes"
+vector 45 ResourceNetwork.mdMobilePhone.lo[0] packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drops: interface down, packetBytes"
+vector 46 ResourceNetwork.mdMobilePhone.lo[0] packetDropNoCarrier:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoCarrier(packetDropped)
+attr title "packet drops: no carrier, packetBytes"
+vector 47 ResourceNetwork.mdMobilePhone.wlan[0].queue queueLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "warmup(atomic(constant0(packetPushEnded) + count(packetPushStarted) - count(packetPulled) - count(packetRemoved) - count(packetDropped)))"
+attr title "queue length"
+attr unit pk
+vector 48 ResourceNetwork.mdMobilePhone.wlan[0].queue queueBitLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "warmup(atomic(constant0(packetPushEnded) + sum(packetLength(packetPushStarted)) - sum(packetLength(packetPulled)) - sum(packetLength(packetRemoved)) - sum(packetLength(packetDropped))))"
+attr title "queue bit length"
+attr unit b
+vector 49 ResourceNetwork.mdMobilePhone.wlan[0].queue queueingTime:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source queueingTime(packetPulled)
+attr title "queueing times"
+attr unit s
+vector 50 ResourceNetwork.mdMobilePhone.wlan[0].queue incomingPacketLengths:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetPushStarted)
+attr title "incoming packet lengths"
+attr unit b
+vector 51 ResourceNetwork.mdMobilePhone.wlan[0].queue incomingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(packetPushStarted)
+attr title "incoming datarate"
+attr unit bps
+vector 52 ResourceNetwork.mdMobilePhone.wlan[0].queue outgoingPacketLengths:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetPulled)
+attr title "outgoing packet lengths"
+attr unit b
+vector 53 ResourceNetwork.mdMobilePhone.wlan[0].queue outgoingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(packetPulled)
+attr title "outgoing datarate"
+attr unit bps
+vector 54 ResourceNetwork.mdMobilePhone.wlan[0].queue droppedPacketLengthsQueueOverflow:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetDropReasonIsQueueOverflow(packetDropped))
+attr title "dropped packet lengths: queue overflow"
+attr unit b
+vector 55 ResourceNetwork.mdMobilePhone.wlan[0].queue flowQueueingTime:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source queueingTime(demuxFlow(packetPulled))
+attr title "flow queueing times"
+attr unit s
+vector 56 ResourceNetwork.mdMobilePhone.wlan[0].queue flowIncomingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(flowPacketLength(demuxFlow(packetPushStarted)))
+attr title "flow specific incoming data rate"
+attr unit bps
+vector 57 ResourceNetwork.mdMobilePhone.wlan[0].queue flowOutgoingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(flowPacketLength(demuxFlow(packetPulled)))
+attr title "flow specific outgoing data rate"
+attr unit bps
+vector 58 ResourceNetwork.mdMobilePhone.wlan[0].mac passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToUpper
+attr title "packets passed to higher layer, packetBytes"
+vector 59 ResourceNetwork.mdMobilePhone.wlan[0].mac sentDownPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToLower
+attr title "packets sent to lower layer, packetBytes"
+vector 60 ResourceNetwork.mdMobilePhone.wlan[0].mac rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, packetBytes"
+vector 61 ResourceNetwork.mdMobilePhone.wlan[0].mac rcvdPkFromLl:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceivedFromLower
+attr title "packets received from lower layer, packetBytes"
+vector 62 ResourceNetwork.mdMobilePhone.wlan[0].mac packetDropIncorrectlyReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, packetBytes"
+vector 63 ResourceNetwork.mdMobilePhone.wlan[0].mac packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, packetBytes"
+vector 64 ResourceNetwork.mdMobilePhone.wlan[0].mac packetDropNotAddressedToUs:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, packetBytes"
+vector 65 ResourceNetwork.mdMobilePhone.wlan[0].radio radioMode:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source radioModeChanged
+attr title "Radio mode"
+vector 66 ResourceNetwork.mdMobilePhone.wlan[0].radio receptionState:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source receptionStateChanged
+attr title "Radio reception state"
+vector 67 ResourceNetwork.mdMobilePhone.wlan[0].radio transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source transmissionStateChanged
+attr title "Radio transmission state"
+vector 68 ResourceNetwork.mdMobilePhone.wlan[0] packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drops: interface down, packetBytes"
+vector 69 ResourceNetwork.mdMobilePhone.wlan[0] packetDropNoCarrier:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoCarrier(packetDropped)
+attr title "packet drops: no carrier, packetBytes"
+vector 70 ResourceNetwork.mdMobilePhone.ipv4.ip packetDropAddressResolutionFailed:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsAddressResolutionFailed(packetDropped)
+attr title "packet drop: address resolution failed, packetBytes"
+vector 71 ResourceNetwork.mdMobilePhone.ipv4.ip packetDropHopLimitReached:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsHopLimitReached(packetDropped)
+attr title "packet drop: hop limit reached, packetBytes"
+vector 72 ResourceNetwork.mdMobilePhone.ipv4.ip packetDropForwardingDisabled:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsForwardingDisabled(packetDropped)
+attr title "packet drop: forwarding disabled, packetBytes"
+vector 73 ResourceNetwork.mdMobilePhone.ipv4.ip packetDropNoInterfaceFound:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoInterfaceFound(packetDropped)
+attr title "packet drop: no interface found, packetBytes"
+vector 74 ResourceNetwork.mdMobilePhone.ipv4.ip packetDropNoRouteFound:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoRouteFound(packetDropped)
+attr title "packet drop: no route found, packetBytes"
+vector 75 ResourceNetwork.mdMobilePhone.ipv4.ip packetDropUndefined:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsUndefined(packetDropped)
+attr title "packet drop: undefined, packetBytes"
+vector 76 ResourceNetwork.mdMobilePhone.udp packetSent:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSent
+attr title "packets sent, packetBytes"
+vector 77 ResourceNetwork.mdMobilePhone.udp packetReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceived
+attr title "packets received, packetBytes"
+vector 78 ResourceNetwork.mdMobilePhone.udp passedUpPk:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetSentToUpper
+attr title "packets passed up, count"
+vector 79 ResourceNetwork.mdMobilePhone.udp droppedPkWrongPort:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsNoPortFound(packetDropped)
+attr title "packets dropped (wrong port), count"
+vector 80 ResourceNetwork.mdMobilePhone.udp droppedPkBadChecksum:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packets dropped (checksum error), count"
+vector 81 ResourceNetwork.mdMobilePhone.app[0] packetReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceived
+attr title "packets received, packetBytes"
+vector 82 ResourceNetwork.mdMobilePhone.app[0] throughput:vector ETV
+attr recordingmode vector
+attr source throughput(packetReceived)
+attr title throughput
+attr unit bps
+vector 83 ResourceNetwork.mdMobilePhone.app[0] packetSent:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSent
+attr title "packets sent, packetBytes"
+vector 84 ResourceNetwork.mdMobilePhone.app[0] rcvdPkLifetime:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source dataAge(packetReceived)
+attr title "received packet lifetime"
+attr unit s
+vector 85 ResourceNetwork.mdMobilePhone.app[0] rcvdPkSeqNo:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source appPkSeqNo(packetReceived)
+attr title "received packet sequence number"
+vector 86 ResourceNetwork.baseStation.ethernet encapPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source encapPk
+attr title "packets encapsulated, packetBytes"
+vector 87 ResourceNetwork.baseStation.ethernet decapPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source decapPk
+attr title "packets decapsulated, packetBytes"
+vector 88 ResourceNetwork.baseStation.ethernet pauseSent:vector ETV
+attr recordingmode vector
+attr title "pause sent"
+vector 89 ResourceNetwork.baseStation.lo[0].lo rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, packetBytes"
+vector 90 ResourceNetwork.baseStation.lo[0].lo passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToUpper
+attr title "packets passed to higher layer, packetBytes"
+vector 91 ResourceNetwork.baseStation.lo[0] packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drops: interface down, packetBytes"
+vector 92 ResourceNetwork.baseStation.lo[0] packetDropNoCarrier:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoCarrier(packetDropped)
+attr title "packet drops: no carrier, packetBytes"
+vector 93 ResourceNetwork.baseStation.wlan[0].queue queueLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "warmup(atomic(constant0(packetPushEnded) + count(packetPushStarted) - count(packetPulled) - count(packetRemoved) - count(packetDropped)))"
+attr title "queue length"
+attr unit pk
+vector 94 ResourceNetwork.baseStation.wlan[0].queue queueBitLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "warmup(atomic(constant0(packetPushEnded) + sum(packetLength(packetPushStarted)) - sum(packetLength(packetPulled)) - sum(packetLength(packetRemoved)) - sum(packetLength(packetDropped))))"
+attr title "queue bit length"
+attr unit b
+vector 95 ResourceNetwork.baseStation.wlan[0].queue queueingTime:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source queueingTime(packetPulled)
+attr title "queueing times"
+attr unit s
+vector 96 ResourceNetwork.baseStation.wlan[0].queue incomingPacketLengths:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetPushStarted)
+attr title "incoming packet lengths"
+attr unit b
+vector 97 ResourceNetwork.baseStation.wlan[0].queue incomingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(packetPushStarted)
+attr title "incoming datarate"
+attr unit bps
+vector 98 ResourceNetwork.baseStation.wlan[0].queue outgoingPacketLengths:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetPulled)
+attr title "outgoing packet lengths"
+attr unit b
+vector 99 ResourceNetwork.baseStation.wlan[0].queue outgoingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(packetPulled)
+attr title "outgoing datarate"
+attr unit bps
+vector 100 ResourceNetwork.baseStation.wlan[0].queue droppedPacketLengthsQueueOverflow:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetDropReasonIsQueueOverflow(packetDropped))
+attr title "dropped packet lengths: queue overflow"
+attr unit b
+vector 101 ResourceNetwork.baseStation.wlan[0].queue flowQueueingTime:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source queueingTime(demuxFlow(packetPulled))
+attr title "flow queueing times"
+attr unit s
+vector 102 ResourceNetwork.baseStation.wlan[0].queue flowIncomingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(flowPacketLength(demuxFlow(packetPushStarted)))
+attr title "flow specific incoming data rate"
+attr unit bps
+vector 103 ResourceNetwork.baseStation.wlan[0].queue flowOutgoingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(flowPacketLength(demuxFlow(packetPulled)))
+attr title "flow specific outgoing data rate"
+attr unit bps
+vector 104 ResourceNetwork.baseStation.wlan[0].mac passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToUpper
+attr title "packets passed to higher layer, packetBytes"
+vector 105 ResourceNetwork.baseStation.wlan[0].mac sentDownPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToLower
+attr title "packets sent to lower layer, packetBytes"
+vector 106 ResourceNetwork.baseStation.wlan[0].mac rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, packetBytes"
+vector 107 ResourceNetwork.baseStation.wlan[0].mac rcvdPkFromLl:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceivedFromLower
+attr title "packets received from lower layer, packetBytes"
+vector 108 ResourceNetwork.baseStation.wlan[0].mac packetDropIncorrectlyReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, packetBytes"
+vector 109 ResourceNetwork.baseStation.wlan[0].mac packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, packetBytes"
+vector 110 ResourceNetwork.baseStation.wlan[0].mac packetDropNotAddressedToUs:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, packetBytes"
+vector 111 ResourceNetwork.baseStation.wlan[0].radio radioMode:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source radioModeChanged
+attr title "Radio mode"
+vector 112 ResourceNetwork.baseStation.wlan[0].radio receptionState:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source receptionStateChanged
+attr title "Radio reception state"
+vector 113 ResourceNetwork.baseStation.wlan[0].radio transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source transmissionStateChanged
+attr title "Radio transmission state"
+vector 114 ResourceNetwork.baseStation.wlan[0] packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drops: interface down, packetBytes"
+vector 115 ResourceNetwork.baseStation.wlan[0] packetDropNoCarrier:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoCarrier(packetDropped)
+attr title "packet drops: no carrier, packetBytes"
+vector 116 ResourceNetwork.baseStation.eth[0].queue queueLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "warmup(atomic(constant0(packetPushEnded) + count(packetPushStarted) - count(packetPulled) - count(packetRemoved) - count(packetDropped)))"
+attr title "queue length"
+attr unit pk
+vector 117 ResourceNetwork.baseStation.eth[0].queue queueBitLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "warmup(atomic(constant0(packetPushEnded) + sum(packetLength(packetPushStarted)) - sum(packetLength(packetPulled)) - sum(packetLength(packetRemoved)) - sum(packetLength(packetDropped))))"
+attr title "queue bit length"
+attr unit b
+vector 118 ResourceNetwork.baseStation.eth[0].queue queueingTime:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source queueingTime(packetPulled)
+attr title "queueing times"
+attr unit s
+vector 119 ResourceNetwork.baseStation.eth[0].queue incomingPacketLengths:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetPushStarted)
+attr title "incoming packet lengths"
+attr unit b
+vector 120 ResourceNetwork.baseStation.eth[0].queue incomingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(packetPushStarted)
+attr title "incoming datarate"
+attr unit bps
+vector 121 ResourceNetwork.baseStation.eth[0].queue outgoingPacketLengths:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetPulled)
+attr title "outgoing packet lengths"
+attr unit b
+vector 122 ResourceNetwork.baseStation.eth[0].queue outgoingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(packetPulled)
+attr title "outgoing datarate"
+attr unit bps
+vector 123 ResourceNetwork.baseStation.eth[0].queue droppedPacketLengthsQueueOverflow:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetDropReasonIsQueueOverflow(packetDropped))
+attr title "dropped packet lengths: queue overflow"
+attr unit b
+vector 124 ResourceNetwork.baseStation.eth[0].queue flowQueueingTime:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source queueingTime(demuxFlow(packetPulled))
+attr title "flow queueing times"
+attr unit s
+vector 125 ResourceNetwork.baseStation.eth[0].queue flowIncomingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(flowPacketLength(demuxFlow(packetPushStarted)))
+attr title "flow specific incoming data rate"
+attr unit bps
+vector 126 ResourceNetwork.baseStation.eth[0].queue flowOutgoingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(flowPacketLength(demuxFlow(packetPulled)))
+attr title "flow specific outgoing data rate"
+attr unit bps
+vector 127 ResourceNetwork.baseStation.eth[0].mac txPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToLower
+attr title "packets transmitted, packetBytes"
+vector 128 ResourceNetwork.baseStation.eth[0].mac rxPkOk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source rxPkOk
+attr title "packets received OK, packetBytes"
+vector 129 ResourceNetwork.baseStation.eth[0].mac passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToUpper
+attr title "packets passed to higher layer, packetBytes"
+vector 130 ResourceNetwork.baseStation.eth[0].mac txPausePkUnits:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr title "pause units sent"
+vector 131 ResourceNetwork.baseStation.eth[0].mac rxPausePkUnits:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr title "pause units received"
+vector 132 ResourceNetwork.baseStation.eth[0].mac packetReceivedFromUpper:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceivedFromUpper
+attr title "packet bytes from higher layer, packetBytes"
+vector 133 ResourceNetwork.baseStation.eth[0].mac packetDropIncorrectlyReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, packetBytes"
+vector 134 ResourceNetwork.baseStation.eth[0].mac packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, packetBytes"
+vector 135 ResourceNetwork.baseStation.eth[0].mac packetDropNotAddressedToUs:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, packetBytes"
+vector 136 ResourceNetwork.baseStation.eth[0] packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drops: interface down, packetBytes"
+vector 137 ResourceNetwork.baseStation.eth[0] packetDropNoCarrier:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoCarrier(packetDropped)
+attr title "packet drops: no carrier, packetBytes"
+vector 138 ResourceNetwork.baseStation.ipv4.ip packetDropAddressResolutionFailed:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsAddressResolutionFailed(packetDropped)
+attr title "packet drop: address resolution failed, packetBytes"
+vector 139 ResourceNetwork.baseStation.ipv4.ip packetDropHopLimitReached:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsHopLimitReached(packetDropped)
+attr title "packet drop: hop limit reached, packetBytes"
+vector 140 ResourceNetwork.baseStation.ipv4.ip packetDropForwardingDisabled:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsForwardingDisabled(packetDropped)
+attr title "packet drop: forwarding disabled, packetBytes"
+vector 141 ResourceNetwork.baseStation.ipv4.ip packetDropNoInterfaceFound:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoInterfaceFound(packetDropped)
+attr title "packet drop: no interface found, packetBytes"
+vector 142 ResourceNetwork.baseStation.ipv4.ip packetDropNoRouteFound:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoRouteFound(packetDropped)
+attr title "packet drop: no route found, packetBytes"
+vector 143 ResourceNetwork.baseStation.ipv4.ip packetDropUndefined:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsUndefined(packetDropped)
+attr title "packet drop: undefined, packetBytes"
+vector 144 ResourceNetwork.baseStation.udp packetSent:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSent
+attr title "packets sent, packetBytes"
+vector 145 ResourceNetwork.baseStation.udp packetReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceived
+attr title "packets received, packetBytes"
+vector 146 ResourceNetwork.baseStation.udp passedUpPk:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetSentToUpper
+attr title "packets passed up, count"
+vector 147 ResourceNetwork.baseStation.udp droppedPkWrongPort:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsNoPortFound(packetDropped)
+attr title "packets dropped (wrong port), count"
+vector 148 ResourceNetwork.baseStation.udp droppedPkBadChecksum:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packets dropped (checksum error), count"
+vector 149 ResourceNetwork.coreRouter.ethernet encapPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source encapPk
+attr title "packets encapsulated, packetBytes"
+vector 150 ResourceNetwork.coreRouter.ethernet decapPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source decapPk
+attr title "packets decapsulated, packetBytes"
+vector 151 ResourceNetwork.coreRouter.ethernet pauseSent:vector ETV
+attr recordingmode vector
+attr title "pause sent"
+vector 152 ResourceNetwork.coreRouter.lo[0].lo rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, packetBytes"
+vector 153 ResourceNetwork.coreRouter.lo[0].lo passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToUpper
+attr title "packets passed to higher layer, packetBytes"
+vector 154 ResourceNetwork.coreRouter.lo[0] packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drops: interface down, packetBytes"
+vector 155 ResourceNetwork.coreRouter.lo[0] packetDropNoCarrier:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoCarrier(packetDropped)
+attr title "packet drops: no carrier, packetBytes"
+vector 156 ResourceNetwork.coreRouter.eth[0].queue queueLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "warmup(atomic(constant0(packetPushEnded) + count(packetPushStarted) - count(packetPulled) - count(packetRemoved) - count(packetDropped)))"
+attr title "queue length"
+attr unit pk
+vector 157 ResourceNetwork.coreRouter.eth[0].queue queueBitLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "warmup(atomic(constant0(packetPushEnded) + sum(packetLength(packetPushStarted)) - sum(packetLength(packetPulled)) - sum(packetLength(packetRemoved)) - sum(packetLength(packetDropped))))"
+attr title "queue bit length"
+attr unit b
+vector 158 ResourceNetwork.coreRouter.eth[0].queue queueingTime:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source queueingTime(packetPulled)
+attr title "queueing times"
+attr unit s
+vector 159 ResourceNetwork.coreRouter.eth[0].queue incomingPacketLengths:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetPushStarted)
+attr title "incoming packet lengths"
+attr unit b
+vector 160 ResourceNetwork.coreRouter.eth[0].queue incomingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(packetPushStarted)
+attr title "incoming datarate"
+attr unit bps
+vector 161 ResourceNetwork.coreRouter.eth[0].queue outgoingPacketLengths:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetPulled)
+attr title "outgoing packet lengths"
+attr unit b
+vector 162 ResourceNetwork.coreRouter.eth[0].queue outgoingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(packetPulled)
+attr title "outgoing datarate"
+attr unit bps
+vector 163 ResourceNetwork.coreRouter.eth[0].queue droppedPacketLengthsQueueOverflow:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetDropReasonIsQueueOverflow(packetDropped))
+attr title "dropped packet lengths: queue overflow"
+attr unit b
+vector 164 ResourceNetwork.coreRouter.eth[0].queue flowQueueingTime:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source queueingTime(demuxFlow(packetPulled))
+attr title "flow queueing times"
+attr unit s
+vector 165 ResourceNetwork.coreRouter.eth[0].queue flowIncomingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(flowPacketLength(demuxFlow(packetPushStarted)))
+attr title "flow specific incoming data rate"
+attr unit bps
+vector 166 ResourceNetwork.coreRouter.eth[0].queue flowOutgoingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(flowPacketLength(demuxFlow(packetPulled)))
+attr title "flow specific outgoing data rate"
+attr unit bps
+vector 167 ResourceNetwork.coreRouter.eth[0].mac txPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToLower
+attr title "packets transmitted, packetBytes"
+vector 168 ResourceNetwork.coreRouter.eth[0].mac rxPkOk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source rxPkOk
+attr title "packets received OK, packetBytes"
+vector 169 ResourceNetwork.coreRouter.eth[0].mac passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToUpper
+attr title "packets passed to higher layer, packetBytes"
+vector 170 ResourceNetwork.coreRouter.eth[0].mac txPausePkUnits:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr title "pause units sent"
+vector 171 ResourceNetwork.coreRouter.eth[0].mac rxPausePkUnits:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr title "pause units received"
+vector 172 ResourceNetwork.coreRouter.eth[0].mac packetReceivedFromUpper:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceivedFromUpper
+attr title "packet bytes from higher layer, packetBytes"
+vector 173 ResourceNetwork.coreRouter.eth[0].mac packetDropIncorrectlyReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, packetBytes"
+vector 174 ResourceNetwork.coreRouter.eth[0].mac packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, packetBytes"
+vector 175 ResourceNetwork.coreRouter.eth[0].mac packetDropNotAddressedToUs:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, packetBytes"
+vector 176 ResourceNetwork.coreRouter.eth[0] packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drops: interface down, packetBytes"
+vector 177 ResourceNetwork.coreRouter.eth[0] packetDropNoCarrier:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoCarrier(packetDropped)
+attr title "packet drops: no carrier, packetBytes"
+vector 178 ResourceNetwork.coreRouter.eth[1].queue queueLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "warmup(atomic(constant0(packetPushEnded) + count(packetPushStarted) - count(packetPulled) - count(packetRemoved) - count(packetDropped)))"
+attr title "queue length"
+attr unit pk
+vector 179 ResourceNetwork.coreRouter.eth[1].queue queueBitLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "warmup(atomic(constant0(packetPushEnded) + sum(packetLength(packetPushStarted)) - sum(packetLength(packetPulled)) - sum(packetLength(packetRemoved)) - sum(packetLength(packetDropped))))"
+attr title "queue bit length"
+attr unit b
+vector 180 ResourceNetwork.coreRouter.eth[1].queue queueingTime:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source queueingTime(packetPulled)
+attr title "queueing times"
+attr unit s
+vector 181 ResourceNetwork.coreRouter.eth[1].queue incomingPacketLengths:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetPushStarted)
+attr title "incoming packet lengths"
+attr unit b
+vector 182 ResourceNetwork.coreRouter.eth[1].queue incomingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(packetPushStarted)
+attr title "incoming datarate"
+attr unit bps
+vector 183 ResourceNetwork.coreRouter.eth[1].queue outgoingPacketLengths:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetPulled)
+attr title "outgoing packet lengths"
+attr unit b
+vector 184 ResourceNetwork.coreRouter.eth[1].queue outgoingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(packetPulled)
+attr title "outgoing datarate"
+attr unit bps
+vector 185 ResourceNetwork.coreRouter.eth[1].queue droppedPacketLengthsQueueOverflow:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetDropReasonIsQueueOverflow(packetDropped))
+attr title "dropped packet lengths: queue overflow"
+attr unit b
+vector 186 ResourceNetwork.coreRouter.eth[1].queue flowQueueingTime:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source queueingTime(demuxFlow(packetPulled))
+attr title "flow queueing times"
+attr unit s
+vector 187 ResourceNetwork.coreRouter.eth[1].queue flowIncomingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(flowPacketLength(demuxFlow(packetPushStarted)))
+attr title "flow specific incoming data rate"
+attr unit bps
+vector 188 ResourceNetwork.coreRouter.eth[1].queue flowOutgoingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(flowPacketLength(demuxFlow(packetPulled)))
+attr title "flow specific outgoing data rate"
+attr unit bps
+vector 189 ResourceNetwork.coreRouter.eth[1].mac txPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToLower
+attr title "packets transmitted, packetBytes"
+vector 190 ResourceNetwork.coreRouter.eth[1].mac rxPkOk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source rxPkOk
+attr title "packets received OK, packetBytes"
+vector 191 ResourceNetwork.coreRouter.eth[1].mac passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToUpper
+attr title "packets passed to higher layer, packetBytes"
+vector 192 ResourceNetwork.coreRouter.eth[1].mac txPausePkUnits:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr title "pause units sent"
+vector 193 ResourceNetwork.coreRouter.eth[1].mac rxPausePkUnits:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr title "pause units received"
+vector 194 ResourceNetwork.coreRouter.eth[1].mac packetReceivedFromUpper:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceivedFromUpper
+attr title "packet bytes from higher layer, packetBytes"
+vector 195 ResourceNetwork.coreRouter.eth[1].mac packetDropIncorrectlyReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, packetBytes"
+vector 196 ResourceNetwork.coreRouter.eth[1].mac packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, packetBytes"
+vector 197 ResourceNetwork.coreRouter.eth[1].mac packetDropNotAddressedToUs:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, packetBytes"
+vector 198 ResourceNetwork.coreRouter.eth[1] packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drops: interface down, packetBytes"
+vector 199 ResourceNetwork.coreRouter.eth[1] packetDropNoCarrier:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoCarrier(packetDropped)
+attr title "packet drops: no carrier, packetBytes"
+vector 200 ResourceNetwork.coreRouter.ipv4.ip packetDropAddressResolutionFailed:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsAddressResolutionFailed(packetDropped)
+attr title "packet drop: address resolution failed, packetBytes"
+vector 201 ResourceNetwork.coreRouter.ipv4.ip packetDropHopLimitReached:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsHopLimitReached(packetDropped)
+attr title "packet drop: hop limit reached, packetBytes"
+vector 202 ResourceNetwork.coreRouter.ipv4.ip packetDropForwardingDisabled:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsForwardingDisabled(packetDropped)
+attr title "packet drop: forwarding disabled, packetBytes"
+vector 203 ResourceNetwork.coreRouter.ipv4.ip packetDropNoInterfaceFound:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoInterfaceFound(packetDropped)
+attr title "packet drop: no interface found, packetBytes"
+vector 204 ResourceNetwork.coreRouter.ipv4.ip packetDropNoRouteFound:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoRouteFound(packetDropped)
+attr title "packet drop: no route found, packetBytes"
+vector 205 ResourceNetwork.coreRouter.ipv4.ip packetDropUndefined:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsUndefined(packetDropped)
+attr title "packet drop: undefined, packetBytes"
+vector 206 ResourceNetwork.edgeServer.ethernet encapPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source encapPk
+attr title "packets encapsulated, packetBytes"
+vector 207 ResourceNetwork.edgeServer.ethernet decapPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source decapPk
+attr title "packets decapsulated, packetBytes"
+vector 208 ResourceNetwork.edgeServer.ethernet pauseSent:vector ETV
+attr recordingmode vector
+attr title "pause sent"
+vector 209 ResourceNetwork.edgeServer.lo[0].lo rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, packetBytes"
+vector 210 ResourceNetwork.edgeServer.lo[0].lo passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToUpper
+attr title "packets passed to higher layer, packetBytes"
+vector 211 ResourceNetwork.edgeServer.lo[0] packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drops: interface down, packetBytes"
+vector 212 ResourceNetwork.edgeServer.lo[0] packetDropNoCarrier:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoCarrier(packetDropped)
+attr title "packet drops: no carrier, packetBytes"
+vector 213 ResourceNetwork.edgeServer.eth[0].queue queueLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "warmup(atomic(constant0(packetPushEnded) + count(packetPushStarted) - count(packetPulled) - count(packetRemoved) - count(packetDropped)))"
+attr title "queue length"
+attr unit pk
+vector 214 ResourceNetwork.edgeServer.eth[0].queue queueBitLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "warmup(atomic(constant0(packetPushEnded) + sum(packetLength(packetPushStarted)) - sum(packetLength(packetPulled)) - sum(packetLength(packetRemoved)) - sum(packetLength(packetDropped))))"
+attr title "queue bit length"
+attr unit b
+vector 215 ResourceNetwork.edgeServer.eth[0].queue queueingTime:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source queueingTime(packetPulled)
+attr title "queueing times"
+attr unit s
+vector 216 ResourceNetwork.edgeServer.eth[0].queue incomingPacketLengths:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetPushStarted)
+attr title "incoming packet lengths"
+attr unit b
+vector 217 ResourceNetwork.edgeServer.eth[0].queue incomingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(packetPushStarted)
+attr title "incoming datarate"
+attr unit bps
+vector 218 ResourceNetwork.edgeServer.eth[0].queue outgoingPacketLengths:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetPulled)
+attr title "outgoing packet lengths"
+attr unit b
+vector 219 ResourceNetwork.edgeServer.eth[0].queue outgoingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(packetPulled)
+attr title "outgoing datarate"
+attr unit bps
+vector 220 ResourceNetwork.edgeServer.eth[0].queue droppedPacketLengthsQueueOverflow:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetDropReasonIsQueueOverflow(packetDropped))
+attr title "dropped packet lengths: queue overflow"
+attr unit b
+vector 221 ResourceNetwork.edgeServer.eth[0].queue flowQueueingTime:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source queueingTime(demuxFlow(packetPulled))
+attr title "flow queueing times"
+attr unit s
+vector 222 ResourceNetwork.edgeServer.eth[0].queue flowIncomingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(flowPacketLength(demuxFlow(packetPushStarted)))
+attr title "flow specific incoming data rate"
+attr unit bps
+vector 223 ResourceNetwork.edgeServer.eth[0].queue flowOutgoingDataRate:vector ETV
+attr interpolationmode linear
+attr recordingmode vector
+attr source throughput(flowPacketLength(demuxFlow(packetPulled)))
+attr title "flow specific outgoing data rate"
+attr unit bps
+vector 224 ResourceNetwork.edgeServer.eth[0].mac txPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToLower
+attr title "packets transmitted, packetBytes"
+vector 225 ResourceNetwork.edgeServer.eth[0].mac rxPkOk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source rxPkOk
+attr title "packets received OK, packetBytes"
+vector 226 ResourceNetwork.edgeServer.eth[0].mac passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToUpper
+attr title "packets passed to higher layer, packetBytes"
+vector 227 ResourceNetwork.edgeServer.eth[0].mac txPausePkUnits:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr title "pause units sent"
+vector 228 ResourceNetwork.edgeServer.eth[0].mac rxPausePkUnits:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr title "pause units received"
+vector 229 ResourceNetwork.edgeServer.eth[0].mac packetReceivedFromUpper:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceivedFromUpper
+attr title "packet bytes from higher layer, packetBytes"
+vector 230 ResourceNetwork.edgeServer.eth[0].mac packetDropIncorrectlyReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, packetBytes"
+vector 231 ResourceNetwork.edgeServer.eth[0].mac packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, packetBytes"
+vector 232 ResourceNetwork.edgeServer.eth[0].mac packetDropNotAddressedToUs:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, packetBytes"
+vector 233 ResourceNetwork.edgeServer.eth[0] packetDropInterfaceDown:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drops: interface down, packetBytes"
+vector 234 ResourceNetwork.edgeServer.eth[0] packetDropNoCarrier:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoCarrier(packetDropped)
+attr title "packet drops: no carrier, packetBytes"
+vector 235 ResourceNetwork.edgeServer.ipv4.ip packetDropAddressResolutionFailed:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsAddressResolutionFailed(packetDropped)
+attr title "packet drop: address resolution failed, packetBytes"
+vector 236 ResourceNetwork.edgeServer.ipv4.ip packetDropHopLimitReached:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsHopLimitReached(packetDropped)
+attr title "packet drop: hop limit reached, packetBytes"
+vector 237 ResourceNetwork.edgeServer.ipv4.ip packetDropForwardingDisabled:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsForwardingDisabled(packetDropped)
+attr title "packet drop: forwarding disabled, packetBytes"
+vector 238 ResourceNetwork.edgeServer.ipv4.ip packetDropNoInterfaceFound:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoInterfaceFound(packetDropped)
+attr title "packet drop: no interface found, packetBytes"
+vector 239 ResourceNetwork.edgeServer.ipv4.ip packetDropNoRouteFound:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsNoRouteFound(packetDropped)
+attr title "packet drop: no route found, packetBytes"
+vector 240 ResourceNetwork.edgeServer.ipv4.ip packetDropUndefined:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetDropReasonIsUndefined(packetDropped)
+attr title "packet drop: undefined, packetBytes"
+vector 241 ResourceNetwork.edgeServer.udp packetSent:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSent
+attr title "packets sent, packetBytes"
+vector 242 ResourceNetwork.edgeServer.udp packetReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceived
+attr title "packets received, packetBytes"
+vector 243 ResourceNetwork.edgeServer.udp passedUpPk:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetSentToUpper
+attr title "packets passed up, count"
+vector 244 ResourceNetwork.edgeServer.udp droppedPkWrongPort:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsNoPortFound(packetDropped)
+attr title "packets dropped (wrong port), count"
+vector 245 ResourceNetwork.edgeServer.udp droppedPkBadChecksum:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packets dropped (checksum error), count"
+4	0	0	0
+4	0	0	0
+4	0	0	0
+4	0	0	0
+4	0	0	0
+4	6	0.022315250545	0
+4	74	0.048997543609	0
+4	89	0.050091475922	1
+4	97	0.057693543609	0
+4	156	0.071541327883	0
+4	173	0.090804202568	0
+4	202	0.109002634256	0
+5	0	0	0
+5	0	0	0
+5	0	0	0
+5	0	0	0
+5	0	0	0
+5	6	0.022315250545	0
+5	74	0.048997543609	0
+5	89	0.050091475922	8416
+5	97	0.057693543609	0
+5	156	0.071541327883	0
+5	173	0.090804202568	0
+5	202	0.109002634256	0
+6	6	0.022315250545	0
+6	74	0.048997543609	0
+6	97	0.057693543609	0.007602067687
+6	156	0.071541327883	0
+6	173	0.090804202568	0
+6	202	0.109002634256	0
+7	6	0.022315250545	8416
+7	74	0.048997543609	8416
+7	89	0.050091475922	8416
+7	156	0.071541327883	8416
+7	173	0.090804202568	8416
+7	202	0.109002634256	8416
+8	202	0.1	420800
+9	6	0.022315250545	8416
+9	74	0.048997543609	8416
+9	97	0.057693543609	8416
+9	156	0.071541327883	8416
+9	173	0.090804202568	8416
+9	202	0.109002634256	8416
+10	202	0.1	420800
+16	6	0.022315250545	1075
+16	74	0.048997543609	1075
+16	97	0.057693543609	1075
+16	156	0.071541327883	1075
+16	173	0.090804202568	1075
+16	202	0.109002634256	1075
+17	6	0.022315250545	1052
+17	74	0.048997543609	1052
+17	97	0.057693543609	1052
+17	156	0.071541327883	1052
+17	173	0.090804202568	1052
+17	202	0.109002634256	1052
+18	45	0.039940250359	1075
+18	70	0.048636250704	1075
+21	45	0.039940250359	1075
+21	70	0.048636250704	1075
+22	0	0	0
+22	0	0	0
+22	0	0	2
+22	6	0.022315250545	3
+22	22	0.031011250545	2
+22	74	0.048997543609	3
+22	97	0.057693543609	2
+22	97	0.057693543609	3
+22	123	0.066389543609	2
+22	156	0.071541327883	3
+22	165	0.080237327883	2
+22	173	0.090804202568	3
+22	184	0.099500202568	2
+22	202	0.109002634256	3
+23	0	0	1
+23	6	0.022315250545	0
+23	22	0.031011250545	2
+23	30	0.031244250014	1
+23	31	0.031244250359	3
+23	44	0.039940250359	1
+23	46	0.039940250704	3
+23	69	0.048636250704	1
+23	74	0.048997543609	0
+23	97	0.057693543609	1
+23	97	0.057693543609	0
+23	123	0.066389543609	1
+23	152	0.068562615487	3
+23	156	0.071541327883	2
+23	156	0.071541327883	0
+23	165	0.080237327883	1
+23	173	0.090804202568	0
+23	184	0.099500202568	2
+23	191	0.101742387552	1
+23	198	0.10530357053	3
+23	202	0.109002634256	2
+23	202	0.109002634256	0
+24	6	0.022315250545	1
+24	7	0.022315250545	2
+24	22	0.031011250545	1
+24	22	0.031011250545	0
+24	74	0.048997543609	1
+24	75	0.048997543609	2
+24	97	0.057693543609	1
+24	97	0.057693543609	0
+24	97	0.057693543609	1
+24	98	0.057693543609	2
+24	123	0.066389543609	1
+24	123	0.066389543609	0
+24	156	0.071541327883	1
+24	157	0.071541327883	2
+24	165	0.080237327883	1
+24	165	0.080237327883	0
+24	173	0.090804202568	1
+24	174	0.090804202568	2
+24	184	0.099500202568	1
+24	184	0.099500202568	0
+24	202	0.109002634256	1
+24	203	0.109002634256	2
+33	4	0.022315250545	1032
+33	72	0.048997543609	1032
+33	87	0.050091475922	1032
+33	154	0.071541327883	1032
+33	171	0.090804202568	1032
+33	200	0.109002634256	1032
+35	0	0	0
+36	0	0	0
+37	0	0	0
+47	0	0	0
+47	0	0	0
+47	0	0	0
+47	0	0	0
+47	0	0	0
+47	14	0.02254756865	0
+47	21	0.028350793909	1
+47	26	0.03124356865	0
+47	35	0.037382883269	1
+47	36	0.03993956865	0
+47	149	0.068561932299	0
+47	180	0.093045703394	0
+47	195	0.105302885886	0
+48	0	0	0
+48	0	0	0
+48	0	0	0
+48	0	0	0
+48	0	0	0
+48	14	0.02254756865	0
+48	21	0.028350793909	8416
+48	26	0.03124356865	0
+48	35	0.037382883269	8416
+48	36	0.03993956865	0
+48	149	0.068561932299	0
+48	180	0.093045703394	0
+48	195	0.105302885886	0
+49	14	0.02254756865	0
+49	26	0.03124356865	0.002892774741
+49	36	0.03993956865	0.002556685381
+49	149	0.068561932299	0
+49	180	0.093045703394	0
+49	195	0.105302885886	0
+50	14	0.02254756865	8416
+50	21	0.028350793909	8416
+50	35	0.037382883269	8416
+50	149	0.068561932299	8416
+50	180	0.093045703394	8416
+50	195	0.105302885886	8416
+51	195	0.1	420800
+52	14	0.02254756865	8416
+52	26	0.03124356865	8416
+52	36	0.03993956865	8416
+52	149	0.068561932299	8416
+52	180	0.093045703394	8416
+52	195	0.105302885886	8416
+53	195	0.1	420800
+59	14	0.02254756865	1075
+59	26	0.03124356865	1075
+59	36	0.03993956865	1075
+59	149	0.068561932299	1075
+59	180	0.093045703394	1075
+59	195	0.105302885886	1075
+60	14	0.02254756865	1052
+60	26	0.03124356865	1052
+60	36	0.03993956865	1052
+60	149	0.068561932299	1052
+60	180	0.093045703394	1052
+60	195	0.105302885886	1052
+61	100	0.057694226022	1075
+61	125	0.066390226366	1075
+64	100	0.057694226022	1075
+64	125	0.066390226366	1075
+65	0	0	0
+65	0	0	0
+65	0	0	2
+65	14	0.02254756865	3
+65	26	0.03124356865	2
+65	26	0.03124356865	3
+65	36	0.03993956865	2
+65	36	0.03993956865	3
+65	63	0.04863556865	2
+65	149	0.068561932299	3
+65	161	0.077257932299	2
+65	180	0.093045703394	3
+65	189	0.101741703394	2
+65	195	0.105302885886	3
+66	0	0	1
+66	8	0.0223159319	3
+66	14	0.02254756865	2
+66	14	0.02254756865	0
+66	26	0.03124356865	1
+66	26	0.03124356865	0
+66	36	0.03993956865	1
+66	36	0.03993956865	0
+66	63	0.04863556865	1
+66	76	0.048998226022	3
+66	99	0.057694226022	1
+66	101	0.057694226366	3
+66	124	0.066390226366	1
+66	149	0.068561932299	0
+66	161	0.077257932299	2
+66	166	0.080238011189	1
+66	175	0.090804886638	3
+66	180	0.093045703394	2
+66	180	0.093045703394	0
+66	189	0.101741703394	1
+66	195	0.105302885886	0
+67	14	0.02254756865	1
+67	15	0.02254756865	2
+67	26	0.03124356865	1
+67	26	0.03124356865	0
+67	26	0.03124356865	1
+67	27	0.03124356865	2
+67	36	0.03993956865	1
+67	36	0.03993956865	0
+67	36	0.03993956865	1
+67	37	0.03993956865	2
+67	63	0.04863556865	1
+67	63	0.04863556865	0
+67	149	0.068561932299	1
+67	150	0.068561932299	2
+67	161	0.077257932299	1
+67	161	0.077257932299	0
+67	180	0.093045703394	1
+67	181	0.093045703394	2
+67	189	0.101741703394	1
+67	189	0.101741703394	0
+67	195	0.105302885886	1
+67	196	0.105302885886	2
+76	12	0.02254756865	1032
+76	19	0.028350793909	1032
+76	33	0.037382883269	1032
+76	147	0.068561932299	1032
+76	178	0.093045703394	1032
+76	193	0.105302885886	1032
+78	0	0	0
+79	0	0	0
+80	0	0	0
+86	42	0.039940043683	1052
+86	67	0.048636043683	1052
+86	105	0.057694229067	1052
+86	129	0.06639022936	1052
+93	0	0	0
+93	0	0	0
+93	0	0	0
+93	0	0	0
+93	0	0	0
+94	0	0	0
+94	0	0	0
+94	0	0	0
+94	0	0	0
+94	0	0	0
+104	40	0.039940043683	1052
+104	65	0.048636043683	1052
+104	103	0.057694229067	1052
+104	127	0.06639022936	1052
+107	25	0.031011935103	1075
+107	40	0.039940043683	1075
+107	65	0.048636043683	1075
+107	103	0.057694229067	1075
+107	127	0.06639022936	1075
+107	163	0.077258407332	1075
+107	187	0.099500889436	1075
+108	25	0.031011935103	1075
+108	163	0.077258407332	1075
+108	187	0.099500889436	1075
+111	0	0	0
+111	0	0	0
+111	0	0	2
+112	0	0	1
+112	9	0.022315935103	3
+112	24	0.031011935103	2
+112	29	0.031244043683	3
+112	38	0.039940043683	2
+112	39	0.039940043683	3
+112	64	0.048636043683	1
+112	77	0.048998229067	3
+112	102	0.057694229067	1
+112	107	0.05769422936	3
+112	126	0.06639022936	1
+112	151	0.068562407332	3
+112	162	0.077258407332	2
+112	167	0.080238014101	1
+112	176	0.090804889436	3
+112	186	0.099500889436	2
+112	190	0.101742178427	1
+112	197	0.105303360919	3
+116	0	0	0
+116	0	0	0
+116	0	0	0
+116	0	0	0
+116	0	0	0
+116	43	0.039940043683	0
+116	68	0.048636043683	0
+116	106	0.057694229067	0
+116	130	0.06639022936	0
+117	0	0	0
+117	0	0	0
+117	0	0	0
+117	0	0	0
+117	0	0	0
+117	43	0.039940043683	0
+117	68	0.048636043683	0
+117	106	0.057694229067	0
+117	130	0.06639022936	0
+118	43	0.039940043683	0
+118	68	0.048636043683	0
+118	106	0.057694229067	0
+118	130	0.06639022936	0
+119	43	0.039940043683	8560
+119	68	0.048636043683	8560
+119	106	0.057694229067	8560
+119	130	0.06639022936	8560
+121	43	0.039940043683	8560
+121	68	0.048636043683	8560
+121	106	0.057694229067	8560
+121	130	0.06639022936	8560
+127	47	0.040802443683	1070
+127	78	0.049498443683	1070
+127	108	0.058556629067	1070
+127	131	0.06725262936	1070
+132	43	0.039940043683	1070
+132	68	0.048636043683	1070
+132	106	0.057694229067	1070
+132	130	0.06639022936	1070
+146	0	0	0
+147	0	0	0
+148	0	0	0
+149	51	0.040802493683	1052
+149	82	0.049498493683	1052
+149	112	0.058556679067	1052
+149	135	0.06725267936	1052
+150	49	0.040802493683	1052
+150	80	0.049498493683	1052
+150	110	0.058556679067	1052
+150	133	0.06725267936	1052
+156	0	0	0
+156	0	0	0
+156	0	0	0
+156	0	0	0
+156	0	0	0
+157	0	0	0
+157	0	0	0
+157	0	0	0
+157	0	0	0
+157	0	0	0
+168	48	0.040802493683	1070
+168	79	0.049498493683	1070
+168	109	0.058556679067	1070
+168	132	0.06725267936	1070
+169	48	0.040802493683	1070
+169	79	0.049498493683	1070
+169	109	0.058556679067	1070
+169	132	0.06725267936	1070
+178	0	0	0
+178	0	0	0
+178	0	0	0
+178	0	0	0
+178	0	0	0
+178	52	0.040802493683	0
+178	83	0.049498493683	0
+178	113	0.058556679067	0
+178	136	0.06725267936	0
+179	0	0	0
+179	0	0	0
+179	0	0	0
+179	0	0	0
+179	0	0	0
+179	52	0.040802493683	0
+179	83	0.049498493683	0
+179	113	0.058556679067	0
+179	136	0.06725267936	0
+180	52	0.040802493683	0
+180	83	0.049498493683	0
+180	113	0.058556679067	0
+180	136	0.06725267936	0
+181	52	0.040802493683	8560
+181	83	0.049498493683	8560
+181	113	0.058556679067	8560
+181	136	0.06725267936	8560
+183	52	0.040802493683	8560
+183	83	0.049498493683	8560
+183	113	0.058556679067	8560
+183	136	0.06725267936	8560
+189	56	0.041664893683	1070
+189	90	0.050360893683	1070
+189	116	0.059419079067	1070
+189	139	0.06811507936	1070
+194	52	0.040802493683	1070
+194	83	0.049498493683	1070
+194	113	0.058556679067	1070
+194	136	0.06725267936	1070
+207	58	0.041664943683	1052
+207	92	0.050360943683	1052
+207	118	0.059419129067	1052
+207	141	0.06811512936	1052
+213	0	0	0
+213	0	0	0
+213	0	0	0
+213	0	0	0
+213	0	0	0
+214	0	0	0
+214	0	0	0
+214	0	0	0
+214	0	0	0
+214	0	0	0
+225	57	0.041664943683	1070
+225	91	0.050360943683	1070
+225	117	0.059419129067	1070
+225	140	0.06811512936	1070
+226	57	0.041664943683	1070
+226	91	0.050360943683	1070
+226	117	0.059419129067	1070
+226	140	0.06811512936	1070
+242	60	0.041664943683	1032
+242	94	0.050360943683	1032
+242	120	0.059419129067	1032
+242	143	0.06811512936	1032
+243	0	0	0
+243	60	0.041664943683	1
+243	94	0.050360943683	2
+243	120	0.059419129067	3
+243	143	0.06811512936	4
+244	0	0	0
+245	0	0	0
+8	203	0.109003008699	934798.60804031
+10	203	0.109003008699	934798.60804031
+39	203	0.1	0
+39	203	0.109003008699	0
+51	203	0.109003008699	934798.60804031
+53	203	0.109003008699	934798.60804031
+82	203	0.1	0
+82	203	0.109003008699	0
+97	203	0.1	0
+97	203	0.109003008699	0
+99	203	0.1	0
+99	203	0.109003008699	0
+120	203	0.1	342400
+120	203	0.109003008699	0
+122	203	0.1	342400
+122	203	0.109003008699	0
+160	203	0.1	0
+160	203	0.109003008699	0
+162	203	0.1	0
+162	203	0.109003008699	0
+182	203	0.1	342400
+182	203	0.109003008699	0
+184	203	0.1	342400
+184	203	0.109003008699	0
+217	203	0.1	0
+217	203	0.109003008699	0
+219	203	0.1	0
+219	203	0.109003008699	0
+

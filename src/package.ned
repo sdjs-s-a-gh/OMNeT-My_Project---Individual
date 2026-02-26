@@ -1,0 +1,3 @@
+package myprojectandtutorial;
+
+@license(LGPL);
