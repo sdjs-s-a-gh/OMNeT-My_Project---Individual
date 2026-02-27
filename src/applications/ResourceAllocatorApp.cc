@@ -41,7 +41,7 @@ void ResourceAllocatorApp::handleMessageWhenUp(cMessage *msg)
         if (cPacket *pkt = dynamic_cast<cPacket *>(msg)) {
             EV << "Packet received: " << pkt->getName() << ", size: " << pkt->getByteLength() << " bytes" << endl;
             socket.processMessage(msg); // <- the one line of code that fixed it.
-           // delete pkt;
+            delete pkt;
         } else {
             delete msg;
         }

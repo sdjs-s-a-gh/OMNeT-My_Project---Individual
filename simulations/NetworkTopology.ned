@@ -24,7 +24,6 @@ import myprojectandtutorial.devices.AutonomousVehicle;
 import inet.node.inet.WirelessHost;
 import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
 import inet.physicallayer.wireless.common.contract.packetlevel.IRadioMedium;
-
 // Visualing the Traffic Propagate throughout the medium
 import inet.visualizer.canvas.integrated.IntegratedCanvasVisualizer;
 
@@ -47,7 +46,7 @@ network ResourceNetwork
         configurator: Ipv4NetworkConfigurator {
             @display("p=62,553");
         }
-        radioMedium: <default("UnitDiskRadioMedium")> like IRadioMedium {
+        radioMedium: <default("ApskScalarRadioMedium")> like IRadioMedium {
             @display("p=62,400");
         } // Will need to change to RadioMedium to configure bandwidth
 
@@ -60,7 +59,7 @@ network ResourceNetwork
             @display("p=230,291");
         }
 
-        mdAutonomousVehicle[10]: WirelessHost {
+        mdAutonomousVehicle[1]: AutonomousVehicle {
             @display("p=428,289");
         }
 
