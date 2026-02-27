@@ -60,9 +60,10 @@ network ResourceNetwork
             @display("p=230,291");
         }
 
-//        mdAutonomousVehicle[10]: StandardHost {
-//            @display("p=428,289");
-//        }
+        mdAutonomousVehicle[10]: WirelessHost {
+            @display("p=428,289");
+        }
+
         //hostB: WirelessHost { @display("p=450,195"); }
 
         // Edge Layer
