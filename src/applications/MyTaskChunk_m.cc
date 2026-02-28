@@ -195,12 +195,12 @@ void MyTaskChunk::parsimUnpack(omnetpp::cCommBuffer *b)
     doParsimUnpacking(b,this->DeadlineLatency);
 }
 
-int MyTaskChunk::getRequiredCPUCycles() const
+double MyTaskChunk::getRequiredCPUCycles() const
 {
     return this->RequiredCPUCycles;
 }
 
-void MyTaskChunk::setRequiredCPUCycles(int RequiredCPUCycles)
+void MyTaskChunk::setRequiredCPUCycles(double RequiredCPUCycles)
 {
     handleChange();
     this->RequiredCPUCycles = RequiredCPUCycles;
@@ -341,7 +341,7 @@ const char *MyTaskChunkDescriptor::getFieldTypeString(int field) const
         field -= base->getFieldCount();
     }
     static const char *fieldTypeStrings[] = {
-        "int",    // FIELD_RequiredCPUCycles
+        "double",    // FIELD_RequiredCPUCycles
         "int",    // FIELD_DeadlineLatency
     };
     return (field >= 0 && field < 2) ? fieldTypeStrings[field] : nullptr;
@@ -427,7 +427,7 @@ std::string MyTaskChunkDescriptor::getFieldValueAsString(omnetpp::any_ptr object
     }
     MyTaskChunk *pp = omnetpp::fromAnyPtr<MyTaskChunk>(object); (void)pp;
     switch (field) {
-        case FIELD_RequiredCPUCycles: return long2string(pp->getRequiredCPUCycles());
+        case FIELD_RequiredCPUCycles: return double2string(pp->getRequiredCPUCycles());
         case FIELD_DeadlineLatency: return long2string(pp->getDeadlineLatency());
         default: return "";
     }
@@ -445,7 +445,7 @@ void MyTaskChunkDescriptor::setFieldValueAsString(omnetpp::any_ptr object, int f
     }
     MyTaskChunk *pp = omnetpp::fromAnyPtr<MyTaskChunk>(object); (void)pp;
     switch (field) {
-        case FIELD_RequiredCPUCycles: pp->setRequiredCPUCycles(string2long(value)); break;
+        case FIELD_RequiredCPUCycles: pp->setRequiredCPUCycles(string2double(value)); break;
         case FIELD_DeadlineLatency: pp->setDeadlineLatency(string2long(value)); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'MyTaskChunk'", field);
     }
@@ -479,7 +479,7 @@ void MyTaskChunkDescriptor::setFieldValue(omnetpp::any_ptr object, int field, in
     }
     MyTaskChunk *pp = omnetpp::fromAnyPtr<MyTaskChunk>(object); (void)pp;
     switch (field) {
-        case FIELD_RequiredCPUCycles: pp->setRequiredCPUCycles(omnetpp::checked_int_cast<int>(value.intValue())); break;
+        case FIELD_RequiredCPUCycles: pp->setRequiredCPUCycles(value.doubleValue()); break;
         case FIELD_DeadlineLatency: pp->setDeadlineLatency(omnetpp::checked_int_cast<int>(value.intValue())); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'MyTaskChunk'", field);
     }

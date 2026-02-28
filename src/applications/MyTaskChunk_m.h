@@ -37,15 +37,16 @@ namespace inet {
  * <pre>
  * class MyTaskChunk extends FieldsChunk
  * {
- *     int RequiredCPUCycles;
+ *     double RequiredCPUCycles;
  *     int DeadlineLatency;
+ * 
  * }
  * </pre>
  */
 class MyTaskChunk : public ::inet::FieldsChunk
 {
   protected:
-    int RequiredCPUCycles = 0;
+    double RequiredCPUCycles = 0;
     int DeadlineLatency = 0;
 
   private:
@@ -63,8 +64,8 @@ class MyTaskChunk : public ::inet::FieldsChunk
     virtual void parsimPack(omnetpp::cCommBuffer *b) const override;
     virtual void parsimUnpack(omnetpp::cCommBuffer *b) override;
 
-    virtual int getRequiredCPUCycles() const;
-    virtual void setRequiredCPUCycles(int RequiredCPUCycles);
+    virtual double getRequiredCPUCycles() const;
+    virtual void setRequiredCPUCycles(double RequiredCPUCycles);
 
     virtual int getDeadlineLatency() const;
     virtual void setDeadlineLatency(int DeadlineLatency);
