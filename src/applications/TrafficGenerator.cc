@@ -46,6 +46,10 @@ void TrafficGenerator::sendPacket()
 
     payload->setRequiredCPUCycles(cpuCycles);
     payload->setDeadlineLatency(deadlineLatency);
+    payload->setCreationTime(simTime());
+
+    EV << "The sim time is: " << simTime() << endl;
+    EV << "The sim time for the payload is: " << payload->getCreationTime() << endl;
 
     payload->setChunkLength(B(par("messageLength")));
     packet->insertAtBack(payload);

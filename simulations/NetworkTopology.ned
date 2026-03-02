@@ -39,6 +39,17 @@ network ResourceNetwork
     parameters:
         @display("bgb=600,600");
 
+        // Statistics to be gathered during the simulation.
+        // Main
+        @statistic[latencyOverTime](source=latency; record=vector);
+        @statistic[systemResourceUtilisationOverTime](source=resourceUtilisation; record=vector);
+        @statistic[energyConsumptionOverTime](source=energyConsumption; record=vector);
+	
+        // Complementary
+        @statistic[tasksProcessedOverTime](source=tasksProcessed; record=vector);
+        @statistic[maxQueueLengthOverTime](source=maxQueueLength; record=vector);
+        @statistic[parallelTasksOverTime](source=parallelTasks; record=vector);
+
     submodules:
         visualizer: IntegratedCanvasVisualizer {
             @display("p=62,475");

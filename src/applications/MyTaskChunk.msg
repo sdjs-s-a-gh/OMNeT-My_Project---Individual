@@ -19,5 +19,8 @@ namespace inet;
   
 class MyTaskChunk extends FieldsChunk {  
     int RequiredCPUCycles;  
-    int DeadlineLatency;
+    double DeadlineLatency;
+    
+    simtime_t creationTime;
+    
 }

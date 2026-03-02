@@ -25,6 +25,14 @@ simple ResourceAllocatorApp like IApp
 	parameters:
 	    @display("i=block/app");	
 	    int localPort;
+	    double maxCPUCapacity;
+
+        @signal[latency](type=double);
+        @signal[resourceUtilisation](type=double);
+        @signal[energyConsumption](type=double);
+        @signal[tasksProcessed](type=int);
+        @signal[maxQueueLength](type=int);
+        @signal[parallelTasks](type=int);
 	
 	gates:
 	    input socketIn;
