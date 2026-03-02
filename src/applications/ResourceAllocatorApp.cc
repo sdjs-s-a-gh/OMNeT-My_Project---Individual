@@ -30,13 +30,20 @@ void ResourceAllocatorApp::initialize(int stage)
     maxCPUCapacity = par("maxCPUCapacity");
     currentCapacity = maxCPUCapacity;
 
+    WATCH(currentCapacity);
+    WATCH(packetsReceived);
+    WATCH(tasksProcessed);
+    WATCH(tasksProcessing);
+    WATCH(maxQueueLength);
+
     // Setup Statistics
-    lifeTimeSignal = registerSignal("lifeTime");
-    totalQueueingTimeSignal = registerSignal("totalQueueingTime");
-    queuesVisitedSignal = registerSignal("queuesVisited");
-    totalServiceTimeSignal = registerSignal("totalServiceTime");
-    totalDelayTimeSignal = registerSignal("totalDelayTime");
-    delaysVisitedSignal = registerSignal("delaysVisited");
+    latencySignal = registerSignal("latency");
+    resourceUtilisationSignal = registerSignal("resourceUtilisation");
+    energyConsumptionSignal = registerSignal("energyConsumption");
+
+    tasksProcessedSignal = registerSignal("tasksProcessed");
+    maxQueueLengthSignal = registerSignal("maxQueueLength");
+    parallelTasksSignal = registerSignal("parallelTasks");
 
     if (stage == INITSTAGE_APPLICATION_LAYER) {
         localPort = par("localPort");
@@ -51,22 +58,6 @@ void ResourceAllocatorApp::initialize(int stage)
 
 void ResourceAllocatorApp::handleMessageWhenUp(cMessage *msg)
 {
-//    if (cPacket *pkt = dynamic_cast<cPacket *>(msg)) {
-//        EV << "Packet received: " << pkt->getName() << ", size: " << pkt->getByteLength() << " bytes" << endl;
-//        socket.processMessage(msg); // <- the one line of code that fixed it.
-//
-////            emit(lifeTimeSignal, simTime() - job->getCreationTime());
-////            emit(totalQueueingTimeSignal, job->getTotalQueueingTime());
-////            emit(queuesVisitedSignal, job->getQueueCount());
-////            emit(totalServiceTimeSignal, job->getTotalServiceTime());
-////            emit(totalDelayTimeSignal, job->getTotalDelayTime());
-////            emit(delaysVisitedSignal, job->getDelayCount());
-//            //delete pkt;
-//    } else {
-//            //delete msg;
-//    }
-
-
     // If a task has completed.
     if (msg->isSelfMessage() && strcmp(msg->getName(), "endExecutionSelfMessage") == 0) {
         endTaskExecution(msg);
@@ -89,11 +80,10 @@ void ResourceAllocatorApp::handleMessageWhenUp(cMessage *msg)
  */
 void ResourceAllocatorApp::allocateResources(Task *task)
 {
+    // Would need to get resource utilisation here before allocating resources.
     int cpuCyclesToAllocate = task->requiredCPUCycles;
     task->allocatedCPUCycles = cpuCyclesToAllocate;
     task->executionTime = getTimeToExecute(cpuCyclesToAllocate);
-
-    task->startServiceTime = simTime();
 }
 
 /**
@@ -104,6 +94,14 @@ void ResourceAllocatorApp::allocateResources(Task *task)
 double ResourceAllocatorApp::getTimeToExecute(double cpuCycles)
 {
     return cpuCycles / maxCPUCapacity;
+}
+
+/**
+ * Returns the current resource utilisation of the edge server - between 0 and 1.
+ */
+double ResourceAllocatorApp::getResourceUtilisation()
+{
+    return 1.0 - (currentCapacity / maxCPUCapacity);
 }
 
 /**
@@ -121,6 +119,7 @@ void ResourceAllocatorApp::processTask(Task *task)
 
     scheduleAt(simTime() + task->executionTime, endExecutionSelfMessage);
     currentCapacity -= task->allocatedCPUCycles;
+
     simtime_t scheduleTimeTotal = simTime() + task->executionTime;
     simtime_t scheduleTimeInMS = scheduleTimeTotal * 1000;
 
@@ -142,8 +141,11 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
 
     auto *completedTask = static_cast<Task *>(msg->getContextPointer());
 
-    completedTask->endServiceTime = simTime();
-    completedTask->totalServiceTime = completedTask->endServiceTime - completedTask->startServiceTime;
+    completedTask->completionTime = simTime();
+    completedTask->totalServiceTime = completedTask->completionTime - completedTask->arrivalTime;
+    completedTask->latency = completedTask->completionTime - completedTask->creationTime;
+    double energyConsumption = completedTask->allocatedCPUCycles * (maxCPUCapacity * maxCPUCapacity);
+    completedTask->energyConsumption = energyConsumption;
     // emit(msg->getTotalServiceTime);
     // totalTime? = communication delay + queue time + computation time?
 
@@ -153,10 +155,19 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
     tasksProcessed++;
 
     EV << "Capacity is now: " << currentCapacity << endl;
-    EV << "Began Servicing: " << SIMTIME_STR(completedTask->startServiceTime) << "; Finished Servicing: " << SIMTIME_STR(completedTask->endServiceTime) << endl;
-    EV << "The total service time for that task was: " << completedTask->totalServiceTime << "seconds or " << completedTask->totalServiceTime * 1000 << "ms." << endl;
+    // These print statements could be inside a function of Task instead.
+    EV << "Task was Created" << SIMTIME_STR(completedTask->creationTime) << "; Completion Time:" << SIMTIME_STR(completedTask->completionTime) << endl;
+    EV << "Began Servicing: " << SIMTIME_STR(completedTask->arrivalTime) << "; Finished Servicing: " << SIMTIME_STR(completedTask->completionTime) << endl;
+    EV << "The total service time for that task was: " << completedTask->totalServiceTime << "seconds." << endl;
     EV << "Tasks Processed: " << tasksProcessed << endl;
+    EV << "Task Latency: " << completedTask->latency << " seconds, or " << completedTask->latency * 1000 << " ms." << endl;
+    EV << "Task Energy Consumption: " << completedTask->energyConsumption << endl;
 
+    double latency = completedTask->latency.dbl() * 1000; // convert to milliseconds.
+    emit(latencySignal,latency);
+    emit(energyConsumptionSignal, energyConsumption);
+    emit(tasksProcessedSignal, tasksProcessed);
+    emit(parallelTasksSignal, tasksProcessing);
     //delete completedTask;
 }
 
@@ -179,11 +190,14 @@ void ResourceAllocatorApp::updateQueue()
 
             // Only now remove (dequeue) the task from the queue once there are enough resources.
             queue.pop();
-
-            // Update the head of the queue (Don't think I need to as it would have been done by dequeueing)
-            // queueHead.front();
             }
-        EV << "The length of the queue is: " << queue.getLength() << endl;;
+        EV << "The length of the queue is: " << queue.getLength() << endl;
+        emit(maxQueueLengthSignal, maxQueueLength);
+        EV << "Resource Utilisation: " << getResourceUtilisation() << endl;
+        emit(resourceUtilisationSignal, getResourceUtilisation());
+        if (queue.getLength() > maxQueueLength) {
+            maxQueueLength = queue.getLength();
+        }
     }
 
 }
@@ -202,21 +216,25 @@ void ResourceAllocatorApp::socketDataArrived(UdpSocket *socket, Packet *packet)
     auto cpuCycles = taskRequirements->getRequiredCPUCycles();
     auto deadlineLatency = taskRequirements->getDeadlineLatency();
 
-    numReceived++;
-
-    EV << "That was Packet " << numReceived << endl;
+    EV << "That was Packet " << packetsReceived << endl;
 
     // Retrieve the task requirements from the Packet's payload.
     auto taskChunk = packet->peekAtFront<MyTaskChunk>();
 
-    // As Chunks are immutable, copy the data over from them.
+    // As Chunks are immutable, copy the data over from them into a new variable.
     auto *task = new Task();
-    task->arrivalTime = simTime();
     task->requiredCPUCycles = taskChunk->getRequiredCPUCycles();
+
+    task->arrivalTime = simTime();
+    task->communicationDelay = task->arrivalTime - taskChunk->getCreationTime();
+    task->creationTime = taskChunk->getCreationTime();
+
+    EV << "Communication Delay: " << task->communicationDelay << endl;
 
     allocateResources(task);
     EV << "CPU Cycles Allocated: " << task->allocatedCPUCycles << endl;
     queue.insert(task); // enqueue the task
+    packetsReceived++;
 }
 
 void ResourceAllocatorApp::refreshDisplay() const
@@ -224,7 +242,7 @@ void ResourceAllocatorApp::refreshDisplay() const
     ApplicationBase::refreshDisplay();
 
     char buf[50];
-    sprintf(buf, "Packets Received: %d", numReceived);
+    sprintf(buf, "Packets Received: %d", packetsReceived);
     getDisplayString().setTagArg("t", 0, buf);
 }
 

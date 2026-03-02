@@ -37,8 +37,10 @@ namespace inet {
  * <pre>
  * class MyTaskChunk extends FieldsChunk
  * {
- *     double RequiredCPUCycles;
- *     int DeadlineLatency;
+ *     int RequiredCPUCycles;
+ *     double DeadlineLatency;
+ * 
+ *     simtime_t creationTime;
  * 
  * }
  * </pre>
@@ -46,8 +48,9 @@ namespace inet {
 class MyTaskChunk : public ::inet::FieldsChunk
 {
   protected:
-    double RequiredCPUCycles = 0;
-    int DeadlineLatency = 0;
+    int RequiredCPUCycles = 0;
+    double DeadlineLatency = 0;
+    ::omnetpp::simtime_t creationTime = SIMTIME_ZERO;
 
   private:
     void copy(const MyTaskChunk& other);
@@ -64,11 +67,14 @@ class MyTaskChunk : public ::inet::FieldsChunk
     virtual void parsimPack(omnetpp::cCommBuffer *b) const override;
     virtual void parsimUnpack(omnetpp::cCommBuffer *b) override;
 
-    virtual double getRequiredCPUCycles() const;
-    virtual void setRequiredCPUCycles(double RequiredCPUCycles);
+    virtual int getRequiredCPUCycles() const;
+    virtual void setRequiredCPUCycles(int RequiredCPUCycles);
 
-    virtual int getDeadlineLatency() const;
-    virtual void setDeadlineLatency(int DeadlineLatency);
+    virtual double getDeadlineLatency() const;
+    virtual void setDeadlineLatency(double DeadlineLatency);
+
+    virtual ::omnetpp::simtime_t getCreationTime() const;
+    virtual void setCreationTime(::omnetpp::simtime_t creationTime);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const MyTaskChunk& obj) {obj.parsimPack(b);}
