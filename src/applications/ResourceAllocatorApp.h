@@ -63,6 +63,7 @@ class ResourceAllocatorApp : public ApplicationBase, UdpSocket::ICallback
     double maxCPUCapacity = 10000; // in MHz currently
     double currentCapacity = 0;
     cQueue queue;
+    std::string resourceAllocator = "static";
 
     // Parameter
     int localPort = -1;

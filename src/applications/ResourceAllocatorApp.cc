@@ -15,7 +15,14 @@
 
 #include "ResourceAllocatorApp.h"
 #include "MyTaskChunk_m.h"
-//#include "EndTaskExecution_m.h"
+#include <pybind11/pybind11.h>
+#include <pybind11/embed.h>
+namespace py = pybind11;
+
+//#include <pybind11/embed.h>
+// located at: home\opp_env\.venv\lib\python3.12 or /home/opp_env/.venv/lib/python3.12/site-packages
+// stable: -I/usr/include/python3.12 -I/home/opp_env/.venv/lib/python3.12/site-packages/pybind11/include
+// 3rd try: -L/nix/store/8w718rm43x7z73xhw9d6vh8s4snrq67h-python3-3.12.10/lib -lpython3.12 -ldl -L/nix/store/qizipyz9y17nr4w4gmxvwd3x4k0bp2rh-libxcrypt-4.4.38/lib -lm
 
 Define_Module(ResourceAllocatorApp);
 
@@ -29,12 +36,16 @@ void ResourceAllocatorApp::initialize(int stage)
 
     maxCPUCapacity = par("maxCPUCapacity");
     currentCapacity = maxCPUCapacity;
+    //resourceAllocator = par("resourceAllocator");
 
-    WATCH(currentCapacity);
-    WATCH(packetsReceived);
-    WATCH(tasksProcessed);
-    WATCH(tasksProcessing);
-    WATCH(maxQueueLength);
+    try {
+        py::scoped_interpreter guard{}; // Start the interpreter
+        py::print("Hello from Python inside OMNeT++!");
+    } catch (py::error_already_set &e) {
+        EV << "Python Error: " << e.what() << std::endl;
+    }
+    //pybind11::scoped_interpreter guard{};
+    //EV << "Python version: " << Py_GetVersion() << endl;
 
     // Setup Statistics
     latencySignal = registerSignal("latency");
@@ -77,14 +88,58 @@ void ResourceAllocatorApp::handleMessageWhenUp(cMessage *msg)
 
 /**
  * Allocates CPU cycles to the task passed as an argument.
+ * The subroutine works by first routing the chosen allocation method to
+ * its corresponding function.
  */
 void ResourceAllocatorApp::allocateResources(Task *task)
 {
+    int requiredCycles = task->requiredCPUCycles;
+//    switch (resourceAllocator)
+//    {
+//    case "Static":
+//        int cpuCyclesToAllocate = staticAllocation(requiredCycles);
+//    case "PPO":
+//        int cpuCyclesToAllocate = PPOAllocation(requiredCycles);
+//    default:
+//        int cpuCyclesToAllocate = staticAllocation(requiredCycles);
+//    }
     // Would need to get resource utilisation here before allocating resources.
-    int cpuCyclesToAllocate = task->requiredCPUCycles;
-    task->allocatedCPUCycles = cpuCyclesToAllocate;
-    task->executionTime = getTimeToExecute(cpuCyclesToAllocate);
+    //int cpuCyclesToAllocate = task->requiredCPUCycles;
+//    task->allocatedCPUCycles = cpuCyclesToAllocate;
+//    task->executionTime = getTimeToExecute(cpuCyclesToAllocate);
 }
+
+///**
+// * Returns the allocated CPU cycles of a given task based off a static ruleset.
+// */
+//int ResourceAllocatorApp::staticAllocation(int requiredCycles)
+//{
+//    // TODO: At the minute, the allocator just gives the incoming task whatever cycles it needs.
+//    return requiredCycles;
+//}
+//
+///**
+// * Returns the allocated CPU cycles of a given task using the Reinforcement Learning method
+// * of PPO.
+// */
+//int ResourceAllocatorApp::PPOAllocation(int requiredCycles)
+//{
+////    py::scoped_interpreter guard();
+////    py::module ai_module = py::module::import("ai_module");
+////    py::object allocate = ai_module.attr("allocate_resources");
+////    auto result = allocate();
+////    // Use result in OMNeT++ Simulation
+////
+////    // Get network state
+////    auto state = genNetworkState();
+////
+////    // Call AI model for resource allocation
+////    auto allocation = allocateResources(state);
+////
+////    // Apply resource allocation
+////    applyAllocation(allocation);
+//
+//}
 
 /**
  * Returns the amount of time in seconds it will take to
