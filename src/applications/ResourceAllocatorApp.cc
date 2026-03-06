@@ -18,6 +18,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
 namespace py = pybind11;
+static py::object agent;
 
 //#include <pybind11/embed.h>
 // located at: home\opp_env\.venv\lib\python3.12 or /home/opp_env/.venv/lib/python3.12/site-packages
@@ -38,12 +39,23 @@ void ResourceAllocatorApp::initialize(int stage)
     currentCapacity = maxCPUCapacity;
     //resourceAllocator = par("resourceAllocator");
 
-    try {
-        py::scoped_interpreter guard{}; // Start the interpreter
-        py::print("Hello from Python inside OMNeT++!");
-    } catch (py::error_already_set &e) {
-        EV << "Python Error: " << e.what() << std::endl;
+    static bool pythonAllocatorStarted = false;
+    if (pythonAllocatorStarted == false) {
+        try {
+            static py::scoped_interpreter guard{}; // Start the interpreter
+
+            // Import the Python File
+            py::module_ rl_mod = py::module_::import("rl_resource_allocator");
+            agent = rl_mod.attr("RLResourceAllocator")();
+
+
+            py::print("Hello from Python inside OMNeT++!");
+            pythonAllocatorStarted = true;
+        } catch (py::error_already_set &e) {
+            throw cRuntimeError("Python Error: %s", e.what());
+        }
     }
+
     //pybind11::scoped_interpreter guard{};
     //EV << "Python version: " << Py_GetVersion() << endl;
 
@@ -94,6 +106,14 @@ void ResourceAllocatorApp::handleMessageWhenUp(cMessage *msg)
 void ResourceAllocatorApp::allocateResources(Task *task)
 {
     int requiredCycles = task->requiredCPUCycles;
+
+    try {
+        int action = agent.attr("allocate_resources")(requiredCycles).cast<int>();
+
+        EV << "The RL Agent has decided to allocate " << action << " cycles." << endl;
+    } catch (py::error_already_set &e){
+        throw cRuntimeError("Python Error: %s", e.what());
+    }
 //    switch (resourceAllocator)
 //    {
 //    case "Static":
