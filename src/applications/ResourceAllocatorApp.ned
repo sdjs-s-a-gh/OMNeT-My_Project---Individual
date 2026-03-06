@@ -26,6 +26,7 @@ simple ResourceAllocatorApp like IApp
 	    @display("i=block/app");	
 	    int localPort;
 	    double maxCPUCapacity;
+	    int resourceAllocatorAlgorithm;
 
         @signal[latency](type=double);
         @signal[resourceUtilisation](type=double);

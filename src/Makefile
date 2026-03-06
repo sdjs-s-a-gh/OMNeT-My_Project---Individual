@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for MyProjectAgain
 #
 # This file was generated with the command:
-#  opp_makemake -f --deep -KINET_PROJ=/home/opp_env/default_workspace/inet-4.5.4 -DINET_IMPORT -I$$\(INET_PROJ\)/src -L$$\(INET_PROJ\)/src -lINET$$\(D\)
+#  opp_makemake -f --deep -KINET_PROJ=/home/opp_env/default_workspace/inet-4.5.4 -DINET_IMPORT -I/nix/store/8w718rm43x7z73xhw9d6vh8s4snrq67h-python3-3.12.10/include/python3.12 -I/home/opp_env/.venv/lib/python3.12/site-packages/pybind11/include -I$$\(INET_PROJ\)/src -L$$\(INET_PROJ\)/src -lpython3.12 -lINET$$\(D\) -- -L/nix/store/8w718rm43x7z73xhw9d6vh8s4snrq67h-python3-3.12.10/lib -ldl -lm
 #
 
 # Name of target to be created (-o option)
@@ -17,13 +17,13 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(QTENV_LIBS) $(CMDENV_LIBS)
 #USERIF_LIBS = $(QTENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = -I$(INET_PROJ)/src
+INCLUDE_PATH = -I/nix/store/8w718rm43x7z73xhw9d6vh8s4snrq67h-python3-3.12.10/include/python3.12 -I/home/opp_env/.venv/lib/python3.12/site-packages/pybind11/include -I$(INET_PROJ)/src
 
 # Additional object and library files to link with
-EXTRA_OBJS =
+EXTRA_OBJS = -L/nix/store/8w718rm43x7z73xhw9d6vh8s4snrq67h-python3-3.12.10/lib -ldl -lm
 
 # Additional libraries (-L, -l options)
-LIBS = $(LDFLAG_LIBPATH)$(INET_PROJ)/src  -lINET$(D)
+LIBS = $(LDFLAG_LIBPATH)$(INET_PROJ)/src  -lpython3.12 -lINET$(D)
 
 # Output directory
 PROJECT_OUTPUT_DIR = ../out

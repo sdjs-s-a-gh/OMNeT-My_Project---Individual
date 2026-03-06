@@ -63,6 +63,7 @@ class ResourceAllocatorApp : public ApplicationBase, UdpSocket::ICallback
     double maxCPUCapacity = 10000; // in MHz currently
     double currentCapacity = 0;
     cQueue queue;
+    int resourceAllocatorAlgorithm = 0;
 
     // Parameter
     int localPort = -1;
@@ -83,11 +84,13 @@ class ResourceAllocatorApp : public ApplicationBase, UdpSocket::ICallback
     UdpSocket socket; // Requires a socket to bind the application to.
 
     void processTask(Task *task);
-    double getTimeToExecute(double cpuCycles);
+    double getTimeToExecute(double cpuCyclesRequired, double allocatedCPUCycles);
     void allocateResources(Task *task);
     void endTaskExecution(cMessage *msg);
     void updateQueue();
     double getResourceUtilisation();
+    int staticAllocation(int requiredCycles);
+    int PPOAllocation(int requiredCycles);
 
     virtual void initialize(int stage) override;
     virtual void handleMessageWhenUp(cMessage *msg) override;

@@ -15,7 +15,17 @@
 
 #include "ResourceAllocatorApp.h"
 #include "MyTaskChunk_m.h"
-//#include "EndTaskExecution_m.h"
+#include <pybind11/pybind11.h>
+#include <pybind11/embed.h>
+namespace py = pybind11;
+static py::object agent;
+static py::scoped_interpreter guard{}; // Start the interpreter
+static bool pythonAllocatorStarted = false;
+
+//#include <pybind11/embed.h>
+// located at: home\opp_env\.venv\lib\python3.12 or /home/opp_env/.venv/lib/python3.12/site-packages
+// stable: -I/usr/include/python3.12 -I/home/opp_env/.venv/lib/python3.12/site-packages/pybind11/include
+// 3rd try: -L/nix/store/8w718rm43x7z73xhw9d6vh8s4snrq67h-python3-3.12.10/lib -lpython3.12 -ldl -L/nix/store/qizipyz9y17nr4w4gmxvwd3x4k0bp2rh-libxcrypt-4.4.38/lib -lm
 
 Define_Module(ResourceAllocatorApp);
 
@@ -29,12 +39,26 @@ void ResourceAllocatorApp::initialize(int stage)
 
     maxCPUCapacity = par("maxCPUCapacity");
     currentCapacity = maxCPUCapacity;
+    resourceAllocatorAlgorithm = par("resourceAllocatorAlgorithm");
+    //resourceAllocator = par("resourceAllocator");
 
-    WATCH(currentCapacity);
-    WATCH(packetsReceived);
-    WATCH(tasksProcessed);
-    WATCH(tasksProcessing);
-    WATCH(maxQueueLength);
+
+    if (pythonAllocatorStarted == false) {
+        try {
+            // Import the Python File
+            py::module_ rl_mod = py::module_::import("rl_resource_allocator");
+            agent = rl_mod.attr("RLResourceAllocator")();
+
+
+            py::print("Hello from Python inside OMNeT++!");
+            pythonAllocatorStarted = true;
+        } catch (py::error_already_set &e) {
+            throw cRuntimeError("Python Error: %s", e.what());
+        }
+    }
+
+    //pybind11::scoped_interpreter guard{};
+    //EV << "Python version: " << Py_GetVersion() << endl;
 
     // Setup Statistics
     latencySignal = registerSignal("latency");
@@ -77,13 +101,70 @@ void ResourceAllocatorApp::handleMessageWhenUp(cMessage *msg)
 
 /**
  * Allocates CPU cycles to the task passed as an argument.
+ * The subroutine works by first routing the chosen allocation method to
+ * its corresponding function.
  */
 void ResourceAllocatorApp::allocateResources(Task *task)
 {
+    int requiredCycles = task->requiredCPUCycles;
+
+    int cpuCyclesToAllocate = 0;
+    if (resourceAllocatorAlgorithm == 0) {
+        cpuCyclesToAllocate = staticAllocation(requiredCycles);
+    } else if (resourceAllocatorAlgorithm == 1) {
+        cpuCyclesToAllocate = PPOAllocation(requiredCycles);
+    } else {
+        throw cRuntimeError("You've given an invalid resource allocator algorithm: %d", resourceAllocatorAlgorithm);
+    }
+
     // Would need to get resource utilisation here before allocating resources.
-    int cpuCyclesToAllocate = task->requiredCPUCycles;
+    // int cpuCyclesToAllocate = task->requiredCPUCycles;
     task->allocatedCPUCycles = cpuCyclesToAllocate;
-    task->executionTime = getTimeToExecute(cpuCyclesToAllocate);
+    task->executionTime = getTimeToExecute(task->requiredCPUCycles, cpuCyclesToAllocate);
+}
+
+/**
+ * Returns the allocated CPU cycles of a given task based off a static ruleset.
+ */
+int ResourceAllocatorApp::staticAllocation(int requiredCycles)
+{
+    // TODO: At the minute, the allocator just gives the incoming task whatever cycles it needs.
+    return requiredCycles;
+}
+
+/**
+ * Returns the allocated CPU cycles of a given task using the Reinforcement Learning method
+ * of PPO.
+ */
+int ResourceAllocatorApp::PPOAllocation(int requiredCycles)
+{
+//    py::scoped_interpreter guard();
+//    py::module ai_module = py::module::import("ai_module");
+//    py::object allocate = ai_module.attr("allocate_resources");
+//    auto result = allocate();
+//    // Use result in OMNeT++ Simulation
+//
+//    // Get network state
+//    auto state = getNetworkState();
+//
+//    // Call AI model for resource allocation
+//    auto allocation = allocateResources(state);
+//
+//    // Apply resource allocation
+//    applyAllocation(allocation);
+
+    double resourceUtilisation = getResourceUtilisation();
+
+    try {
+        //int action = agent.attr("allocate_resources")(maxCPUCapacity, requiredCycles, resourceUtilisation).cast<double>();
+        int action = agent.attr("allocate_resources")(maxCPUCapacity, requiredCycles, resourceUtilisation).cast<double>();
+
+        EV << "The RL Agent has decided to allocate " << action << " cycles." << endl;
+        return action;
+    } catch (py::error_already_set &e){
+        throw cRuntimeError("Python Error: %s", e.what());
+    }
+
 }
 
 /**
@@ -91,9 +172,9 @@ void ResourceAllocatorApp::allocateResources(Task *task)
  * execute a task of a certain size based on the capacity of
  * the edge server.
  */
-double ResourceAllocatorApp::getTimeToExecute(double cpuCycles)
+double ResourceAllocatorApp::getTimeToExecute(double cpuCyclesRequired, double allocatedCPUCycles)
 {
-    return cpuCycles / maxCPUCapacity;
+    return cpuCyclesRequired / allocatedCPUCycles;
 }
 
 /**
@@ -156,12 +237,14 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
 
     EV << "Capacity is now: " << currentCapacity << endl;
     // These print statements could be inside a function of Task instead.
-    EV << "Task was Created" << SIMTIME_STR(completedTask->creationTime) << "; Completion Time:" << SIMTIME_STR(completedTask->completionTime) << endl;
+    EV << "Task was Created: " << SIMTIME_STR(completedTask->creationTime) << "; Completion Time: " << SIMTIME_STR(completedTask->completionTime) << endl;
     EV << "Began Servicing: " << SIMTIME_STR(completedTask->arrivalTime) << "; Finished Servicing: " << SIMTIME_STR(completedTask->completionTime) << endl;
-    EV << "The total service time for that task was: " << completedTask->totalServiceTime << "seconds." << endl;
+    EV << "The total service time for that task was: " << completedTask->totalServiceTime << " seconds." << endl;
     EV << "Tasks Processed: " << tasksProcessed << endl;
     EV << "Task Latency: " << completedTask->latency << " seconds, or " << completedTask->latency * 1000 << " ms." << endl;
     EV << "Task Energy Consumption: " << completedTask->energyConsumption << endl;
+    EV << "Task CPU Cycles Required: " << completedTask->requiredCPUCycles << "; Expected Execution Time: " << getTimeToExecute(completedTask->requiredCPUCycles, completedTask->requiredCPUCycles)
+            << "; Actual Cycles Given: " << completedTask->allocatedCPUCycles << "; Actual Execution Time: " << getTimeToExecute(completedTask->requiredCPUCycles,completedTask->allocatedCPUCycles) << endl;
 
     double latency = completedTask->latency.dbl() * 1000; // convert to milliseconds.
     emit(latencySignal,latency);
@@ -209,6 +292,8 @@ void ResourceAllocatorApp::updateQueue()
  */
 void ResourceAllocatorApp::socketDataArrived(UdpSocket *socket, Packet *packet)
 {
+    packetsReceived++;
+
     EV << "========"<< endl << "socketDataArrived" << endl;
     EV << "Packet received: " << packet->getName() << ", size: " << packet->getByteLength() << " bytes" << endl;
 
@@ -216,7 +301,7 @@ void ResourceAllocatorApp::socketDataArrived(UdpSocket *socket, Packet *packet)
     auto cpuCycles = taskRequirements->getRequiredCPUCycles();
     auto deadlineLatency = taskRequirements->getDeadlineLatency();
 
-    EV << "That was Packet " << packetsReceived << endl;
+    EV << "That was Packet " << packetsReceived << ". Required CPU Cycles: " << cpuCycles << "; Deadline Latency: " << deadlineLatency << endl;
 
     // Retrieve the task requirements from the Packet's payload.
     auto taskChunk = packet->peekAtFront<MyTaskChunk>();
@@ -234,7 +319,6 @@ void ResourceAllocatorApp::socketDataArrived(UdpSocket *socket, Packet *packet)
     allocateResources(task);
     EV << "CPU Cycles Allocated: " << task->allocatedCPUCycles << endl;
     queue.insert(task); // enqueue the task
-    packetsReceived++;
 }
 
 void ResourceAllocatorApp::refreshDisplay() const

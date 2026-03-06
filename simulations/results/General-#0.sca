@@ -1,8 +1,8 @@
 version 3
-run General-0-20260301-15:44:37-2967
+run General-0-20260306-18:35:09-1581
 attr configname General
-attr datetime 20260301-15:44:37
-attr datetimef 20260301-154437
+attr datetime 20260306-18:35:09
+attr datetimef 20260306-183509
 attr experiment General
 attr inifile omnetpp.ini
 attr iterationvars ""
@@ -10,7 +10,7 @@ attr iterationvarsd ""
 attr iterationvarsf ""
 attr measurement ""
 attr network ResourceNetwork
-attr processid 2967
+attr processid 1581
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -7328,7 +7328,8 @@ par ResourceNetwork.edgeServer.tn forwardServiceRegistration true
 par ResourceNetwork.edgeServer.tn forwardProtocolRegistration true
 par ResourceNetwork.edgeServer.app[0] typename "\"myprojectandtutorial.applications.ResourceAllocatorApp\""
 par ResourceNetwork.edgeServer.app[0] localPort 5000
-par ResourceNetwork.edgeServer.app[0] maxCPUCapacity 2500
+par ResourceNetwork.edgeServer.app[0] maxCPUCapacity 10000
+par ResourceNetwork.edgeServer.app[0] resourceAllocatorAlgorithm 0
 par ResourceNetwork.edgeServer.at typename "\"inet.common.MessageDispatcher\""
 par ResourceNetwork.edgeServer.at displayStringTextFormat "\"processed %p pk (%l)\""
 par ResourceNetwork.edgeServer.at forwardServiceRegistration true

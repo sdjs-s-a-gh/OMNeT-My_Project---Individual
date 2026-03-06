@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <buildspec version="4.0">
-    <dir makemake-options="--deep --meta:recurse --meta:use-exported-include-paths --meta:export-library --meta:use-exported-libs --meta:feature-cflags" path="src" type="makemake"/>
     <dir path="." type="custom"/>
+    <dir makemake-options="--deep -I/nix/store/8w718rm43x7z73xhw9d6vh8s4snrq67h-python3-3.12.10/include/python3.12 -I/home/opp_env/.venv/lib/python3.12/site-packages/pybind11/include -lpython3.12 --meta:recurse --meta:use-exported-include-paths --meta:export-library --meta:use-exported-libs --meta:feature-cflags -- -L/nix/store/8w718rm43x7z73xhw9d6vh8s4snrq67h-python3-3.12.10/lib -ldl -lm" path="src" type="makemake"/>
 </buildspec>
