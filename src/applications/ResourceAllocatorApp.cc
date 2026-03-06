@@ -19,6 +19,8 @@
 #include <pybind11/embed.h>
 namespace py = pybind11;
 static py::object agent;
+static py::scoped_interpreter guard{}; // Start the interpreter
+static bool pythonAllocatorStarted = false;
 
 //#include <pybind11/embed.h>
 // located at: home\opp_env\.venv\lib\python3.12 or /home/opp_env/.venv/lib/python3.12/site-packages
@@ -37,13 +39,12 @@ void ResourceAllocatorApp::initialize(int stage)
 
     maxCPUCapacity = par("maxCPUCapacity");
     currentCapacity = maxCPUCapacity;
+    resourceAllocatorAlgorithm = par("resourceAllocatorAlgorithm");
     //resourceAllocator = par("resourceAllocator");
 
-    static bool pythonAllocatorStarted = false;
+
     if (pythonAllocatorStarted == false) {
         try {
-            static py::scoped_interpreter guard{}; // Start the interpreter
-
             // Import the Python File
             py::module_ rl_mod = py::module_::import("rl_resource_allocator");
             agent = rl_mod.attr("RLResourceAllocator")();
@@ -144,7 +145,7 @@ int ResourceAllocatorApp::PPOAllocation(int requiredCycles)
 //    // Use result in OMNeT++ Simulation
 //
 //    // Get network state
-//    auto state = genNetworkState();
+//    auto state = getNetworkState();
 //
 //    // Call AI model for resource allocation
 //    auto allocation = allocateResources(state);
@@ -152,10 +153,14 @@ int ResourceAllocatorApp::PPOAllocation(int requiredCycles)
 //    // Apply resource allocation
 //    applyAllocation(allocation);
 
+    double resourceUtilisation = getResourceUtilisation();
+
     try {
-        int action = agent.attr("allocate_resources")(requiredCycles).cast<int>();
+        //int action = agent.attr("allocate_resources")(maxCPUCapacity, requiredCycles, resourceUtilisation).cast<double>();
+        int action = agent.attr("allocate_resources")(maxCPUCapacity, requiredCycles, resourceUtilisation).cast<double>();
 
         EV << "The RL Agent has decided to allocate " << action << " cycles." << endl;
+        return action;
     } catch (py::error_already_set &e){
         throw cRuntimeError("Python Error: %s", e.what());
     }
@@ -232,12 +237,14 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
 
     EV << "Capacity is now: " << currentCapacity << endl;
     // These print statements could be inside a function of Task instead.
-    EV << "Task was Created" << SIMTIME_STR(completedTask->creationTime) << "; Completion Time:" << SIMTIME_STR(completedTask->completionTime) << endl;
+    EV << "Task was Created: " << SIMTIME_STR(completedTask->creationTime) << "; Completion Time: " << SIMTIME_STR(completedTask->completionTime) << endl;
     EV << "Began Servicing: " << SIMTIME_STR(completedTask->arrivalTime) << "; Finished Servicing: " << SIMTIME_STR(completedTask->completionTime) << endl;
-    EV << "The total service time for that task was: " << completedTask->totalServiceTime << "seconds." << endl;
+    EV << "The total service time for that task was: " << completedTask->totalServiceTime << " seconds." << endl;
     EV << "Tasks Processed: " << tasksProcessed << endl;
     EV << "Task Latency: " << completedTask->latency << " seconds, or " << completedTask->latency * 1000 << " ms." << endl;
     EV << "Task Energy Consumption: " << completedTask->energyConsumption << endl;
+    EV << "Task CPU Cycles Required: " << completedTask->requiredCPUCycles << "; Expected Execution Time: " << getTimeToExecute(completedTask->requiredCPUCycles)
+            << "; Actual Cycles Given: " << completedTask->allocatedCPUCycles << "; Actual Execution Time: " << getTimeToExecute(completedTask->allocatedCPUCycles) << endl;
 
     double latency = completedTask->latency.dbl() * 1000; // convert to milliseconds.
     emit(latencySignal,latency);
@@ -285,6 +292,8 @@ void ResourceAllocatorApp::updateQueue()
  */
 void ResourceAllocatorApp::socketDataArrived(UdpSocket *socket, Packet *packet)
 {
+    packetsReceived++;
+
     EV << "========"<< endl << "socketDataArrived" << endl;
     EV << "Packet received: " << packet->getName() << ", size: " << packet->getByteLength() << " bytes" << endl;
 
@@ -310,7 +319,6 @@ void ResourceAllocatorApp::socketDataArrived(UdpSocket *socket, Packet *packet)
     allocateResources(task);
     EV << "CPU Cycles Allocated: " << task->allocatedCPUCycles << endl;
     queue.insert(task); // enqueue the task
-    packetsReceived++;
 }
 
 void ResourceAllocatorApp::refreshDisplay() const
