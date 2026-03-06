@@ -107,6 +107,51 @@ void ResourceAllocatorApp::allocateResources(Task *task)
 {
     int requiredCycles = task->requiredCPUCycles;
 
+    int cpuCyclesToAllocate = 0;
+    if (resourceAllocatorAlgorithm == 0) {
+        cpuCyclesToAllocate = staticAllocation(requiredCycles);
+    } else if (resourceAllocatorAlgorithm == 1) {
+        cpuCyclesToAllocate = PPOAllocation(requiredCycles);
+    } else {
+        throw cRuntimeError("You've given an invalid resource allocator algorithm: %d", resourceAllocatorAlgorithm);
+    }
+
+    // Would need to get resource utilisation here before allocating resources.
+    // int cpuCyclesToAllocate = task->requiredCPUCycles;
+    task->allocatedCPUCycles = cpuCyclesToAllocate;
+    task->executionTime = getTimeToExecute(cpuCyclesToAllocate);
+}
+
+/**
+ * Returns the allocated CPU cycles of a given task based off a static ruleset.
+ */
+int ResourceAllocatorApp::staticAllocation(int requiredCycles)
+{
+    // TODO: At the minute, the allocator just gives the incoming task whatever cycles it needs.
+    return requiredCycles;
+}
+
+/**
+ * Returns the allocated CPU cycles of a given task using the Reinforcement Learning method
+ * of PPO.
+ */
+int ResourceAllocatorApp::PPOAllocation(int requiredCycles)
+{
+//    py::scoped_interpreter guard();
+//    py::module ai_module = py::module::import("ai_module");
+//    py::object allocate = ai_module.attr("allocate_resources");
+//    auto result = allocate();
+//    // Use result in OMNeT++ Simulation
+//
+//    // Get network state
+//    auto state = genNetworkState();
+//
+//    // Call AI model for resource allocation
+//    auto allocation = allocateResources(state);
+//
+//    // Apply resource allocation
+//    applyAllocation(allocation);
+
     try {
         int action = agent.attr("allocate_resources")(requiredCycles).cast<int>();
 
@@ -114,52 +159,8 @@ void ResourceAllocatorApp::allocateResources(Task *task)
     } catch (py::error_already_set &e){
         throw cRuntimeError("Python Error: %s", e.what());
     }
-//    switch (resourceAllocator)
-//    {
-//    case "Static":
-//        int cpuCyclesToAllocate = staticAllocation(requiredCycles);
-//    case "PPO":
-//        int cpuCyclesToAllocate = PPOAllocation(requiredCycles);
-//    default:
-//        int cpuCyclesToAllocate = staticAllocation(requiredCycles);
-//    }
-    // Would need to get resource utilisation here before allocating resources.
-    //int cpuCyclesToAllocate = task->requiredCPUCycles;
-//    task->allocatedCPUCycles = cpuCyclesToAllocate;
-//    task->executionTime = getTimeToExecute(cpuCyclesToAllocate);
-}
 
-///**
-// * Returns the allocated CPU cycles of a given task based off a static ruleset.
-// */
-//int ResourceAllocatorApp::staticAllocation(int requiredCycles)
-//{
-//    // TODO: At the minute, the allocator just gives the incoming task whatever cycles it needs.
-//    return requiredCycles;
-//}
-//
-///**
-// * Returns the allocated CPU cycles of a given task using the Reinforcement Learning method
-// * of PPO.
-// */
-//int ResourceAllocatorApp::PPOAllocation(int requiredCycles)
-//{
-////    py::scoped_interpreter guard();
-////    py::module ai_module = py::module::import("ai_module");
-////    py::object allocate = ai_module.attr("allocate_resources");
-////    auto result = allocate();
-////    // Use result in OMNeT++ Simulation
-////
-////    // Get network state
-////    auto state = genNetworkState();
-////
-////    // Call AI model for resource allocation
-////    auto allocation = allocateResources(state);
-////
-////    // Apply resource allocation
-////    applyAllocation(allocation);
-//
-//}
+}
 
 /**
  * Returns the amount of time in seconds it will take to
@@ -291,7 +292,7 @@ void ResourceAllocatorApp::socketDataArrived(UdpSocket *socket, Packet *packet)
     auto cpuCycles = taskRequirements->getRequiredCPUCycles();
     auto deadlineLatency = taskRequirements->getDeadlineLatency();
 
-    EV << "That was Packet " << packetsReceived << endl;
+    EV << "That was Packet " << packetsReceived << ". Required CPU Cycles: " << cpuCycles << "; Deadline Latency: " << deadlineLatency << endl;
 
     // Retrieve the task requirements from the Packet's payload.
     auto taskChunk = packet->peekAtFront<MyTaskChunk>();
