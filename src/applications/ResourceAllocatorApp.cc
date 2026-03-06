@@ -120,7 +120,7 @@ void ResourceAllocatorApp::allocateResources(Task *task)
     // Would need to get resource utilisation here before allocating resources.
     // int cpuCyclesToAllocate = task->requiredCPUCycles;
     task->allocatedCPUCycles = cpuCyclesToAllocate;
-    task->executionTime = getTimeToExecute(cpuCyclesToAllocate);
+    task->executionTime = getTimeToExecute(task->requiredCPUCycles, cpuCyclesToAllocate);
 }
 
 /**
@@ -172,9 +172,9 @@ int ResourceAllocatorApp::PPOAllocation(int requiredCycles)
  * execute a task of a certain size based on the capacity of
  * the edge server.
  */
-double ResourceAllocatorApp::getTimeToExecute(double cpuCycles)
+double ResourceAllocatorApp::getTimeToExecute(double cpuCyclesRequired, double allocatedCPUCycles)
 {
-    return cpuCycles / maxCPUCapacity;
+    return cpuCyclesRequired / allocatedCPUCycles;
 }
 
 /**
@@ -243,8 +243,8 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
     EV << "Tasks Processed: " << tasksProcessed << endl;
     EV << "Task Latency: " << completedTask->latency << " seconds, or " << completedTask->latency * 1000 << " ms." << endl;
     EV << "Task Energy Consumption: " << completedTask->energyConsumption << endl;
-    EV << "Task CPU Cycles Required: " << completedTask->requiredCPUCycles << "; Expected Execution Time: " << getTimeToExecute(completedTask->requiredCPUCycles)
-            << "; Actual Cycles Given: " << completedTask->allocatedCPUCycles << "; Actual Execution Time: " << getTimeToExecute(completedTask->allocatedCPUCycles) << endl;
+    EV << "Task CPU Cycles Required: " << completedTask->requiredCPUCycles << "; Expected Execution Time: " << getTimeToExecute(completedTask->requiredCPUCycles, completedTask->requiredCPUCycles)
+            << "; Actual Cycles Given: " << completedTask->allocatedCPUCycles << "; Actual Execution Time: " << getTimeToExecute(completedTask->requiredCPUCycles,completedTask->allocatedCPUCycles) << endl;
 
     double latency = completedTask->latency.dbl() * 1000; // convert to milliseconds.
     emit(latencySignal,latency);
