@@ -107,7 +107,7 @@ void ResourceAllocatorApp::handleMessageWhenUp(cMessage *msg)
 void ResourceAllocatorApp::allocateResources(Task *task)
 {
     int requiredCycles = task->requiredCPUCycles;
-    double communicationLatency = task->communicationDelay.dbl();
+    double communicationLatency = (task->communicationDelay.dbl() * 1000); // Convert to milliseconds
 
     int cpuCyclesToAllocate = 0;
     if (resourceAllocatorAlgorithm == 0) {
@@ -164,7 +164,7 @@ int ResourceAllocatorApp::PPOAllocation(int requiredCycles, double communication
 
     try {
         // int action = agent.attr("allocate_resources")(maxCPUCapacity, requiredCycles, resourceUtilisation).cast<double>();
-        double action = agent.attr("allocate_resources")(requiredCycles, queueLength, resourceUtilisation, communicationLatency, totalQueueCycles).cast<double>();
+        double action = agent.attr("allocate_resources")(requiredCycles, communicationLatency, resourceUtilisation, queueLength, totalQueueCycles).cast<double>();
 
         int allocatedCPUCycles = action * maxCPUCapacity;
         EV << "The RL Agent has decided to allocate " << action << " cycles." << endl;

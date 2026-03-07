@@ -35,8 +35,12 @@ class RLResourceAllocator():
         else:
             return required_cpu_cycles
         
-    def allocate_resources(self, required_cpu_cycles, queue_length, communication_latency, resource_utilisation, total_cpu_cycles_in_queue):
-        print(f"Required CPU Cycles: {required_cpu_cycles}; Queue Length: {queue_length}; Communication Latency: {communication_latency}; Resource Utilisation: {resource_utilisation}; CPU Cycles in Queue: {total_cpu_cycles_in_queue}")
+    def allocate_resources(self, required_cpu_cycles, communication_latency, resource_utilisation, queue_length, total_cpu_cycles_in_queue):
+        """
+        args: 
+        * communication_latency: Measured in milliseconds, the time delay between the task leaving the sending device and arriving on the edge server.
+        """
+        print(f"Required CPU Cycles: {required_cpu_cycles}; Communication Latency: {communication_latency}; Resource Utilisation: {resource_utilisation}; Queue Length: {queue_length}; CPU Cycles in Queue: {total_cpu_cycles_in_queue}")
         return required_cpu_cycles
         
         

@@ -1,8 +1,8 @@
 version 3
-run General-0-20260307-14:11:43-2965
+run General-0-20260307-14:31:31-3722
 attr configname General
-attr datetime 20260307-14:11:43
-attr datetimef 20260307-141143
+attr datetime 20260307-14:31:31
+attr datetimef 20260307-143131
 attr experiment General
 attr inifile omnetpp.ini
 attr iterationvars ""
@@ -10,7 +10,7 @@ attr iterationvarsd ""
 attr iterationvarsf ""
 attr measurement ""
 attr network ResourceNetwork
-attr processid 2965
+attr processid 3722
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -855,7 +855,7 @@ attr unit mps
 par ResourceNetwork.radioMedium.propagation ignoreMovementDuringTransmission true
 par ResourceNetwork.radioMedium.propagation ignoreMovementDuringPropagation true
 par ResourceNetwork.radioMedium.propagation ignoreMovementDuringReception true
-scalar ResourceNetwork.radioMedium.propagation "Arrival computation count" 10203
+scalar ResourceNetwork.radioMedium.propagation "Arrival computation count" 3792
 par ResourceNetwork.radioMedium.analogModel typename "\"inet.physicallayer.wireless.common.analogmodel.packetlevel.ScalarAnalogModel\""
 par ResourceNetwork.radioMedium.analogModel ignorePartialInterference true
 par ResourceNetwork.radioMedium.backgroundNoise typename "\"inet.physicallayer.wireless.common.backgroundnoise.IsotropicScalarBackgroundNoise\""
@@ -899,13 +899,13 @@ par ResourceNetwork.radioMedium listeningFilter false
 par ResourceNetwork.radioMedium macAddressFilter true
 par ResourceNetwork.radioMedium recordTransmissionLog false
 par ResourceNetwork.radioMedium recordReceptionLog false
-scalar ResourceNetwork.radioMedium "transmission count" 3401
-scalar ResourceNetwork.radioMedium "signal send count" 3983
-scalar ResourceNetwork.radioMedium "reception computation count" 4425
-scalar ResourceNetwork.radioMedium "interference computation count" 14249
-scalar ResourceNetwork.radioMedium "reception decision computation count" 3109
-scalar ResourceNetwork.radioMedium "listening decision computation count" 7379
-scalar ResourceNetwork.radioMedium "reception cache hit" 84.214469178082
+scalar ResourceNetwork.radioMedium "transmission count" 1264
+scalar ResourceNetwork.radioMedium "signal send count" 1484
+scalar ResourceNetwork.radioMedium "reception computation count" 1646
+scalar ResourceNetwork.radioMedium "interference computation count" 5316
+scalar ResourceNetwork.radioMedium "reception decision computation count" 1153
+scalar ResourceNetwork.radioMedium "listening decision computation count" 2760
+scalar ResourceNetwork.radioMedium "reception cache hit" 84.180682364248
 attr unit %
 scalar ResourceNetwork.radioMedium "interference cache hit" 66.666666666667
 attr unit %
@@ -1041,13 +1041,13 @@ attr unit s
 par ResourceNetwork.hostA.wlan[0].agent startingTime -1s
 attr unit s
 par ResourceNetwork.hostA.wlan[0].agent defaultSsid "\"SSID\""
-scalar ResourceNetwork.hostA.wlan[0].agent dropConfirm:count 145
+scalar ResourceNetwork.hostA.wlan[0].agent dropConfirm:count 55
 attr recordingmode count
 attr title "dropped confirms, count"
 scalar ResourceNetwork.hostA.wlan[0].agent acceptConfirm:count 0
 attr recordingmode count
 attr title "accepted confirms, count"
-scalar ResourceNetwork.hostA.wlan[0].agent sentRequest:count 146
+scalar ResourceNetwork.hostA.wlan[0].agent sentRequest:count 56
 attr recordingmode count
 attr title "sent requests, count"
 par ResourceNetwork.hostA.wlan[0].mgmt typename "\"inet.linklayer.ieee80211.mgmt.Ieee80211MgmtSta\""
@@ -1106,7 +1106,7 @@ attr source "warmup(atomic(constant0(packetPushEnded) + sum(packetLength(packetP
 attr title "queue bit length, timeavg"
 attr unit b
 statistic ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.pendingQueue queueingTime:histogram
-field count 146
+field count 55
 field mean 0
 field stddev 0
 field min 0
@@ -1144,7 +1144,7 @@ bin	-0.08	0
 bin	-0.06	0
 bin	-0.04	0
 bin	-0.02	0
-bin	0	146
+bin	0	55
 bin	0.02	0
 bin	0.04	0
 bin	0.06	0
@@ -1170,25 +1170,25 @@ bin	0.44	0
 bin	0.46	0
 bin	0.48	0
 bin	0.5	0
-scalar ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.pendingQueue outgoingPackets:count 146
+scalar ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.pendingQueue outgoingPackets:count 55
 attr recordingmode count
 attr source packetPulled
 attr title "outgoing packets, count"
 attr unit pk
-scalar ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.pendingQueue outgoingPacketLengths:sum 37376
+scalar ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.pendingQueue outgoingPacketLengths:sum 14080
 attr interpolationmode none
 attr recordingmode sum
 attr source packetLength(packetPulled)
 attr title "outgoing packet lengths, sum"
 attr unit b
 statistic ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.pendingQueue outgoingPacketLengths:histogram
-field count 146
+field count 55
 field mean 256
 field stddev 0
 field min 256
 field max 256
-field sum 37376
-field sqrsum 9568256
+field sum 14080
+field sqrsum 3604480
 attr interpolationmode none
 attr recordingmode histogram
 attr source packetLength(packetPulled)
@@ -1196,7 +1196,7 @@ attr title "outgoing packet lengths"
 attr unit b
 bin	-inf	0
 bin	255	0
-bin	256	146
+bin	256	55
 bin	257	0
 statistic ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.pendingQueue flowQueueingTime:histogram
 field count 0
@@ -1214,25 +1214,25 @@ attr unit s
 bin	-inf	0
 bin	0	0
 bin	1	0
-scalar ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.pendingQueue incomingPackets:count 146
+scalar ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.pendingQueue incomingPackets:count 55
 attr recordingmode count
 attr source packetPushStarted
 attr title "incoming packets, count"
 attr unit pk
-scalar ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.pendingQueue incomingPacketLengths:sum 37376
+scalar ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.pendingQueue incomingPacketLengths:sum 14080
 attr interpolationmode none
 attr recordingmode sum
 attr source packetLength(packetPushStarted)
 attr title "incoming packet lengths, sum"
 attr unit b
 statistic ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.pendingQueue incomingPacketLengths:histogram
-field count 146
+field count 55
 field mean 256
 field stddev 0
 field min 256
 field max 256
-field sum 37376
-field sqrsum 9568256
+field sum 14080
+field sqrsum 3604480
 attr interpolationmode none
 attr recordingmode histogram
 attr source packetLength(packetPushStarted)
@@ -1240,7 +1240,7 @@ attr title "incoming packet lengths"
 attr unit b
 bin	-inf	0
 bin	255	0
-bin	256	146
+bin	256	55
 bin	257	0
 scalar ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.pendingQueue droppedPacketsQueueOverflow:count 0
 attr interpolationmode none
@@ -1259,19 +1259,19 @@ par ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.inProgressFrames pending
 par ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.inProgressFrames originatorMacDataServiceModule "\"^.^.originatorMacDataService\""
 par ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.inProgressFrames ackHandlerModule "\"^.^.ackHandler\""
 statistic ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.inProgressFrames queueingTime:histogram
-field count 146
+field count 55
 field mean 3.8e-05
 field stddev 0
 field min 3.8e-05
 field max 3.8e-05
-field sum 0.005548
-field sqrsum 2.10824e-07
+field sum 0.00209
+field sqrsum 7.942e-08
 attr interpolationmode none
 attr recordingmode histogram
 attr source queueingTime(packetDequeued)
 attr title "queueing times"
 bin	-inf	0
-bin	0	146
+bin	0	55
 bin	0.01	0
 bin	0.02	0
 bin	0.03	0
@@ -1329,7 +1329,7 @@ attr interpolationmode sample-hold
 attr recordingmode max
 attr source "warmup(count(packetEnqueued) - count(packetDequeued))"
 attr title "queue length, max"
-scalar ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.inProgressFrames queueLength:timeavg 0.00015174552212295
+scalar ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.inProgressFrames queueLength:timeavg 0.00015011738181262
 attr autoWarmupFilter false
 attr interpolationmode sample-hold
 attr recordingmode timeavg
@@ -1338,10 +1338,10 @@ attr title "queue length, timeavg"
 par ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.contention typename "\"inet.linklayer.ieee80211.mac.contention.Contention\""
 par ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.contention initialChannelBusy true
 par ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.contention backoffOptimization true
-scalar ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.contention channelAccessGranted:count 146
+scalar ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.contention channelAccessGranted:count 55
 attr recordingmode count
 attr title "channel access granted, count"
-scalar ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.contention stateChanged:count 1170
+scalar ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess.contention stateChanged:count 442
 attr enum IDLE,DEFER,IFS_AND_BACKOFF
 attr interpolationmode none
 attr recordingmode count
@@ -1352,7 +1352,7 @@ par ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess difsn -1
 par ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess cwMin -1
 par ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess cwMax -1
 par ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess rxModule "\"^.^.rx\""
-scalar ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess channelOwnershipChanged:count 292
+scalar ResourceNetwork.hostA.wlan[0].mac.dcf.channelAccess channelOwnershipChanged:count 110
 attr interpolationmode sample-hold
 attr recordingmode count
 attr title "channel ownership, count"
@@ -1429,22 +1429,22 @@ par ResourceNetwork.hostA.wlan[0].mac.dcf.ctsPolicy rateSelectionModule "\"^.rat
 par ResourceNetwork.hostA.wlan[0].mac.dcf typename "\"inet.linklayer.ieee80211.mac.coordinationfunction.Dcf\""
 par ResourceNetwork.hostA.wlan[0].mac.dcf rxModule "\"^.rx\""
 par ResourceNetwork.hostA.wlan[0].mac.dcf txModule "\"^.tx\""
-scalar ResourceNetwork.hostA.wlan[0].mac.dcf frameSequenceFinished:count 146
+scalar ResourceNetwork.hostA.wlan[0].mac.dcf frameSequenceFinished:count 55
 attr recordingmode count
 attr title "finished frame sequences, count"
 statistic ResourceNetwork.hostA.wlan[0].mac.dcf frameSequenceDuration:histogram
-field count 146
+field count 55
 field mean 3.8e-05
 field stddev 0
 field min 3.8e-05
 field max 3.8e-05
-field sum 0.005548
-field sqrsum 2.10824e-07
+field sum 0.00209
+field sqrsum 7.942e-08
 attr recordingmode histogram
 attr source frameSequenceDuration(frameSequenceFinished)
 attr title "frame sequence durations"
 bin	-inf	0
-bin	0	146
+bin	0	55
 bin	0.01	0
 bin	0.02	0
 bin	0.03	0
@@ -1497,19 +1497,19 @@ bin	0.49	0
 bin	0.5	0
 bin	0.51	0
 statistic ResourceNetwork.hostA.wlan[0].mac.dcf frameSequenceNumPackets:histogram
-field count 146
+field count 55
 field mean 1
 field stddev 0
 field min 1
 field max 1
-field sum 146
-field sqrsum 146
+field sum 55
+field sqrsum 55
 attr recordingmode histogram
 attr source frameSequenceNumPackets(frameSequenceFinished)
 attr title "frame sequences: number of packets"
 bin	-inf	0
 bin	0	0
-bin	1	146
+bin	1	55
 bin	2	0
 scalar ResourceNetwork.hostA.wlan[0].mac.dcf packetReceivedFromPeer:count 0
 attr interpolationmode none
@@ -1569,11 +1569,11 @@ attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source ieee80211NotRetry(packetReceivedFromPeer)
 attr title "packets received: without retry, sum(packetBytes)"
-scalar ResourceNetwork.hostA.wlan[0].mac.dcf packetSentToPeer:count 146
+scalar ResourceNetwork.hostA.wlan[0].mac.dcf packetSentToPeer:count 55
 attr interpolationmode none
 attr recordingmode count
 attr title "packets sent, count"
-scalar ResourceNetwork.hostA.wlan[0].mac.dcf packetSentToPeer:sum(packetBytes) 4672
+scalar ResourceNetwork.hostA.wlan[0].mac.dcf packetSentToPeer:sum(packetBytes) 1760
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr title "packets sent, sum(packetBytes)"
@@ -1587,22 +1587,22 @@ attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source ieee80211Unicast(packetSentToPeer)
 attr title "packets sent: unicast, sum(packetBytes)"
-scalar ResourceNetwork.hostA.wlan[0].mac.dcf packetSentToPeerMulticast:count 146
+scalar ResourceNetwork.hostA.wlan[0].mac.dcf packetSentToPeerMulticast:count 55
 attr interpolationmode none
 attr recordingmode count
 attr source ieee80211Multicast(packetSentToPeer)
 attr title "packets sent: multicast, count"
-scalar ResourceNetwork.hostA.wlan[0].mac.dcf packetSentToPeerMulticast:sum(packetBytes) 4672
+scalar ResourceNetwork.hostA.wlan[0].mac.dcf packetSentToPeerMulticast:sum(packetBytes) 1760
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source ieee80211Multicast(packetSentToPeer)
 attr title "packets sent: multicast, sum(packetBytes)"
-scalar ResourceNetwork.hostA.wlan[0].mac.dcf packetSentToPeerBroadcast:count 146
+scalar ResourceNetwork.hostA.wlan[0].mac.dcf packetSentToPeerBroadcast:count 55
 attr interpolationmode none
 attr recordingmode count
 attr source ieee80211Broadcast(packetSentToPeer)
 attr title "packets sent: broadcast , count"
-scalar ResourceNetwork.hostA.wlan[0].mac.dcf packetSentToPeerBroadcast:sum(packetBytes) 4672
+scalar ResourceNetwork.hostA.wlan[0].mac.dcf packetSentToPeerBroadcast:sum(packetBytes) 1760
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source ieee80211Broadcast(packetSentToPeer)
@@ -1617,12 +1617,12 @@ attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source ieee80211Retry(packetSentToPeer)
 attr title "packets sent: with retry, sum(packetBytes)"
-scalar ResourceNetwork.hostA.wlan[0].mac.dcf packetSentToPeerWithoutRetry:count 146
+scalar ResourceNetwork.hostA.wlan[0].mac.dcf packetSentToPeerWithoutRetry:count 55
 attr interpolationmode none
 attr recordingmode count
 attr source ieee80211NotRetry(packetSentToPeer)
 attr title "packets sent: without retry, count"
-scalar ResourceNetwork.hostA.wlan[0].mac.dcf packetSentToPeerWithoutRetry:sum(packetBytes) 4672
+scalar ResourceNetwork.hostA.wlan[0].mac.dcf packetSentToPeerWithoutRetry:sum(packetBytes) 1760
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source ieee80211NotRetry(packetSentToPeer)
@@ -1696,11 +1696,11 @@ scalar ResourceNetwork.hostA.wlan[0].mac packetReceivedFromLower:sum(packetBytes
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr title "packets received from lower layer, sum(packetBytes)"
-scalar ResourceNetwork.hostA.wlan[0].mac packetSentToLower:count 146
+scalar ResourceNetwork.hostA.wlan[0].mac packetSentToLower:count 55
 attr interpolationmode none
 attr recordingmode count
 attr title "packets sent to lower layer, count"
-scalar ResourceNetwork.hostA.wlan[0].mac packetSentToLower:sum(packetBytes) 4672
+scalar ResourceNetwork.hostA.wlan[0].mac packetSentToLower:sum(packetBytes) 1760
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr title "packets sent to lower layer, sum(packetBytes)"
@@ -1868,7 +1868,7 @@ par ResourceNetwork.hostA.wlan[0].radio channelNumber 0
 par ResourceNetwork.hostA.wlan[0].radio crcMode "\"declared\""
 attr enum declared,computed
 statistic ResourceNetwork.hostA.wlan[0].radio radioChannel:histogram
-field count 147
+field count 57
 field mean 0
 field stddev 0
 field min 0
@@ -1905,7 +1905,7 @@ bin	-0.08	0
 bin	-0.06	0
 bin	-0.04	0
 bin	-0.02	0
-bin	0	147
+bin	0	57
 bin	0.02	0
 bin	0.04	0
 bin	0.06	0
@@ -1931,17 +1931,17 @@ bin	0.44	0
 bin	0.46	0
 bin	0.48	0
 bin	0.5	0
-scalar ResourceNetwork.hostA.wlan[0].radio radioMode:count 295
+scalar ResourceNetwork.hostA.wlan[0].radio radioMode:count 113
 attr interpolationmode sample-hold
 attr recordingmode count
 attr source radioModeChanged
 attr title "Radio mode, count"
-scalar ResourceNetwork.hostA.wlan[0].radio receptionState:count 293
+scalar ResourceNetwork.hostA.wlan[0].radio receptionState:count 111
 attr interpolationmode sample-hold
 attr recordingmode count
 attr source receptionStateChanged
 attr title "Radio reception state, count"
-scalar ResourceNetwork.hostA.wlan[0].radio transmissionState:count 584
+scalar ResourceNetwork.hostA.wlan[0].radio transmissionState:count 220
 attr interpolationmode sample-hold
 attr recordingmode count
 attr source transmissionStateChanged
@@ -2388,13 +2388,13 @@ attr unit s
 par ResourceNetwork.mdMobilePhone.wlan[0].agent startingTime -1s
 attr unit s
 par ResourceNetwork.mdMobilePhone.wlan[0].agent defaultSsid "\"SSID\""
-scalar ResourceNetwork.mdMobilePhone.wlan[0].agent dropConfirm:count 145
+scalar ResourceNetwork.mdMobilePhone.wlan[0].agent dropConfirm:count 54
 attr recordingmode count
 attr title "dropped confirms, count"
 scalar ResourceNetwork.mdMobilePhone.wlan[0].agent acceptConfirm:count 0
 attr recordingmode count
 attr title "accepted confirms, count"
-scalar ResourceNetwork.mdMobilePhone.wlan[0].agent sentRequest:count 146
+scalar ResourceNetwork.mdMobilePhone.wlan[0].agent sentRequest:count 55
 attr recordingmode count
 attr title "sent requests, count"
 par ResourceNetwork.mdMobilePhone.wlan[0].mgmt typename "\"inet.linklayer.ieee80211.mgmt.Ieee80211MgmtSta\""
@@ -2453,7 +2453,7 @@ attr source "warmup(atomic(constant0(packetPushEnded) + sum(packetLength(packetP
 attr title "queue bit length, timeavg"
 attr unit b
 statistic ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.pendingQueue queueingTime:histogram
-field count 145
+field count 55
 field mean 0
 field stddev 0
 field min 0
@@ -2491,7 +2491,7 @@ bin	-0.08	0
 bin	-0.06	0
 bin	-0.04	0
 bin	-0.02	0
-bin	0	145
+bin	0	55
 bin	0.02	0
 bin	0.04	0
 bin	0.06	0
@@ -2517,25 +2517,25 @@ bin	0.44	0
 bin	0.46	0
 bin	0.48	0
 bin	0.5	0
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.pendingQueue outgoingPackets:count 145
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.pendingQueue outgoingPackets:count 55
 attr recordingmode count
 attr source packetPulled
 attr title "outgoing packets, count"
 attr unit pk
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.pendingQueue outgoingPacketLengths:sum 37120
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.pendingQueue outgoingPacketLengths:sum 14080
 attr interpolationmode none
 attr recordingmode sum
 attr source packetLength(packetPulled)
 attr title "outgoing packet lengths, sum"
 attr unit b
 statistic ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.pendingQueue outgoingPacketLengths:histogram
-field count 145
+field count 55
 field mean 256
 field stddev 0
 field min 256
 field max 256
-field sum 37120
-field sqrsum 9502720
+field sum 14080
+field sqrsum 3604480
 attr interpolationmode none
 attr recordingmode histogram
 attr source packetLength(packetPulled)
@@ -2543,7 +2543,7 @@ attr title "outgoing packet lengths"
 attr unit b
 bin	-inf	0
 bin	255	0
-bin	256	145
+bin	256	55
 bin	257	0
 statistic ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.pendingQueue flowQueueingTime:histogram
 field count 0
@@ -2561,25 +2561,25 @@ attr unit s
 bin	-inf	0
 bin	0	0
 bin	1	0
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.pendingQueue incomingPackets:count 145
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.pendingQueue incomingPackets:count 55
 attr recordingmode count
 attr source packetPushStarted
 attr title "incoming packets, count"
 attr unit pk
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.pendingQueue incomingPacketLengths:sum 37120
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.pendingQueue incomingPacketLengths:sum 14080
 attr interpolationmode none
 attr recordingmode sum
 attr source packetLength(packetPushStarted)
 attr title "incoming packet lengths, sum"
 attr unit b
 statistic ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.pendingQueue incomingPacketLengths:histogram
-field count 145
+field count 55
 field mean 256
 field stddev 0
 field min 256
 field max 256
-field sum 37120
-field sqrsum 9502720
+field sum 14080
+field sqrsum 3604480
 attr interpolationmode none
 attr recordingmode histogram
 attr source packetLength(packetPushStarted)
@@ -2587,7 +2587,7 @@ attr title "incoming packet lengths"
 attr unit b
 bin	-inf	0
 bin	255	0
-bin	256	145
+bin	256	55
 bin	257	0
 scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.pendingQueue droppedPacketsQueueOverflow:count 0
 attr interpolationmode none
@@ -2606,19 +2606,19 @@ par ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.inProgressFrames
 par ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.inProgressFrames originatorMacDataServiceModule "\"^.^.originatorMacDataService\""
 par ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.inProgressFrames ackHandlerModule "\"^.^.ackHandler\""
 statistic ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.inProgressFrames queueingTime:histogram
-field count 145
+field count 55
 field mean 3.8e-05
 field stddev 0
 field min 3.8e-05
 field max 3.8e-05
-field sum 0.00551
-field sqrsum 2.0938e-07
+field sum 0.00209
+field sqrsum 7.942e-08
 attr interpolationmode none
 attr recordingmode histogram
 attr source queueingTime(packetDequeued)
 attr title "queueing times"
 bin	-inf	0
-bin	0	145
+bin	0	55
 bin	0.01	0
 bin	0.02	0
 bin	0.03	0
@@ -2676,7 +2676,7 @@ attr interpolationmode sample-hold
 attr recordingmode max
 attr source "warmup(count(packetEnqueued) - count(packetDequeued))"
 attr title "queue length, max"
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.inProgressFrames queueLength:timeavg 0.0001507061692317
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.inProgressFrames queueLength:timeavg 0.00015011738181262
 attr autoWarmupFilter false
 attr interpolationmode sample-hold
 attr recordingmode timeavg
@@ -2685,10 +2685,10 @@ attr title "queue length, timeavg"
 par ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.contention typename "\"inet.linklayer.ieee80211.mac.contention.Contention\""
 par ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.contention initialChannelBusy true
 par ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.contention backoffOptimization true
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.contention channelAccessGranted:count 145
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.contention channelAccessGranted:count 55
 attr recordingmode count
 attr title "channel access granted, count"
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.contention stateChanged:count 1162
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess.contention stateChanged:count 442
 attr enum IDLE,DEFER,IFS_AND_BACKOFF
 attr interpolationmode none
 attr recordingmode count
@@ -2699,7 +2699,7 @@ par ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess difsn -1
 par ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess cwMin -1
 par ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess cwMax -1
 par ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess rxModule "\"^.^.rx\""
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess channelOwnershipChanged:count 290
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.channelAccess channelOwnershipChanged:count 110
 attr interpolationmode sample-hold
 attr recordingmode count
 attr title "channel ownership, count"
@@ -2776,22 +2776,22 @@ par ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf.ctsPolicy rateSelectionModule 
 par ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf typename "\"inet.linklayer.ieee80211.mac.coordinationfunction.Dcf\""
 par ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf rxModule "\"^.rx\""
 par ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf txModule "\"^.tx\""
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf frameSequenceFinished:count 145
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf frameSequenceFinished:count 55
 attr recordingmode count
 attr title "finished frame sequences, count"
 statistic ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf frameSequenceDuration:histogram
-field count 145
+field count 55
 field mean 3.8e-05
 field stddev 0
 field min 3.8e-05
 field max 3.8e-05
-field sum 0.00551
-field sqrsum 2.0938e-07
+field sum 0.00209
+field sqrsum 7.942e-08
 attr recordingmode histogram
 attr source frameSequenceDuration(frameSequenceFinished)
 attr title "frame sequence durations"
 bin	-inf	0
-bin	0	145
+bin	0	55
 bin	0.01	0
 bin	0.02	0
 bin	0.03	0
@@ -2844,19 +2844,19 @@ bin	0.49	0
 bin	0.5	0
 bin	0.51	0
 statistic ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf frameSequenceNumPackets:histogram
-field count 145
+field count 55
 field mean 1
 field stddev 0
 field min 1
 field max 1
-field sum 145
-field sqrsum 145
+field sum 55
+field sqrsum 55
 attr recordingmode histogram
 attr source frameSequenceNumPackets(frameSequenceFinished)
 attr title "frame sequences: number of packets"
 bin	-inf	0
 bin	0	0
-bin	1	145
+bin	1	55
 bin	2	0
 scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf packetReceivedFromPeer:count 0
 attr interpolationmode none
@@ -2916,11 +2916,11 @@ attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source ieee80211NotRetry(packetReceivedFromPeer)
 attr title "packets received: without retry, sum(packetBytes)"
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf packetSentToPeer:count 145
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf packetSentToPeer:count 55
 attr interpolationmode none
 attr recordingmode count
 attr title "packets sent, count"
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf packetSentToPeer:sum(packetBytes) 4640
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf packetSentToPeer:sum(packetBytes) 1760
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr title "packets sent, sum(packetBytes)"
@@ -2934,22 +2934,22 @@ attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source ieee80211Unicast(packetSentToPeer)
 attr title "packets sent: unicast, sum(packetBytes)"
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf packetSentToPeerMulticast:count 145
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf packetSentToPeerMulticast:count 55
 attr interpolationmode none
 attr recordingmode count
 attr source ieee80211Multicast(packetSentToPeer)
 attr title "packets sent: multicast, count"
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf packetSentToPeerMulticast:sum(packetBytes) 4640
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf packetSentToPeerMulticast:sum(packetBytes) 1760
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source ieee80211Multicast(packetSentToPeer)
 attr title "packets sent: multicast, sum(packetBytes)"
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf packetSentToPeerBroadcast:count 145
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf packetSentToPeerBroadcast:count 55
 attr interpolationmode none
 attr recordingmode count
 attr source ieee80211Broadcast(packetSentToPeer)
 attr title "packets sent: broadcast , count"
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf packetSentToPeerBroadcast:sum(packetBytes) 4640
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf packetSentToPeerBroadcast:sum(packetBytes) 1760
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source ieee80211Broadcast(packetSentToPeer)
@@ -2964,12 +2964,12 @@ attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source ieee80211Retry(packetSentToPeer)
 attr title "packets sent: with retry, sum(packetBytes)"
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf packetSentToPeerWithoutRetry:count 145
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf packetSentToPeerWithoutRetry:count 55
 attr interpolationmode none
 attr recordingmode count
 attr source ieee80211NotRetry(packetSentToPeer)
 attr title "packets sent: without retry, count"
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf packetSentToPeerWithoutRetry:sum(packetBytes) 4640
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac.dcf packetSentToPeerWithoutRetry:sum(packetBytes) 1760
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source ieee80211NotRetry(packetSentToPeer)
@@ -3043,11 +3043,11 @@ scalar ResourceNetwork.mdMobilePhone.wlan[0].mac packetReceivedFromLower:sum(pac
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr title "packets received from lower layer, sum(packetBytes)"
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac packetSentToLower:count 145
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac packetSentToLower:count 55
 attr interpolationmode none
 attr recordingmode count
 attr title "packets sent to lower layer, count"
-scalar ResourceNetwork.mdMobilePhone.wlan[0].mac packetSentToLower:sum(packetBytes) 4640
+scalar ResourceNetwork.mdMobilePhone.wlan[0].mac packetSentToLower:sum(packetBytes) 1760
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr title "packets sent to lower layer, sum(packetBytes)"
@@ -3215,7 +3215,7 @@ par ResourceNetwork.mdMobilePhone.wlan[0].radio channelNumber 0
 par ResourceNetwork.mdMobilePhone.wlan[0].radio crcMode "\"declared\""
 attr enum declared,computed
 statistic ResourceNetwork.mdMobilePhone.wlan[0].radio radioChannel:histogram
-field count 147
+field count 56
 field mean 0
 field stddev 0
 field min 0
@@ -3252,7 +3252,7 @@ bin	-0.08	0
 bin	-0.06	0
 bin	-0.04	0
 bin	-0.02	0
-bin	0	147
+bin	0	56
 bin	0.02	0
 bin	0.04	0
 bin	0.06	0
@@ -3278,17 +3278,17 @@ bin	0.44	0
 bin	0.46	0
 bin	0.48	0
 bin	0.5	0
-scalar ResourceNetwork.mdMobilePhone.wlan[0].radio radioMode:count 293
+scalar ResourceNetwork.mdMobilePhone.wlan[0].radio radioMode:count 113
 attr interpolationmode sample-hold
 attr recordingmode count
 attr source radioModeChanged
 attr title "Radio mode, count"
-scalar ResourceNetwork.mdMobilePhone.wlan[0].radio receptionState:count 291
+scalar ResourceNetwork.mdMobilePhone.wlan[0].radio receptionState:count 111
 attr interpolationmode sample-hold
 attr recordingmode count
 attr source receptionStateChanged
 attr title "Radio reception state, count"
-scalar ResourceNetwork.mdMobilePhone.wlan[0].radio transmissionState:count 580
+scalar ResourceNetwork.mdMobilePhone.wlan[0].radio transmissionState:count 220
 attr interpolationmode sample-hold
 attr recordingmode count
 attr source transmissionStateChanged
@@ -3736,7 +3736,7 @@ attr recordingmode max
 attr source "warmup(atomic(constant0(packetPushEnded) + count(packetPushStarted) - count(packetPulled) - count(packetRemoved) - count(packetDropped)))"
 attr title "queue length, max"
 attr unit pk
-scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].queue queueLength:timeavg 1.1817512608035
+scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].queue queueLength:timeavg 1.2798362665053
 attr autoWarmupFilter false
 attr interpolationmode sample-hold
 attr recordingmode timeavg
@@ -3757,7 +3757,7 @@ attr recordingmode max
 attr source "warmup(atomic(constant0(packetPushEnded) + sum(packetLength(packetPushStarted)) - sum(packetLength(packetPulled)) - sum(packetLength(packetRemoved)) - sum(packetLength(packetDropped))))"
 attr title "queue bit length, max"
 attr unit b
-scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].queue queueBitLength:timeavg 9945.6186109221
+scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].queue queueBitLength:timeavg 10771.102018909
 attr autoWarmupFilter false
 attr interpolationmode sample-hold
 attr recordingmode timeavg
@@ -3765,85 +3765,85 @@ attr source "warmup(atomic(constant0(packetPushEnded) + sum(packetLength(packetP
 attr title "queue bit length, timeavg"
 attr unit b
 statistic ResourceNetwork.mdAutonomousVehicle[0].wlan[0].queue queueingTime:histogram
-field count 3110
-field mean 0.013892687069385
-field stddev 0.016341991325052
+field count 1154
+field mean 0.015440590618291
+field stddev 0.019096660805254
 field min 0
 field max 0.090303252125
-field sum 43.206256785788
-field sqrsum 1.4305426605397
+field sum 17.818441573508
+field sqrsum 0.69560613115176
 attr interpolationmode none
 attr recordingmode histogram
 attr source queueingTime(packetPulled)
 attr title "queueing times"
 attr unit s
 bin	-inf	0
-bin	0	921
-bin	0.002	170
-bin	0.004	177
-bin	0.006	234
-bin	0.008	178
-bin	0.01	149
-bin	0.012	152
-bin	0.014	127
-bin	0.016	102
-bin	0.018	113
-bin	0.02	104
-bin	0.022	70
-bin	0.024	54
-bin	0.026	62
-bin	0.028	51
-bin	0.03	43
-bin	0.032	45
-bin	0.034	39
-bin	0.036	36
-bin	0.038	25
-bin	0.04	24
-bin	0.042	27
-bin	0.044	24
-bin	0.046	22
-bin	0.048	17
-bin	0.05	5
-bin	0.052	26
-bin	0.054	14
-bin	0.056	11
-bin	0.058	4
-bin	0.06	16
-bin	0.062	11
-bin	0.064	9
-bin	0.066	7
-bin	0.068	5
-bin	0.07	5
-bin	0.072	4
-bin	0.074	3
+bin	0	361
+bin	0.002	67
+bin	0.004	65
+bin	0.006	83
+bin	0.008	57
+bin	0.01	55
+bin	0.012	46
+bin	0.014	32
+bin	0.016	36
+bin	0.018	23
+bin	0.02	35
+bin	0.022	21
+bin	0.024	16
+bin	0.026	26
+bin	0.028	19
+bin	0.03	15
+bin	0.032	16
+bin	0.034	16
+bin	0.036	12
+bin	0.038	7
+bin	0.04	9
+bin	0.042	10
+bin	0.044	18
+bin	0.046	13
+bin	0.048	10
+bin	0.05	4
+bin	0.052	16
+bin	0.054	10
+bin	0.056	5
+bin	0.058	2
+bin	0.06	8
+bin	0.062	5
+bin	0.064	3
+bin	0.066	3
+bin	0.068	4
+bin	0.07	2
+bin	0.072	1
+bin	0.074	1
 bin	0.076	4
-bin	0.078	5
-bin	0.08	7
+bin	0.078	4
+bin	0.08	6
 bin	0.082	3
 bin	0.084	1
 bin	0.086	2
 bin	0.088	1
 bin	0.09	1
 bin	0.092	0
-scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].queue outgoingPackets:count 3110
+scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].queue outgoingPackets:count 1154
 attr recordingmode count
 attr source packetPulled
 attr title "outgoing packets, count"
 attr unit pk
-scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].queue outgoingPacketLengths:sum 26173760
+scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].queue outgoingPacketLengths:sum 9712064
 attr interpolationmode none
 attr recordingmode sum
 attr source packetLength(packetPulled)
 attr title "outgoing packet lengths, sum"
 attr unit b
 statistic ResourceNetwork.mdAutonomousVehicle[0].wlan[0].queue outgoingPacketLengths:histogram
-field count 3110
+field count 1154
 field mean 8416
 field stddev 0
 field min 8416
 field max 8416
-field sum 26173760
-field sqrsum 220278364160
+field sum 9712064
+field sqrsum 81736730624
 attr interpolationmode none
 attr recordingmode histogram
 attr source packetLength(packetPulled)
@@ -3851,7 +3851,7 @@ attr title "outgoing packet lengths"
 attr unit b
 bin	-inf	0
 bin	8415	0
-bin	8416	3110
+bin	8416	1154
 bin	8417	0
 statistic ResourceNetwork.mdAutonomousVehicle[0].wlan[0].queue flowQueueingTime:histogram
 field count 0
@@ -3869,25 +3869,25 @@ attr unit s
 bin	-inf	0
 bin	0	0
 bin	1	0
-scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].queue incomingPackets:count 3110
+scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].queue incomingPackets:count 1154
 attr recordingmode count
 attr source packetPushStarted
 attr title "incoming packets, count"
 attr unit pk
-scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].queue incomingPacketLengths:sum 26173760
+scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].queue incomingPacketLengths:sum 9712064
 attr interpolationmode none
 attr recordingmode sum
 attr source packetLength(packetPushStarted)
 attr title "incoming packet lengths, sum"
 attr unit b
 statistic ResourceNetwork.mdAutonomousVehicle[0].wlan[0].queue incomingPacketLengths:histogram
-field count 3110
+field count 1154
 field mean 8416
 field stddev 0
 field min 8416
 field max 8416
-field sum 26173760
-field sqrsum 220278364160
+field sum 9712064
+field sqrsum 81736730624
 attr interpolationmode none
 attr recordingmode histogram
 attr source packetLength(packetPushStarted)
@@ -3895,7 +3895,7 @@ attr title "incoming packet lengths"
 attr unit b
 bin	-inf	0
 bin	8415	0
-bin	8416	3110
+bin	8416	1154
 bin	8417	0
 scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].queue droppedPacketsQueueOverflow:count 0
 attr interpolationmode none
@@ -3934,22 +3934,22 @@ attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetReceivedFromLower
 attr title "packets received from lower layer, sum(packetBytes)"
-scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].mac sentDownPk:count 3110
+scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].mac sentDownPk:count 1154
 attr interpolationmode none
 attr recordingmode count
 attr source packetSentToLower
 attr title "packets sent to lower layer, count"
-scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].mac sentDownPk:sum(packetBytes) 3343250
+scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].mac sentDownPk:sum(packetBytes) 1240550
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetSentToLower
 attr title "packets sent to lower layer, sum(packetBytes)"
-scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].mac rcvdPkFromHl:count 3110
+scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].mac rcvdPkFromHl:count 1154
 attr interpolationmode none
 attr recordingmode count
 attr source packetReceivedFromUpper
 attr title "packets received from higher layer, count"
-scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].mac rcvdPkFromHl:sum(packetBytes) 3271720
+scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].mac rcvdPkFromHl:sum(packetBytes) 1214008
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetReceivedFromUpper
@@ -4056,17 +4056,17 @@ attr unit Hz
 par ResourceNetwork.mdAutonomousVehicle[0].wlan[0].radio protocol "\"\""
 par ResourceNetwork.mdAutonomousVehicle[0].wlan[0].radio signalAnalogRepresentation "\"scalar\""
 attr enum scalar,dimensional
-scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].radio radioMode:count 6222
+scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].radio radioMode:count 2310
 attr interpolationmode sample-hold
 attr recordingmode count
 attr source radioModeChanged
 attr title "Radio mode, count"
-scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].radio receptionState:count 6220
+scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].radio receptionState:count 2308
 attr interpolationmode sample-hold
 attr recordingmode count
 attr source receptionStateChanged
 attr title "Radio reception state, count"
-scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].radio transmissionState:count 12438
+scalar ResourceNetwork.mdAutonomousVehicle[0].wlan[0].radio transmissionState:count 4614
 attr interpolationmode sample-hold
 attr recordingmode count
 attr source transmissionStateChanged
@@ -4330,12 +4330,12 @@ attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetReceived
 attr title "packets received, sum(packetBytes)"
-scalar ResourceNetwork.mdAutonomousVehicle[0].udp packetSent:count 3110
+scalar ResourceNetwork.mdAutonomousVehicle[0].udp packetSent:count 1154
 attr interpolationmode none
 attr recordingmode count
 attr source packetSent
 attr title "packets sent, count"
-scalar ResourceNetwork.mdAutonomousVehicle[0].udp packetSent:sum(packetBytes) 3209520
+scalar ResourceNetwork.mdAutonomousVehicle[0].udp packetSent:sum(packetBytes) 1190928
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetSent
@@ -4394,7 +4394,7 @@ par ResourceNetwork.mdAutonomousVehicle[0].app[0] minDeadlineLatency 0.5
 attr units s
 par ResourceNetwork.mdAutonomousVehicle[0].app[0] maxDeadlineLatency 20
 attr units s
-scalar ResourceNetwork.mdAutonomousVehicle[0].app[0] "packets sent" 3110
+scalar ResourceNetwork.mdAutonomousVehicle[0].app[0] "packets sent" 1154
 scalar ResourceNetwork.mdAutonomousVehicle[0].app[0] "packets received" 0
 scalar ResourceNetwork.mdAutonomousVehicle[0].app[0] packetReceived:count 0
 attr interpolationmode none
@@ -4534,12 +4534,12 @@ attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source decapPk
 attr title "packets decapsulated, sum(packetBytes)"
-scalar ResourceNetwork.baseStation.ethernet encapPk:count 2222
+scalar ResourceNetwork.baseStation.ethernet encapPk:count 807
 attr interpolationmode none
 attr recordingmode count
 attr source encapPk
 attr title "packets encapsulated, count"
-scalar ResourceNetwork.baseStation.ethernet encapPk:sum(packetBytes) 2337544
+scalar ResourceNetwork.baseStation.ethernet encapPk:sum(packetBytes) 848964
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source encapPk
@@ -4765,12 +4765,12 @@ par ResourceNetwork.baseStation.wlan[0].mac fullDuplex false
 par ResourceNetwork.baseStation.wlan[0].mac useAck false
 par ResourceNetwork.baseStation.wlan[0].mac ackTimeout 0.1s
 attr unit s
-scalar ResourceNetwork.baseStation.wlan[0].mac rcvdPkFromLl:count 3108
+scalar ResourceNetwork.baseStation.wlan[0].mac rcvdPkFromLl:count 1153
 attr interpolationmode none
 attr recordingmode count
 attr source packetReceivedFromLower
 attr title "packets received from lower layer, count"
-scalar ResourceNetwork.baseStation.wlan[0].mac rcvdPkFromLl:sum(packetBytes) 3341100
+scalar ResourceNetwork.baseStation.wlan[0].mac rcvdPkFromLl:sum(packetBytes) 1239475
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetReceivedFromLower
@@ -4795,22 +4795,22 @@ attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetReceivedFromUpper
 attr title "packets received from higher layer, sum(packetBytes)"
-scalar ResourceNetwork.baseStation.wlan[0].mac passedUpPk:count 2222
+scalar ResourceNetwork.baseStation.wlan[0].mac passedUpPk:count 807
 attr interpolationmode none
 attr recordingmode count
 attr source packetSentToUpper
 attr title "packets passed to higher layer, count"
-scalar ResourceNetwork.baseStation.wlan[0].mac passedUpPk:sum(packetBytes) 2337544
+scalar ResourceNetwork.baseStation.wlan[0].mac passedUpPk:sum(packetBytes) 848964
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetSentToUpper
 attr title "packets passed to higher layer, sum(packetBytes)"
-scalar ResourceNetwork.baseStation.wlan[0].mac packetDropIncorrectlyReceived:count 886
+scalar ResourceNetwork.baseStation.wlan[0].mac packetDropIncorrectlyReceived:count 346
 attr interpolationmode none
 attr recordingmode count
 attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
 attr title "packet drop: incorrectly received, count"
-scalar ResourceNetwork.baseStation.wlan[0].mac packetDropIncorrectlyReceived:sum(packetBytes) 952450
+scalar ResourceNetwork.baseStation.wlan[0].mac packetDropIncorrectlyReceived:sum(packetBytes) 371950
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
@@ -4902,7 +4902,7 @@ attr interpolationmode sample-hold
 attr recordingmode count
 attr source radioModeChanged
 attr title "Radio mode, count"
-scalar ResourceNetwork.baseStation.wlan[0].radio receptionState:count 6219
+scalar ResourceNetwork.baseStation.wlan[0].radio receptionState:count 2308
 attr interpolationmode sample-hold
 attr recordingmode count
 attr source receptionStateChanged
@@ -4913,13 +4913,13 @@ attr recordingmode count
 attr source transmissionStateChanged
 attr title "Radio transmission state, count"
 statistic ResourceNetwork.baseStation.wlan[0].radio minSnir:histogram
-field count 3109
-field mean 3.9055029506914
+field count 1153
+field mean 3.9055029506916
 field stddev 0
 field min 3.9055029506915
 field max 3.9055029506915
-field sum 12142.208673699
-field sqrsum 47421.431803045
+field sum 4503.0449021474
+field sqrsum 17586.655152433
 attr recordingmode histogram
 attr source minimumSnir(packetSentToUpper)
 attr title "Min SNIR"
@@ -4949,7 +4949,7 @@ bin	3.82	0
 bin	3.84	0
 bin	3.86	0
 bin	3.88	0
-bin	3.9	3109
+bin	3.9	1153
 bin	3.92	0
 bin	3.94	0
 bin	3.96	0
@@ -4977,13 +4977,13 @@ bin	4.38	0
 bin	4.4	0
 bin	4.42	0
 statistic ResourceNetwork.baseStation.wlan[0].radio packetErrorRate:histogram
-field count 3109
+field count 1153
 field mean 0.2847205924902
 field stddev 0
 field min 0.28472059249019
 field max 0.28472059249019
-field sum 885.19632205204
-field sqrsum 252.03362128481
+field sum 328.2828431412
+field sqrsum 93.468885603525
 attr recordingmode histogram
 attr source packetErrorRate(packetSentToUpper)
 attr title "Packet error rate"
@@ -5016,7 +5016,7 @@ bin	0.24	0
 bin	0.25	0
 bin	0.26	0
 bin	0.27	0
-bin	0.28	3109
+bin	0.28	1153
 bin	0.29	0
 bin	0.3	0
 bin	0.31	0
@@ -5069,18 +5069,18 @@ bin	0.77	0
 bin	0.78	0
 bin	0.79	0
 statistic ResourceNetwork.baseStation.wlan[0].radio bitErrorRate:histogram
-field count 3109
-field mean 3.8674463675923e-05
+field count 1153
+field mean 3.8674463675926e-05
 field stddev 0
 field min 3.8674463675926e-05
 field max 3.8674463675926e-05
-field sum 0.12023890756845
-field sqrsum 4.6501752631891e-06
+field sum 0.044591656618343
+field sqrsum 1.7245584041355e-06
 attr recordingmode histogram
 attr source bitErrorRate(packetSentToUpper)
 attr title "Bit error rate"
 bin	-inf	0
-bin	0	3109
+bin	0	1153
 bin	0.01	0
 bin	0.02	0
 bin	0.03	0
@@ -5133,18 +5133,18 @@ bin	0.49	0
 bin	0.5	0
 bin	0.51	0
 statistic ResourceNetwork.baseStation.wlan[0].radio symbolErrorRate:histogram
-field count 3109
-field mean 3.8674463675923e-05
+field count 1153
+field mean 3.8674463675926e-05
 field stddev 0
 field min 3.8674463675926e-05
 field max 3.8674463675926e-05
-field sum 0.12023890756845
-field sqrsum 4.6501752631891e-06
+field sum 0.044591656618343
+field sqrsum 1.7245584041355e-06
 attr recordingmode histogram
 attr source symbolErrorRate(packetSentToUpper)
 attr title "Symbol error rate"
 bin	-inf	0
-bin	0	3109
+bin	0	1153
 bin	0.01	0
 bin	0.02	0
 bin	0.03	0
@@ -5287,7 +5287,7 @@ attr source "warmup(atomic(constant0(packetPushEnded) + sum(packetLength(packetP
 attr title "queue bit length, timeavg"
 attr unit b
 statistic ResourceNetwork.baseStation.eth[0].queue queueingTime:histogram
-field count 2222
+field count 807
 field mean 0
 field stddev 0
 field min 0
@@ -5325,7 +5325,7 @@ bin	-0.08	0
 bin	-0.06	0
 bin	-0.04	0
 bin	-0.02	0
-bin	0	2222
+bin	0	807
 bin	0.02	0
 bin	0.04	0
 bin	0.06	0
@@ -5351,25 +5351,25 @@ bin	0.44	0
 bin	0.46	0
 bin	0.48	0
 bin	0.5	0
-scalar ResourceNetwork.baseStation.eth[0].queue outgoingPackets:count 2222
+scalar ResourceNetwork.baseStation.eth[0].queue outgoingPackets:count 807
 attr recordingmode count
 attr source packetPulled
 attr title "outgoing packets, count"
 attr unit pk
-scalar ResourceNetwork.baseStation.eth[0].queue outgoingPacketLengths:sum 19020320
+scalar ResourceNetwork.baseStation.eth[0].queue outgoingPacketLengths:sum 6907920
 attr interpolationmode none
 attr recordingmode sum
 attr source packetLength(packetPulled)
 attr title "outgoing packet lengths, sum"
 attr unit b
 statistic ResourceNetwork.baseStation.eth[0].queue outgoingPacketLengths:histogram
-field count 2222
+field count 807
 field mean 8560
 field stddev 0
 field min 8560
 field max 8560
-field sum 19020320
-field sqrsum 162813939200
+field sum 6907920
+field sqrsum 59131795200
 attr interpolationmode none
 attr recordingmode histogram
 attr source packetLength(packetPulled)
@@ -5377,7 +5377,7 @@ attr title "outgoing packet lengths"
 attr unit b
 bin	-inf	0
 bin	8559	0
-bin	8560	2222
+bin	8560	807
 bin	8561	0
 statistic ResourceNetwork.baseStation.eth[0].queue flowQueueingTime:histogram
 field count 0
@@ -5395,25 +5395,25 @@ attr unit s
 bin	-inf	0
 bin	0	0
 bin	1	0
-scalar ResourceNetwork.baseStation.eth[0].queue incomingPackets:count 2222
+scalar ResourceNetwork.baseStation.eth[0].queue incomingPackets:count 807
 attr recordingmode count
 attr source packetPushStarted
 attr title "incoming packets, count"
 attr unit pk
-scalar ResourceNetwork.baseStation.eth[0].queue incomingPacketLengths:sum 19020320
+scalar ResourceNetwork.baseStation.eth[0].queue incomingPacketLengths:sum 6907920
 attr interpolationmode none
 attr recordingmode sum
 attr source packetLength(packetPushStarted)
 attr title "incoming packet lengths, sum"
 attr unit b
 statistic ResourceNetwork.baseStation.eth[0].queue incomingPacketLengths:histogram
-field count 2222
+field count 807
 field mean 8560
 field stddev 0
 field min 8560
 field max 8560
-field sum 19020320
-field sqrsum 162813939200
+field sum 6907920
+field sqrsum 59131795200
 attr interpolationmode none
 attr recordingmode histogram
 attr source packetLength(packetPushStarted)
@@ -5421,7 +5421,7 @@ attr title "incoming packet lengths"
 attr unit b
 bin	-inf	0
 bin	8559	0
-bin	8560	2222
+bin	8560	807
 bin	8561	0
 scalar ResourceNetwork.baseStation.eth[0].queue droppedPacketsQueueOverflow:count 0
 attr interpolationmode none
@@ -5449,11 +5449,11 @@ par ResourceNetwork.baseStation.eth[0].mac stopOperationExtraTime -1s
 attr unit s
 par ResourceNetwork.baseStation.eth[0].mac stopOperationTimeout 2s
 attr unit s
-scalar ResourceNetwork.baseStation.eth[0].mac "simulated time" 36.561210653088
+scalar ResourceNetwork.baseStation.eth[0].mac "simulated time" 13.922438392969
 scalar ResourceNetwork.baseStation.eth[0].mac full-duplex 1
-scalar ResourceNetwork.baseStation.eth[0].mac "frames/sec sent" 60.77479274643
+scalar ResourceNetwork.baseStation.eth[0].mac "frames/sec sent" 57.963984269275
 scalar ResourceNetwork.baseStation.eth[0].mac "frames/sec rcvd" 0
-scalar ResourceNetwork.baseStation.eth[0].mac "bits/sec sent" 520232.22590944
+scalar ResourceNetwork.baseStation.eth[0].mac "bits/sec sent" 496171.70534499
 scalar ResourceNetwork.baseStation.eth[0].mac "bits/sec rcvd" 0
 scalar ResourceNetwork.baseStation.eth[0].mac "rx channel idle (%)" 100
 scalar ResourceNetwork.baseStation.eth[0].mac "rx channel utilization (%)" 0
@@ -5483,22 +5483,22 @@ attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source rxPkOk
 attr title "packets received OK, sum(packetBytes)"
-scalar ResourceNetwork.baseStation.eth[0].mac txPk:count 2222
+scalar ResourceNetwork.baseStation.eth[0].mac txPk:count 807
 attr interpolationmode none
 attr recordingmode count
 attr source packetSentToLower
 attr title "packets transmitted, count"
-scalar ResourceNetwork.baseStation.eth[0].mac txPk:sum(packetBytes) 2377540
+scalar ResourceNetwork.baseStation.eth[0].mac txPk:sum(packetBytes) 863490
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetSentToLower
 attr title "packets transmitted, sum(packetBytes)"
-scalar ResourceNetwork.baseStation.eth[0].mac packetReceivedFromUpper:count 2222
+scalar ResourceNetwork.baseStation.eth[0].mac packetReceivedFromUpper:count 807
 attr interpolationmode none
 attr recordingmode count
 attr source packetReceivedFromUpper
 attr title "packet bytes from higher layer, count"
-scalar ResourceNetwork.baseStation.eth[0].mac packetReceivedFromUpper:sum(packetBytes) 2377540
+scalar ResourceNetwork.baseStation.eth[0].mac packetReceivedFromUpper:sum(packetBytes) 863490
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetReceivedFromUpper
@@ -5831,22 +5831,22 @@ attr title "pause sent, count"
 scalar ResourceNetwork.coreRouter.ethernet pauseSent:sum 0
 attr recordingmode sum
 attr title "pause sent, sum"
-scalar ResourceNetwork.coreRouter.ethernet decapPk:count 2222
+scalar ResourceNetwork.coreRouter.ethernet decapPk:count 807
 attr interpolationmode none
 attr recordingmode count
 attr source decapPk
 attr title "packets decapsulated, count"
-scalar ResourceNetwork.coreRouter.ethernet decapPk:sum(packetBytes) 2337544
+scalar ResourceNetwork.coreRouter.ethernet decapPk:sum(packetBytes) 848964
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source decapPk
 attr title "packets decapsulated, sum(packetBytes)"
-scalar ResourceNetwork.coreRouter.ethernet encapPk:count 2222
+scalar ResourceNetwork.coreRouter.ethernet encapPk:count 807
 attr interpolationmode none
 attr recordingmode count
 attr source encapPk
 attr title "packets encapsulated, count"
-scalar ResourceNetwork.coreRouter.ethernet encapPk:sum(packetBytes) 2337544
+scalar ResourceNetwork.coreRouter.ethernet encapPk:sum(packetBytes) 848964
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source encapPk
@@ -6072,14 +6072,14 @@ par ResourceNetwork.coreRouter.eth[0].mac stopOperationExtraTime -1s
 attr unit s
 par ResourceNetwork.coreRouter.eth[0].mac stopOperationTimeout 2s
 attr unit s
-scalar ResourceNetwork.coreRouter.eth[0].mac "simulated time" 36.561210653088
+scalar ResourceNetwork.coreRouter.eth[0].mac "simulated time" 13.922438392969
 scalar ResourceNetwork.coreRouter.eth[0].mac full-duplex 1
 scalar ResourceNetwork.coreRouter.eth[0].mac "frames/sec sent" 0
-scalar ResourceNetwork.coreRouter.eth[0].mac "frames/sec rcvd" 60.77479274643
+scalar ResourceNetwork.coreRouter.eth[0].mac "frames/sec rcvd" 57.963984269275
 scalar ResourceNetwork.coreRouter.eth[0].mac "bits/sec sent" 0
-scalar ResourceNetwork.coreRouter.eth[0].mac "bits/sec rcvd" 520232.22590944
-scalar ResourceNetwork.coreRouter.eth[0].mac "rx channel idle (%)" 94.758781873548
-scalar ResourceNetwork.coreRouter.eth[0].mac "rx channel utilization (%)" 5.2412181264521
+scalar ResourceNetwork.coreRouter.eth[0].mac "bits/sec rcvd" 496171.70534499
+scalar ResourceNetwork.coreRouter.eth[0].mac "rx channel idle (%)" 95.001185996618
+scalar ResourceNetwork.coreRouter.eth[0].mac "rx channel utilization (%)" 4.9988140033822
 scalar ResourceNetwork.coreRouter.eth[0].mac rxPausePkUnits:count 0
 attr interpolationmode none
 attr recordingmode count
@@ -6096,12 +6096,12 @@ scalar ResourceNetwork.coreRouter.eth[0].mac txPausePkUnits:sum 0
 attr interpolationmode none
 attr recordingmode sum
 attr title "pause units sent, sum"
-scalar ResourceNetwork.coreRouter.eth[0].mac rxPkOk:count 2222
+scalar ResourceNetwork.coreRouter.eth[0].mac rxPkOk:count 807
 attr interpolationmode none
 attr recordingmode count
 attr source rxPkOk
 attr title "packets received OK, count"
-scalar ResourceNetwork.coreRouter.eth[0].mac rxPkOk:sum(packetBytes) 2377540
+scalar ResourceNetwork.coreRouter.eth[0].mac rxPkOk:sum(packetBytes) 863490
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source rxPkOk
@@ -6126,12 +6126,12 @@ attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetReceivedFromUpper
 attr title "packet bytes from higher layer, sum(packetBytes)"
-scalar ResourceNetwork.coreRouter.eth[0].mac passedUpPk:count 2222
+scalar ResourceNetwork.coreRouter.eth[0].mac passedUpPk:count 807
 attr interpolationmode none
 attr recordingmode count
 attr source packetSentToUpper
 attr title "packets passed to higher layer, count"
-scalar ResourceNetwork.coreRouter.eth[0].mac passedUpPk:sum(packetBytes) 2377540
+scalar ResourceNetwork.coreRouter.eth[0].mac passedUpPk:sum(packetBytes) 863490
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetSentToUpper
@@ -6255,7 +6255,7 @@ attr source "warmup(atomic(constant0(packetPushEnded) + sum(packetLength(packetP
 attr title "queue bit length, timeavg"
 attr unit b
 statistic ResourceNetwork.coreRouter.eth[1].queue queueingTime:histogram
-field count 2222
+field count 807
 field mean 0
 field stddev 0
 field min 0
@@ -6293,7 +6293,7 @@ bin	-0.08	0
 bin	-0.06	0
 bin	-0.04	0
 bin	-0.02	0
-bin	0	2222
+bin	0	807
 bin	0.02	0
 bin	0.04	0
 bin	0.06	0
@@ -6319,25 +6319,25 @@ bin	0.44	0
 bin	0.46	0
 bin	0.48	0
 bin	0.5	0
-scalar ResourceNetwork.coreRouter.eth[1].queue outgoingPackets:count 2222
+scalar ResourceNetwork.coreRouter.eth[1].queue outgoingPackets:count 807
 attr recordingmode count
 attr source packetPulled
 attr title "outgoing packets, count"
 attr unit pk
-scalar ResourceNetwork.coreRouter.eth[1].queue outgoingPacketLengths:sum 19020320
+scalar ResourceNetwork.coreRouter.eth[1].queue outgoingPacketLengths:sum 6907920
 attr interpolationmode none
 attr recordingmode sum
 attr source packetLength(packetPulled)
 attr title "outgoing packet lengths, sum"
 attr unit b
 statistic ResourceNetwork.coreRouter.eth[1].queue outgoingPacketLengths:histogram
-field count 2222
+field count 807
 field mean 8560
 field stddev 0
 field min 8560
 field max 8560
-field sum 19020320
-field sqrsum 162813939200
+field sum 6907920
+field sqrsum 59131795200
 attr interpolationmode none
 attr recordingmode histogram
 attr source packetLength(packetPulled)
@@ -6345,7 +6345,7 @@ attr title "outgoing packet lengths"
 attr unit b
 bin	-inf	0
 bin	8559	0
-bin	8560	2222
+bin	8560	807
 bin	8561	0
 statistic ResourceNetwork.coreRouter.eth[1].queue flowQueueingTime:histogram
 field count 0
@@ -6363,25 +6363,25 @@ attr unit s
 bin	-inf	0
 bin	0	0
 bin	1	0
-scalar ResourceNetwork.coreRouter.eth[1].queue incomingPackets:count 2222
+scalar ResourceNetwork.coreRouter.eth[1].queue incomingPackets:count 807
 attr recordingmode count
 attr source packetPushStarted
 attr title "incoming packets, count"
 attr unit pk
-scalar ResourceNetwork.coreRouter.eth[1].queue incomingPacketLengths:sum 19020320
+scalar ResourceNetwork.coreRouter.eth[1].queue incomingPacketLengths:sum 6907920
 attr interpolationmode none
 attr recordingmode sum
 attr source packetLength(packetPushStarted)
 attr title "incoming packet lengths, sum"
 attr unit b
 statistic ResourceNetwork.coreRouter.eth[1].queue incomingPacketLengths:histogram
-field count 2222
+field count 807
 field mean 8560
 field stddev 0
 field min 8560
 field max 8560
-field sum 19020320
-field sqrsum 162813939200
+field sum 6907920
+field sqrsum 59131795200
 attr interpolationmode none
 attr recordingmode histogram
 attr source packetLength(packetPushStarted)
@@ -6389,7 +6389,7 @@ attr title "incoming packet lengths"
 attr unit b
 bin	-inf	0
 bin	8559	0
-bin	8560	2222
+bin	8560	807
 bin	8561	0
 scalar ResourceNetwork.coreRouter.eth[1].queue droppedPacketsQueueOverflow:count 0
 attr interpolationmode none
@@ -6417,11 +6417,11 @@ par ResourceNetwork.coreRouter.eth[1].mac stopOperationExtraTime -1s
 attr unit s
 par ResourceNetwork.coreRouter.eth[1].mac stopOperationTimeout 2s
 attr unit s
-scalar ResourceNetwork.coreRouter.eth[1].mac "simulated time" 36.561210653088
+scalar ResourceNetwork.coreRouter.eth[1].mac "simulated time" 13.922438392969
 scalar ResourceNetwork.coreRouter.eth[1].mac full-duplex 1
-scalar ResourceNetwork.coreRouter.eth[1].mac "frames/sec sent" 60.77479274643
+scalar ResourceNetwork.coreRouter.eth[1].mac "frames/sec sent" 57.963984269275
 scalar ResourceNetwork.coreRouter.eth[1].mac "frames/sec rcvd" 0
-scalar ResourceNetwork.coreRouter.eth[1].mac "bits/sec sent" 520232.22590944
+scalar ResourceNetwork.coreRouter.eth[1].mac "bits/sec sent" 496171.70534499
 scalar ResourceNetwork.coreRouter.eth[1].mac "bits/sec rcvd" 0
 scalar ResourceNetwork.coreRouter.eth[1].mac "rx channel idle (%)" 100
 scalar ResourceNetwork.coreRouter.eth[1].mac "rx channel utilization (%)" 0
@@ -6451,22 +6451,22 @@ attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source rxPkOk
 attr title "packets received OK, sum(packetBytes)"
-scalar ResourceNetwork.coreRouter.eth[1].mac txPk:count 2222
+scalar ResourceNetwork.coreRouter.eth[1].mac txPk:count 807
 attr interpolationmode none
 attr recordingmode count
 attr source packetSentToLower
 attr title "packets transmitted, count"
-scalar ResourceNetwork.coreRouter.eth[1].mac txPk:sum(packetBytes) 2377540
+scalar ResourceNetwork.coreRouter.eth[1].mac txPk:sum(packetBytes) 863490
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetSentToLower
 attr title "packets transmitted, sum(packetBytes)"
-scalar ResourceNetwork.coreRouter.eth[1].mac packetReceivedFromUpper:count 2222
+scalar ResourceNetwork.coreRouter.eth[1].mac packetReceivedFromUpper:count 807
 attr interpolationmode none
 attr recordingmode count
 attr source packetReceivedFromUpper
 attr title "packet bytes from higher layer, count"
-scalar ResourceNetwork.coreRouter.eth[1].mac packetReceivedFromUpper:sum(packetBytes) 2377540
+scalar ResourceNetwork.coreRouter.eth[1].mac packetReceivedFromUpper:sum(packetBytes) 863490
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetReceivedFromUpper
@@ -6761,12 +6761,12 @@ attr title "pause sent, count"
 scalar ResourceNetwork.edgeServer.ethernet pauseSent:sum 0
 attr recordingmode sum
 attr title "pause sent, sum"
-scalar ResourceNetwork.edgeServer.ethernet decapPk:count 2222
+scalar ResourceNetwork.edgeServer.ethernet decapPk:count 807
 attr interpolationmode none
 attr recordingmode count
 attr source decapPk
 attr title "packets decapsulated, count"
-scalar ResourceNetwork.edgeServer.ethernet decapPk:sum(packetBytes) 2337544
+scalar ResourceNetwork.edgeServer.ethernet decapPk:sum(packetBytes) 848964
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source decapPk
@@ -7002,14 +7002,14 @@ par ResourceNetwork.edgeServer.eth[0].mac stopOperationExtraTime -1s
 attr unit s
 par ResourceNetwork.edgeServer.eth[0].mac stopOperationTimeout 2s
 attr unit s
-scalar ResourceNetwork.edgeServer.eth[0].mac "simulated time" 36.561210653088
+scalar ResourceNetwork.edgeServer.eth[0].mac "simulated time" 13.922438392969
 scalar ResourceNetwork.edgeServer.eth[0].mac full-duplex 1
 scalar ResourceNetwork.edgeServer.eth[0].mac "frames/sec sent" 0
-scalar ResourceNetwork.edgeServer.eth[0].mac "frames/sec rcvd" 60.77479274643
+scalar ResourceNetwork.edgeServer.eth[0].mac "frames/sec rcvd" 57.963984269275
 scalar ResourceNetwork.edgeServer.eth[0].mac "bits/sec sent" 0
-scalar ResourceNetwork.edgeServer.eth[0].mac "bits/sec rcvd" 520232.22590944
-scalar ResourceNetwork.edgeServer.eth[0].mac "rx channel idle (%)" 94.758781873548
-scalar ResourceNetwork.edgeServer.eth[0].mac "rx channel utilization (%)" 5.2412181264521
+scalar ResourceNetwork.edgeServer.eth[0].mac "bits/sec rcvd" 496171.70534499
+scalar ResourceNetwork.edgeServer.eth[0].mac "rx channel idle (%)" 95.001185996618
+scalar ResourceNetwork.edgeServer.eth[0].mac "rx channel utilization (%)" 4.9988140033822
 scalar ResourceNetwork.edgeServer.eth[0].mac rxPausePkUnits:count 0
 attr interpolationmode none
 attr recordingmode count
@@ -7026,12 +7026,12 @@ scalar ResourceNetwork.edgeServer.eth[0].mac txPausePkUnits:sum 0
 attr interpolationmode none
 attr recordingmode sum
 attr title "pause units sent, sum"
-scalar ResourceNetwork.edgeServer.eth[0].mac rxPkOk:count 2222
+scalar ResourceNetwork.edgeServer.eth[0].mac rxPkOk:count 807
 attr interpolationmode none
 attr recordingmode count
 attr source rxPkOk
 attr title "packets received OK, count"
-scalar ResourceNetwork.edgeServer.eth[0].mac rxPkOk:sum(packetBytes) 2377540
+scalar ResourceNetwork.edgeServer.eth[0].mac rxPkOk:sum(packetBytes) 863490
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source rxPkOk
@@ -7056,12 +7056,12 @@ attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetReceivedFromUpper
 attr title "packet bytes from higher layer, sum(packetBytes)"
-scalar ResourceNetwork.edgeServer.eth[0].mac passedUpPk:count 2222
+scalar ResourceNetwork.edgeServer.eth[0].mac passedUpPk:count 807
 attr interpolationmode none
 attr recordingmode count
 attr source packetSentToUpper
 attr title "packets passed to higher layer, count"
-scalar ResourceNetwork.edgeServer.eth[0].mac passedUpPk:sum(packetBytes) 2377540
+scalar ResourceNetwork.edgeServer.eth[0].mac passedUpPk:sum(packetBytes) 863490
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetSentToUpper
@@ -7287,12 +7287,12 @@ par ResourceNetwork.edgeServer.udp icmpv6Module "\"^.ipv6.icmpv6\""
 par ResourceNetwork.edgeServer.udp crcMode "\"declared\""
 attr enum disabled,declared,computed
 par ResourceNetwork.edgeServer.udp defaultMulticastLoop true
-scalar ResourceNetwork.edgeServer.udp packetReceived:count 2222
+scalar ResourceNetwork.edgeServer.udp packetReceived:count 807
 attr interpolationmode none
 attr recordingmode count
 attr source packetReceived
 attr title "packets received, count"
-scalar ResourceNetwork.edgeServer.udp packetReceived:sum(packetBytes) 2293104
+scalar ResourceNetwork.edgeServer.udp packetReceived:sum(packetBytes) 832824
 attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetReceived
@@ -7307,7 +7307,7 @@ attr interpolationmode none
 attr recordingmode sum(packetBytes)
 attr source packetSent
 attr title "packets sent, sum(packetBytes)"
-scalar ResourceNetwork.edgeServer.udp passedUpPk:count 2222
+scalar ResourceNetwork.edgeServer.udp passedUpPk:count 807
 attr interpolationmode none
 attr recordingmode count
 attr source packetSentToUpper
@@ -7328,7 +7328,7 @@ par ResourceNetwork.edgeServer.tn forwardServiceRegistration true
 par ResourceNetwork.edgeServer.tn forwardProtocolRegistration true
 par ResourceNetwork.edgeServer.app[0] typename "\"myprojectandtutorial.applications.ResourceAllocatorApp\""
 par ResourceNetwork.edgeServer.app[0] localPort 5000
-par ResourceNetwork.edgeServer.app[0] maxCPUCapacity 10000
+par ResourceNetwork.edgeServer.app[0] maxCPUCapacity 1000
 par ResourceNetwork.edgeServer.app[0] resourceAllocatorAlgorithm 1
 par ResourceNetwork.edgeServer.at typename "\"inet.common.MessageDispatcher\""
 par ResourceNetwork.edgeServer.at displayStringTextFormat "\"processed %p pk (%l)\""
