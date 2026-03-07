@@ -12,7 +12,7 @@ class RLResourceAllocator():
         """
         return required_cpu_cycles
     
-    def allocate_resources(self, max_cpu_capacity, required_cpu_cycles, resource_utilisation):
+    def allocate_resources_ppo_dummy(self, max_cpu_capacity, required_cpu_cycles, resource_utilisation):
         """
         Input:
             # CPU Cycles Required
@@ -21,18 +21,22 @@ class RLResourceAllocator():
         State: 
             # Network Conditions (connection quality expressed as SINR (Alex); Path loss (Chen); Packet loss, communication latency, bandwidth (Mahimalmur))
             # Queue Length (Liu, Mahimalmur)
+            # Waiting time for pending tasks (Mahimalmur)
             # Resource Utilisation (Mahimalur) or Availability (Liu)
             # Current Latency of the system (which would just be the average of each task combined)
-            # Current Energy Consumption of the system (which would just be the average of each task combined) (Alex, Mahimalmur)
-            # Waiting time for pending tasks (Mahimalmur)
+            # Current Energy Consumption of the system (which would just be the average of each task combined) (Alex, Mahimalmur)            
         
         Action/Output:
             # Allocate x number of CPU cycles to the task.
-            A change to the file.
         """
         print(f"Max CPU Capacity: {max_cpu_capacity}; Required CPU Cycles: {required_cpu_cycles}; Resource Utilisation: {resource_utilisation}")
         if resource_utilisation < 0.5:
             return int(max_cpu_capacity/2)
         else:
             return required_cpu_cycles
+        
+    def allocate_resources(self, required_cpu_cycles, queue_length, communication_latency, resource_utilisation, total_cpu_cycles_in_queue):
+        print(f"Required CPU Cycles: {required_cpu_cycles}; Queue Length: {queue_length}; Communication Latency: {communication_latency}; Resource Utilisation: {resource_utilisation}; CPU Cycles in Queue: {total_cpu_cycles_in_queue}")
+        return required_cpu_cycles
+        
         
