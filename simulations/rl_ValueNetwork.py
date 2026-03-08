@@ -1,3 +1,8 @@
+import torch
+import torch.nn as nn
+from torch.distributions import Normal
+
+
 class ValueNetwork(nn.Module):
     """
         A Class representing a 64-in-64-out Feed Forward Neural Network that will act as the 'critic'

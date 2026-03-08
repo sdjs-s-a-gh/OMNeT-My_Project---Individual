@@ -21,7 +21,7 @@ class PolicyNetwork(nn.Module):
             Return:
                 None
         """
-        super(ValueNetwork, self).__init__()
+        super(PolicyNetwork, self).__init__()
         
         self.layer1 = nn.Linear(state_space_dimensions, 64)
         self.layer2 = nn.Linear(64, 64)

@@ -50,6 +50,11 @@ struct Task : public cObject
 
     simtime_t latency; // In seconds, the difference in time between the task being sent to the edge server and it finishing being processed.
     double energyConsumption; // The amount of energy (in an undefined unit) that was consumed to process the task.
+
+    // Resource Allocation Specific
+    std::vector<double> state; // The state space used to inform the CPU frequency that was to be allocated to the task.
+    double logProbability; // The log probability given to the task for the action taken (CPU frequency allocated).
+
 };
 
 
@@ -90,8 +95,10 @@ class ResourceAllocatorApp : public ApplicationBase, UdpSocket::ICallback
     void updateQueue();
     double getResourceUtilisation();
     int staticAllocation(int requiredCycles);
-    int PPOAllocation(int requiredCycles, double communicationLatency);
+    int PPOAllocation(Task *task);
     int getTotalCyclesInQueue();
+
+    double calculateReward(double latency);
 
     virtual void initialize(int stage) override;
     virtual void handleMessageWhenUp(cMessage *msg) override;

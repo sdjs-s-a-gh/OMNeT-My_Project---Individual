@@ -1,11 +1,21 @@
+import torch
+import torch.optim as optim
+from torch.distributions import Normal
+import torch.nn as nn
+
+from rl_PolicyNetwork import PolicyNetwork
+from rl_ValueNetwork import ValueNetwork
+
 class RLResourceAllocator():
-    def __init__(self, state_space_dimensions, action_space_dimensions, learning_rate=3e-4, gamma=0.99, clip_parameter=0.2):        
+    def __init__(self, state_space_dimensions, action_space_dimensions, learning_rate=3e-4, gamma=0.99, clip_parameter=0.2):
+        # Instantiate the Actor (Policy) and Critic (Value) Neural Networks.        
         self.policy_network = PolicyNetwork(state_space_dimensions, action_space_dimensions)
         self.value_network = ValueNetwork(state_space_dimensions)
         
         self.policy_optimiser = optim.Adam(self.policy_network.parameters(), lr=learning_rate)
         self.value_optimiser = optim.Adam(self.value_network.parameters(), lr=learning_rate)
         
+        # Set Hyperparameters
         self.gamma = gamma
         self.clip_parameter = clip_parameter
         

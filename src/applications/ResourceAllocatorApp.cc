@@ -46,9 +46,19 @@ void ResourceAllocatorApp::initialize(int stage)
     if (pythonAllocatorStarted == false) {
         try {
             // Import the Python File
-            py::module_ rl_mod = py::module_::import("rl_resource_allocator");
-            agent = rl_mod.attr("RLResourceAllocator")();
 
+            py::module_ sys = py::module_::import("sys");
+            // 1. Force the interpreter to look at your VENV's libraries
+            sys.attr("path").attr("append")("/home/opp_env/.venv/lib/python3.12/site-packages");
+
+            // 2. Also keep the current directory for your local script
+            sys.attr("path").attr("append")(".");
+
+            py::module_ rl_mod = py::module_::import("rl_resource_allocator");
+
+            int stateSpaceDimensions = 5;
+            int actionSpaceDimensions = 1;
+            agent = rl_mod.attr("RLResourceAllocator")(stateSpaceDimensions, actionSpaceDimensions);
 
             py::print("Hello from Python inside OMNeT++!");
             pythonAllocatorStarted = true;
@@ -113,7 +123,7 @@ void ResourceAllocatorApp::allocateResources(Task *task)
     if (resourceAllocatorAlgorithm == 0) {
         cpuCyclesToAllocate = staticAllocation(requiredCycles);
     } else if (resourceAllocatorAlgorithm == 1) {
-        cpuCyclesToAllocate = PPOAllocation(requiredCycles, communicationLatency);
+        cpuCyclesToAllocate = PPOAllocation(task);
     } else {
         throw cRuntimeError("You've given an invalid resource allocator algorithm: %d", resourceAllocatorAlgorithm);
     }
@@ -137,26 +147,12 @@ int ResourceAllocatorApp::staticAllocation(int requiredCycles)
  * Returns the allocated CPU cycles of a given task using the Reinforcement Learning method
  * of PPO.
  */
-int ResourceAllocatorApp::PPOAllocation(int requiredCycles, double communicationLatency)
+int ResourceAllocatorApp::PPOAllocation(Task *task)
 {
-//    py::scoped_interpreter guard();
-//    py::module ai_module = py::module::import("ai_module");
-//    py::object allocate = ai_module.attr("allocate_resources");
-//    auto result = allocate();
-//    // Use result in OMNeT++ Simulation
-//
-//    // Get network state
-//    auto state = getNetworkState();
-//
-//    // Call AI model for resource allocation
-//    auto allocation = allocateResources(state);
-//
-//    // Apply resource allocation
-//    applyAllocation(allocation);
-
-
     // Get State
     // requiredCycles
+    int requiredCycles = task->requiredCPUCycles;
+    double communicationLatency = (task->communicationDelay.dbl() * 1000); // Convert to milliseconds
     int queueLength = queue.getLength();
     double resourceUtilisation = getResourceUtilisation();
     // int communicationLatency =;
@@ -164,10 +160,26 @@ int ResourceAllocatorApp::PPOAllocation(int requiredCycles, double communication
 
     try {
         // int action = agent.attr("allocate_resources")(maxCPUCapacity, requiredCycles, resourceUtilisation).cast<double>();
-        double action = agent.attr("allocate_resources")(requiredCycles, communicationLatency, resourceUtilisation, queueLength, totalQueueCycles).cast<double>();
+        //double action = agent.attr("allocate_resources")(requiredCycles, communicationLatency, resourceUtilisation, queueLength, totalQueueCycles).cast<double>();
+        EV << "The code has reached the Resource Allocator binding." << endl;
+        std::vector<double>state = {
+                (double)requiredCycles,
+                communicationLatency,
+                resourceUtilisation,
+                (double)queueLength,
+                (double)totalQueueCycles
+        };
 
-        int allocatedCPUCycles = action * maxCPUCapacity;
+        py::tuple result = agent.attr("select_action")(state);
+        EV << "The code has surpassed the Resource Allocator binding." << endl;
+        double action = result[0].cast<double>();
+        double logProbability = result[1].cast<double>();
+
+        int allocatedCPUCycles = action * maxCPUCapacity; // TODO: Will need to round to the nearest int.
         EV << "The RL Agent has decided to allocate " << action << " cycles." << endl;
+
+        task->state = state;
+        task->logProbability = -1;
         return action;
     } catch (py::error_already_set &e){
         throw cRuntimeError("Python Error: %s", e.what());
@@ -252,6 +264,21 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
     completedTask->latency = completedTask->completionTime - completedTask->creationTime;
     double energyConsumption = completedTask->allocatedCPUFrequency * (maxCPUCapacity * maxCPUCapacity);
     completedTask->energyConsumption = energyConsumption;
+
+    // Send the details of the task back to the allocator
+    try {
+        // TODO
+        //reward = calculateReward(state, action, newState);
+        double reward = calculateReward(completedTask->latency.dbl() * 1000);
+        std::vector state = completedTask->state;
+        double action = completedTask->allocatedCPUFrequency;
+        double logProbability = completedTask->logProbability;
+        agent.attr("add_to_batch")(state, action, logProbability, reward);
+
+    } catch (py::error_already_set &e){
+        throw cRuntimeError("Python Error: %s", e.what());
+    }
+
     // emit(msg->getTotalServiceTime);
     // totalTime? = communication delay + queue time + computation time?
 
@@ -277,6 +304,34 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
     emit(tasksProcessedSignal, tasksProcessed);
     emit(parallelTasksSignal, tasksProcessing);
     //delete completedTask;
+}
+
+double ResourceAllocatorApp::calculateReward(double latency)
+{
+    // Average System Task Latency, Average System Task Energy Consumption, Resource Utilisation
+    // Maybe just latency, energy consumption and resource utilisation
+
+    //TODO: normalise the rewards
+
+    // utilisation is fine as it is already between 0 and 1
+    double normalisedLatency = latency / 500; // 500 is just a random worst case; I've completely made it up.
+    // energy consumption = energy / max energy?
+
+//    latencyWeight = 0.4;
+//    energyConsumptionWeight = 0.2;
+//    resourceUtilisationWeight = 0.2;
+//
+//    double reward = (
+//            -latencyWeight * latency
+//            -energyConsumptionWeight * energyConsumption
+//            + resourceUtilisationWeight * resourceUtilisation
+//          );
+
+    // just do latency at the minute
+    double reward = -normalisedLatency;
+
+    return reward;
+
 }
 
 /**
