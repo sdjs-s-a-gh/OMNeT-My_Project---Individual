@@ -1,7 +1,125 @@
 class RLResourceAllocator():
-    def __init__(self):
-        print("Python: RL Agent has been initialised")
+    def __init__(self, state_space_dimensions, action_space_dimensions, learning_rate=3e-4, gamma=0.99, clip_parameter=0.2):        
+        self.policy_network = PolicyNetwork(state_space_dimensions, action_space_dimensions)
+        self.value_network = ValueNetwork(state_space_dimensions)
         
+        self.policy_optimiser = optim.Adam(self.policy_network.parameters(), lr=learning_rate)
+        self.value_optimiser = optim.Adam(self.value_network.parameters(), lr=learning_rate)
+        
+        self.gamma = gamma
+        self.clip_parameter = clip_parameter
+        
+        self.batch_states = []
+        self.batch_actions = []
+        self.batch_log_probabilities = []
+        self.batch_rewards = []        
+        
+        print("Python: RL Agent has been initialised")
+    
+    def select_action(self, state):
+        """
+            The brains of the allocation. What OMNeT will directly connect with.            
+            
+            Parameters:
+                state: The state of the current simulation environment, including:
+                    1. Required CPU cycles to process the input task.
+                    2. Communication latency of that task.
+                    3. Queue length.
+                    4. Total combined CPU cycles from the queue.
+                    5. Resource (CPU) Utilisation.
+                
+            Return:
+                action: The CPU allocation for the input task.
+                log_probability: The log probability for the input task.
+                
+        """
+        # Convert the state to a tensor.
+        state_tensor = torch.tensor(state, dtype=torch.float32)
+        
+        # Query the Policy/Actor network for a mean.
+        mean, std = self.policy_network(state_tensor)
+        distribution = Normal(mean, std)
+        
+        # Sample an action from the distribution.
+        action = distribution.sample()
+        
+        # Calculate the log probability for that action.
+        log_probability = distribution.log_prob(action).sum()
+        
+        if len(self.batch_states) >= 1024:
+            self.update()
+        
+        return action.item(), log_probability.item()
+        
+    def update(self):
+        # Get information from the batched experiences.
+        batch_states = torch.tensor(self.batch_states, dtype=torch.float32)
+        batch_actions = torch.tensor(self.batch_actions)
+        old_log_probabilities = torch.tensor(self.batch_log_probabilities, dtype=torch.float32)
+        #batch_rewards = torch.tensor(self.batch_rewards, dtype=torch.float32)
+        
+        # Compute Rewards to go? Don't know if this is correct
+        rewards_to_go = torch.tensor(self.compute_rewards_to_go(self.batch_rewards), dtype=torch.float32)
+        
+        # Calculate advantages.
+        value = self.value_network(batch_states)
+        advantages = rewards_to_go - value
+        
+        # Normalising the advantages
+        advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-10)
+        advantages = advantages.detach()
+        
+        for epoch in range(4):
+            # Calculate the new log probabilities. TODO: Should the value not also be in here as well in addition to being outside?
+            current_log_probabilities, entropy = self.policy_network.evaluate(batch_states, batch_actions)
+            
+            # Calculate the ratio.
+            ratio = torch.exp(current_log_probabilities - old_log_probabilities)
+            
+            # Calculate the surrogate losses.
+            surr1 = ratio * advantages
+            surr2 = torch.clamp(ratio, 1 - self.clip_parameter, 1 + self.clip_parameter) * advantages
+            
+            # Counteract Adam minimising the function.
+            policy_loss = -torch.min(surr1, surr2).mean() - 0.01 * entropy.mean()
+            
+            self.policy_optimiser.zero_grad()
+            policy_loss.backward()
+            self.policy_optimiser.step()
+            
+        values = self.value_network(batch_states).squeeze()
+        value_loss = nn.MSELoss()(values, rewards_to_go)
+        
+        self.value_optimiser.zero_grad()
+        value_loss.backward()
+        self.value_optimiser.step()
+        
+        # Clear the batch
+        self.clear_batch()
+    
+    def compute_rewards_to_go(self, batch_rewards):
+        batch_rewards_to_go = []
+        discounted_reward = 0
+        
+        for reward in reversed(batch_rewards):          
+            discounted_reward = reward + discounted_reward * self.gamma
+            batch_rewards_to_go.insert(0, discounted_reward)
+                
+        return batch_rewards_to_go
+        
+    def add_to_batch(self, state, action, log_probability, reward):
+        """Called from OMNeT. Stores the transition/experience from the last action."""
+        self.batch_states.append(state)
+        self.batch_actions.append(action)
+        self.batch_log_probabilities.append(log_probability)
+        self.batch_rewards.append(reward)
+    
+    def clear_batch(self):
+        self.batch_states = []
+        self.batch_actions = []
+        self.batch_log_probabilities = []
+        self.batch_rewards = []
+    
     def decide_allocation(self, current_load):
         print(f"Python Received load {current_load}.")
         return 1 if current_load > 0.5 else 0
