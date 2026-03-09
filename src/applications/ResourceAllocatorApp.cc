@@ -17,6 +17,7 @@
 #include "MyTaskChunk_m.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
+#include <pybind11/stl.h>
 namespace py = pybind11;
 static py::object agent;
 static py::scoped_interpreter guard{}; // Start the interpreter
@@ -176,11 +177,11 @@ int ResourceAllocatorApp::PPOAllocation(Task *task)
         double logProbability = result[1].cast<double>();
 
         int allocatedCPUCycles = action * maxCPUCapacity; // TODO: Will need to round to the nearest int.
-        EV << "The RL Agent has decided to allocate " << action << " cycles." << endl;
+        EV << "The RL Agent has decided to allocate " << action << " cycles as a ratio or "<< allocatedCPUCycles << " cycles." << endl;
 
         task->state = state;
-        task->logProbability = -1;
-        return action;
+        task->logProbability = logProbability;
+        return allocatedCPUCycles;
     } catch (py::error_already_set &e){
         throw cRuntimeError("Python Error: %s", e.what());
     }

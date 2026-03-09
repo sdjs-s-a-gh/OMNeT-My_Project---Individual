@@ -53,6 +53,9 @@ class RLResourceAllocator():
         # Sample an action from the distribution.
         action = distribution.sample()
         
+        # Constrain the action so that it is not invalid.
+        
+        
         # Calculate the log probability for that action.
         log_probability = distribution.log_prob(action).sum()
         
