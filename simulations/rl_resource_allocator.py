@@ -18,6 +18,7 @@ class RLResourceAllocator():
         # Set Hyperparameters
         self.gamma = gamma
         self.clip_parameter = clip_parameter
+        torch.manual_seed(1)
         
         self.times_batched = 0
         self.times_updated = 0
@@ -86,10 +87,11 @@ class RLResourceAllocator():
         
         # Compute Rewards to go? Don't know if this is correct
         rewards_to_go = torch.tensor(self.compute_rewards_to_go(self.batch_rewards), dtype=torch.float32)
+        #rewards_to_go = (rewards_to_go - rewards_to_go.mean()) / (rewards_to_go.std() + 1e-8)
         
         # Calculate advantages.
         value = self.value_network(batch_states)
-        advantages = rewards_to_go - value
+        advantages = rewards_to_go - value.detach()
         
         # Normalising the advantages
         advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-10)
@@ -119,6 +121,14 @@ class RLResourceAllocator():
         self.value_optimiser.zero_grad()
         value_loss.backward()
         self.value_optimiser.step()
+        
+        print("Average reward:", sum(self.batch_rewards)/len(self.batch_rewards))
+        print("Reward min/max:", min(self.batch_rewards), max(self.batch_rewards))
+        print("Average reward:", sum(self.batch_rewards)/len(self.batch_rewards))
+        print("Reward min/max:", min(self.batch_rewards), max(self.batch_rewards))
+        print("Policy loss:", policy_loss.item())
+        print("Value loss:", value_loss.item())
+        print("---- PPO Update Complete ----")
         
         # Clear the batch
         self.clear_batch()

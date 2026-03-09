@@ -318,7 +318,7 @@ double ResourceAllocatorApp::calculateReward(double latency)
     //TODO: normalise the rewards
 
     // utilisation is fine as it is already between 0 and 1
-    double normalisedLatency = latency / 1000; // 500 is just a random worst case; I've completely made it up.
+    double normalisedLatency = latency / 5000; // 500 is just a random worst case; I've completely made it up.
     // energy consumption = energy / max energy?
 
 //    latencyWeight = 0.4;
