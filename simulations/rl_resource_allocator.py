@@ -19,6 +19,8 @@ class RLResourceAllocator():
         self.gamma = gamma
         self.clip_parameter = clip_parameter
         
+        self.times_batched = 0
+        self.times_updated = 0
         self.batch_states = []
         self.batch_actions = []
         self.batch_log_probabilities = []
@@ -34,9 +36,9 @@ class RLResourceAllocator():
                 state: The state of the current simulation environment, including:
                     1. Required CPU cycles to process the input task.
                     2. Communication latency of that task.
-                    3. Queue length.
-                    4. Total combined CPU cycles from the queue.
-                    5. Resource (CPU) Utilisation.
+                    3. Resource (CPU) Utilisation.
+                    4. Queue length.
+                    5. Total combined CPU cycles from the queue.                    
                 
             Return:
                 action: The CPU allocation for the input task.
@@ -46,21 +48,32 @@ class RLResourceAllocator():
         # Convert the state to a tensor.
         state_tensor = torch.tensor(state, dtype=torch.float32)
         
-        # Query the Policy/Actor network for a mean.
+        # Query the Policy/Actor network for a mean action to take.
         mean, std = self.policy_network(state_tensor)
         distribution = Normal(mean, std)
         
         # Sample an action from the distribution.
-        action = distribution.sample()
+        raw_action = distribution.sample()
         
-        # Constrain the action so that it is not invalid.
+        # Restrict the action to being between -1 and +1.   
+        action = torch.tanh(raw_action)
         
+        #print(f"Action before contraint: {action}")
+        
+        # Constrain the action so that it is not invalid (> 0 and <=1.
+        action = (action + 1) / 2   
+        #print(f"Action after contraint: {action}")   
+        
+        assert action > 0 and action <= 1 
         
         # Calculate the log probability for that action.
-        log_probability = distribution.log_prob(action).sum()
+        log_probability = distribution.log_prob(raw_action).sum()
         
-        if len(self.batch_states) >= 1024:
+        #print(f"Times Batched: {self.times_batched}")
+        if len(self.batch_states) >= 512: # Was 1024            
             self.update()
+            self.times_updated += 1
+            print(f"Times Updated: {self.times_updated}")
         
         return action.item(), log_probability.item()
         
@@ -117,11 +130,13 @@ class RLResourceAllocator():
         for reward in reversed(batch_rewards):          
             discounted_reward = reward + discounted_reward * self.gamma
             batch_rewards_to_go.insert(0, discounted_reward)
-                
+        
+        print(f"Rewards-to-go: {batch_rewards_to_go}")
         return batch_rewards_to_go
         
     def add_to_batch(self, state, action, log_probability, reward):
         """Called from OMNeT. Stores the transition/experience from the last action."""
+        self.times_batched += 1
         self.batch_states.append(state)
         self.batch_actions.append(action)
         self.batch_log_probabilities.append(log_probability)

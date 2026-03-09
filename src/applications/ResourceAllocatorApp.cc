@@ -49,7 +49,7 @@ void ResourceAllocatorApp::initialize(int stage)
             // Import the Python File
 
             py::module_ sys = py::module_::import("sys");
-            // 1. Force the interpreter to look at your VENV's libraries
+            // TODO: Remove these comments : 1. Force the interpreter to look at your VENV's libraries
             sys.attr("path").attr("append")("/home/opp_env/.venv/lib/python3.12/site-packages");
 
             // 2. Also keep the current directory for your local script
@@ -152,17 +152,18 @@ int ResourceAllocatorApp::PPOAllocation(Task *task)
 {
     // Get State
     // requiredCycles
-    int requiredCycles = task->requiredCPUCycles;
-    double communicationLatency = (task->communicationDelay.dbl() * 1000); // Convert to milliseconds
-    int queueLength = queue.getLength();
+    // Normalised the state to improve learning stability
+    int requiredCycles = task->requiredCPUCycles / 500; // 500 = Max CPU cycles set in ini.
+    double communicationLatency = (task->communicationDelay.dbl() * 1000) / 50; // Convert to milliseconds
+    int queueLength = queue.getLength() / 100;
     double resourceUtilisation = getResourceUtilisation();
-    // int communicationLatency =;
-    int totalQueueCycles = getTotalCyclesInQueue();
+    int totalQueueCycles = getTotalCyclesInQueue() / 5000; // 5000 = Max CPU cycles set in ini * Max Queue Length
 
     try {
         // int action = agent.attr("allocate_resources")(maxCPUCapacity, requiredCycles, resourceUtilisation).cast<double>();
         //double action = agent.attr("allocate_resources")(requiredCycles, communicationLatency, resourceUtilisation, queueLength, totalQueueCycles).cast<double>();
         EV << "The code has reached the Resource Allocator binding." << endl;
+
         std::vector<double>state = {
                 (double)requiredCycles,
                 communicationLatency,
@@ -315,7 +316,7 @@ double ResourceAllocatorApp::calculateReward(double latency)
     //TODO: normalise the rewards
 
     // utilisation is fine as it is already between 0 and 1
-    double normalisedLatency = latency / 500; // 500 is just a random worst case; I've completely made it up.
+    double normalisedLatency = latency / 250; // 500 is just a random worst case; I've completely made it up.
     // energy consumption = energy / max energy?
 
 //    latencyWeight = 0.4;
@@ -384,6 +385,13 @@ void ResourceAllocatorApp::socketDataArrived(UdpSocket *socket, Packet *packet)
     auto deadlineLatency = taskRequirements->getDeadlineLatency();
 
     EV << "That was Packet " << packetsReceived << ". Required CPU Cycles: " << cpuCycles << "; Deadline Latency: " << deadlineLatency << endl;
+
+    // TODO:
+    // If the queue is over 100 tasks long, delete/drop the incoming task.
+    if (queue.getLength() >= 100) {
+        EV << "Queue is too big. Dropped Task." << endl;
+        return;
+    }
 
     // Retrieve the task requirements from the Packet's payload.
     auto taskChunk = packet->peekAtFront<MyTaskChunk>();

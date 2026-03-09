@@ -42,7 +42,7 @@ class PolicyNetwork(nn.Module):
         """
         # Tanh can be substituted for ReLu.
         activation1 = torch.tanh(self.layer1(state))
-        activation2 = torch.tanh(self.layer2(activation1))        
+        activation2 = torch.tanh(self.layer2(activation1))     
         mean = self.layer3(activation2)
         
         std = torch.exp(self.log_std) # Exponentiate out the log_std, ensuring that the std is > 0 to not cause any errors.
@@ -54,12 +54,12 @@ class PolicyNetwork(nn.Module):
             Estimates the values of the each state and their corresponding log 
             probabilities.
         """
-        mean, std = self.forward(state)
+        mean, std = self.forward(states)
         distribution = Normal(mean, std)
         
         # Calculate the log probability for that action.
-        log_probability = dist.log_prob(actions).sum(-1)
-        entropy = dist.entropy().sum()
+        log_probability = distribution.log_prob(actions).sum(-1)
+        entropy = distribution.entropy().sum()
         
         return log_probability, entropy
         
