@@ -54,7 +54,7 @@ struct Task : public cObject
     // Resource Allocation Specific
     std::vector<double> state; // The state space used to inform the CPU frequency that was to be allocated to the task.
     double logProbability; // The log probability given to the task for the action taken (CPU frequency allocated).
-
+    double rawAction; // The raw action PPO produced prior to constraints.
 };
 
 
