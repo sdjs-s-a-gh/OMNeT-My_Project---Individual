@@ -95,7 +95,7 @@ class RLResourceAllocator():
         advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-10)
         advantages = advantages.detach()
         
-        for epoch in range(10): # was 6
+        for epoch in range(4): # was 4
             # Calculate the new log probabilities. TODO: Should the value not also be in here as well in addition to being outside?
             current_log_probabilities, entropy = self.policy_network.evaluate(batch_states, batch_actions)
             
