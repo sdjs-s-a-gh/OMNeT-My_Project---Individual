@@ -153,11 +153,14 @@ int ResourceAllocatorApp::PPOAllocation(Task *task)
     // Get State
     // requiredCycles
     // Normalised the state to improve learning stability
-    int requiredCycles = task->requiredCPUCycles / 500; // 500 = Max CPU cycles set in ini.
+    int requiredCycles = task->requiredCPUCycles / 500.0; // 500 = Max CPU cycles set in ini.
     double communicationLatency = (task->communicationDelay.dbl() * 1000) / 50; // Convert to milliseconds
     int queueLength = queue.getLength() / 100;
     double resourceUtilisation = getResourceUtilisation();
     int totalQueueCycles = getTotalCyclesInQueue() / 5000; // 5000 = Max CPU cycles set in ini * Max Queue Length
+
+    EV << "State: " << requiredCycles << ", " << communicationLatency << ", "
+       << resourceUtilisation << ", " << queueLength << ", " << totalQueueCycles << endl;
 
     try {
         // int action = agent.attr("allocate_resources")(maxCPUCapacity, requiredCycles, resourceUtilisation).cast<double>();
@@ -179,6 +182,10 @@ int ResourceAllocatorApp::PPOAllocation(Task *task)
         double logProbability = result[2].cast<double>();
 
         int allocatedCPUCycles = action * maxCPUCapacity; // TODO: Will need to round to the nearest int.
+        // Constrain between the required cycles (minimum useful) and max capacity
+        allocatedCPUCycles = std::max((int)task->requiredCPUCycles,
+                             std::min(allocatedCPUCycles, (int)maxCPUCapacity));
+
         EV << "The RL Agent has decided to allocate " << action << " cycles as a ratio or "<< allocatedCPUCycles << " cycles." << endl;
 
         task->state = state;
@@ -318,7 +325,7 @@ double ResourceAllocatorApp::calculateReward(double latency)
     //TODO: normalise the rewards
 
     // utilisation is fine as it is already between 0 and 1
-    double normalisedLatency = latency / 5000; // 500 is just a random worst case; I've completely made it up.
+    //double normalisedLatency = latency / 5000; // 500 is just a random worst case; I've completely made it up.
     // energy consumption = energy / max energy?
 
 //    latencyWeight = 0.4;
@@ -332,9 +339,12 @@ double ResourceAllocatorApp::calculateReward(double latency)
 //          );
 
     // just do latency at the minute
-    double reward = -normalisedLatency;
-
-    return reward;
+    double baseline = 7279.0; // static allocator average
+    double reward = (baseline - latency) / baseline;
+    return std::max(-1.0, std::min(1.0, reward)); // clip to [-1, 1]
+//    double reward = -normalisedLatency;
+//
+//    return reward;
 
 }
 

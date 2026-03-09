@@ -7,7 +7,7 @@ from rl_PolicyNetwork import PolicyNetwork
 from rl_ValueNetwork import ValueNetwork
 
 class RLResourceAllocator():
-    def __init__(self, state_space_dimensions, action_space_dimensions, learning_rate=3e-4, gamma=0.99, clip_parameter=0.2):
+    def __init__(self, state_space_dimensions, action_space_dimensions, learning_rate=0.005, gamma=0.95, clip_parameter=0.2):
         # Instantiate the Actor (Policy) and Critic (Value) Neural Networks.        
         self.policy_network = PolicyNetwork(state_space_dimensions, action_space_dimensions)
         self.value_network = ValueNetwork(state_space_dimensions)
@@ -61,11 +61,12 @@ class RLResourceAllocator():
         
         #print(f"Action before contraint: {action}")
         
-        # Constrain the action so that it is not invalid (> 0 and <=1.
+        # Constrain the action so that it is not invalid (> 0 and <=1).
         action = (action + 1) / 2   
         #print(f"Action after contraint: {action}")   
         
-        assert action > 0 and action <= 1 
+        #assert action > 0 and action <= 1 
+        action = torch.clamp(action, 1e-6, 1.0)  # replaces your assert and the == 0 check
         
         # Calculate the log probability for that action.
         log_probability = distribution.log_prob(raw_action).sum()
@@ -81,14 +82,15 @@ class RLResourceAllocator():
     def update(self):
         # Get information from the batched experiences.
         batch_states = torch.tensor(self.batch_states, dtype=torch.float32)
-        batch_actions = torch.tensor(self.batch_actions)
+        batch_actions = torch.tensor(self.batch_actions, dtype=torch.float32)
         old_log_probabilities = torch.tensor(self.batch_log_probabilities, dtype=torch.float32)
         #batch_rewards = torch.tensor(self.batch_rewards, dtype=torch.float32)
         
         # Compute Rewards to go? Don't know if this is correct.
         rewards_to_go = torch.tensor(self.compute_rewards_to_go(self.batch_rewards), dtype=torch.float32)
+        
         # Normalise Rewards to go
-        rewards_to_go = (rewards_to_go - rewards_to_go.mean()) / (rewards_to_go.std() + 1e-8)
+        #rewards_to_go = (rewards_to_go - rewards_to_go.mean()) / (rewards_to_go.std() + 1e-8)
         
         # Calculate advantages.
         value = self.value_network(batch_states)
@@ -111,22 +113,24 @@ class RLResourceAllocator():
             
             # Counteract Adam minimising the function.
             policy_loss = -torch.min(surr1, surr2).mean() - 0.01 * entropy.mean()
-            
+                
             self.policy_optimiser.zero_grad()
             policy_loss.backward()
+            torch.nn.utils.clip_grad_norm_(self.policy_network.parameters(), 0.5)
             self.policy_optimiser.step()
-            
+                
         values = self.value_network(batch_states).squeeze()
+        torch.nn.utils.clip_grad_norm_(self.value_network.parameters(), 0.5)
         value_loss = nn.MSELoss()(values, rewards_to_go)
-        
+            
         self.value_optimiser.zero_grad()
         value_loss.backward()
         self.value_optimiser.step()
         
         print("Average reward:", sum(self.batch_rewards)/len(self.batch_rewards))
         print("Reward min/max:", min(self.batch_rewards), max(self.batch_rewards))
-        print("Average reward:", sum(self.batch_rewards)/len(self.batch_rewards))
-        print("Reward min/max:", min(self.batch_rewards), max(self.batch_rewards))
+        print("Advantage mean:", advantages.mean().item())
+        print("Advantage std:", advantages.std().item())
         print("Policy loss:", policy_loss.item())
         print("Value loss:", value_loss.item())
         print("---- PPO Update Complete ----")
