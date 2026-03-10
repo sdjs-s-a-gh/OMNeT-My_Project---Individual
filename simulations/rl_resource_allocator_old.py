@@ -56,28 +56,20 @@ class RLResourceAllocator():
         # Sample an action from the distribution.
         raw_action = distribution.sample()
         
-        # Convert the action to a scale of [-1,1] to use later.
+        # Restrict the action to being between -1 and +1.   
         action = torch.tanh(raw_action)
         
-        # Calculate the raw log probablity.
-        raw_log_probability = distribution.log_prob(raw_action).sum()
-
-        # Apply a correction for the log probability using the 'Jacobian Correction'.
-        correction = torch.log(1 - action.pow(2) + 1e-6)
+        #print(f"Action before contraint: {action}")
         
-        # Calculate the proper log probability
-        log_probability = (raw_log_probability - correction).sum(dim=-1, keepdim=True)
-        
-        # Scale the action from [-1, 1] to [0,1]
-        scaled_action = (action + 1) / 2
+        # Constrain the action so that it is not invalid (> 0 and <=1).
+        action = (action + 1) / 2   
+        #print(f"Action after contraint: {action}")   
         
         #assert action > 0 and action <= 1 
-        #action = torch.clamp(action, 1e-6, 1.0)  # replaces your assert and the == 0 check
+        action = torch.clamp(action, 1e-6, 1.0)  # replaces your assert and the == 0 check
         
-        #print(f"Action: {scaled_action}")
         # Calculate the log probability for that action.
-        #log_probability = distribution.log_prob(action).sum()
-
+        log_probability = distribution.log_prob(raw_action).sum()
         
         #print(f"Times Batched: {self.times_batched}")
         if len(self.batch_states) >= 512: # Was 1024            
@@ -85,7 +77,7 @@ class RLResourceAllocator():
             self.times_updated += 1
             print(f"Times Updated: {self.times_updated}")
         
-        return scaled_action.item(), log_probability.item()
+        return raw_action.item(), action.item(), log_probability.item()
         
     def update(self):
         # Get information from the batched experiences.
@@ -105,23 +97,19 @@ class RLResourceAllocator():
         advantages = rewards_to_go - value.detach()
         
         # Normalising the advantages
-        #advantages = (advantages - advantages.mean()) / advantages.std()
         advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-10)
         advantages = advantages.detach()
         
         for epoch in range(4): # was 4
             # Calculate the new log probabilities. TODO: Should the value not also be in here as well in addition to being outside?
-            current_log_probabilities, raw_entropy = self.policy_network.evaluate(batch_states, batch_actions)
-            
-            # Alter the entropy to account for squashing the action.
-            entropy = raw_entropy - torch.log(torch.tensor(2.0))
+            current_log_probabilities, entropy = self.policy_network.evaluate(batch_states, batch_actions)
             
             # Calculate the ratio.
-            policy_ratio = torch.exp(current_log_probabilities - old_log_probabilities)
+            ratio = torch.exp(current_log_probabilities - old_log_probabilities)
             
             # Calculate the surrogate losses.
-            surr1 = policy_ratio * advantages
-            surr2 = torch.clamp(policy_ratio, 1 - self.clip_parameter, 1 + self.clip_parameter) * advantages
+            surr1 = ratio * advantages
+            surr2 = torch.clamp(ratio, 1 - self.clip_parameter, 1 + self.clip_parameter) * advantages
             
             # Counteract Adam minimising the function.
             policy_loss = -torch.min(surr1, surr2).mean() - 0.01 * entropy.mean()
@@ -174,4 +162,46 @@ class RLResourceAllocator():
         self.batch_actions = []
         self.batch_log_probabilities = []
         self.batch_rewards = []
+    
+    def decide_allocation(self, current_load):
+        print(f"Python Received load {current_load}.")
+        return 1 if current_load > 0.5 else 0
+    
+    def allocate_resources_static(self, required_cpu_cycles):
+        """
+        A dummy function used just to ensure that this script can be accessed from the Simulator.
+        """
+        return required_cpu_cycles
+    
+    def allocate_resources_ppo_dummy(self, max_cpu_capacity, required_cpu_cycles, resource_utilisation):
+        """
+        Input:
+            # CPU Cycles Required
+            # Maybe deadline latency
+            
+        State: 
+            # Network Conditions (connection quality expressed as SINR (Alex); Path loss (Chen); Packet loss, communication latency, bandwidth (Mahimalmur))
+            # Queue Length (Liu, Mahimalmur)
+            # Waiting time for pending tasks (Mahimalmur)
+            # Resource Utilisation (Mahimalur) or Availability (Liu)
+            # Current Latency of the system (which would just be the average of each task combined)
+            # Current Energy Consumption of the system (which would just be the average of each task combined) (Alex, Mahimalmur)            
+        
+        Action/Output:
+            # Allocate x number of CPU cycles to the task.
+        """
+        print(f"Max CPU Capacity: {max_cpu_capacity}; Required CPU Cycles: {required_cpu_cycles}; Resource Utilisation: {resource_utilisation}")
+        if resource_utilisation < 0.5:
+            return int(max_cpu_capacity/2)
+        else:
+            return required_cpu_cycles
+        
+    def allocate_resources(self, required_cpu_cycles, communication_latency, resource_utilisation, queue_length, total_cpu_cycles_in_queue):
+        """
+        args: 
+        * communication_latency: Measured in milliseconds, the time delay between the task leaving the sending device and arriving on the edge server.
+        """
+        print(f"Required CPU Cycles: {required_cpu_cycles}; Communication Latency: {communication_latency}; Resource Utilisation: {resource_utilisation}; Queue Length: {queue_length}; CPU Cycles in Queue: {total_cpu_cycles_in_queue}")
+        return required_cpu_cycles
+        
         

@@ -153,11 +153,11 @@ int ResourceAllocatorApp::PPOAllocation(Task *task)
     // Get State
     // requiredCycles
     // Normalised the state to improve learning stability
-    int requiredCycles = task->requiredCPUCycles / 500.0; // 500 = Max CPU cycles set in ini.
+    double requiredCycles = task->requiredCPUCycles / 500.0; // 500 = Max CPU cycles set in ini.
     double communicationLatency = (task->communicationDelay.dbl() * 1000) / 50; // Convert to milliseconds
-    int queueLength = queue.getLength() / 100;
+    double queueLength = queue.getLength() / 100.0;
     double resourceUtilisation = getResourceUtilisation();
-    int totalQueueCycles = getTotalCyclesInQueue() / 5000; // 5000 = Max CPU cycles set in ini * Max Queue Length
+    double totalQueueCycles = getTotalCyclesInQueue() / 5000; // 5000 = Max CPU cycles set in ini * Max Queue Length
 
     EV << "State: " << requiredCycles << ", " << communicationLatency << ", "
        << resourceUtilisation << ", " << queueLength << ", " << totalQueueCycles << endl;
@@ -168,29 +168,30 @@ int ResourceAllocatorApp::PPOAllocation(Task *task)
         EV << "The code has reached the Resource Allocator binding." << endl;
 
         std::vector<double>state = {
-                (double)requiredCycles,
+                requiredCycles,
                 communicationLatency,
                 resourceUtilisation,
-                (double)queueLength,
-                (double)totalQueueCycles
+                queueLength,
+                totalQueueCycles
         };
 
         py::tuple result = agent.attr("select_action")(state);
         EV << "The code has surpassed the Resource Allocator binding." << endl;
-        double rawAction = result[0].cast<double>();
-        double action = result[1].cast<double>();
-        double logProbability = result[2].cast<double>();
+        //double rawAction = result[0].cast<double>();
+        double action = result[0].cast<double>();
+        double logProbability = result[1].cast<double>();
 
         int allocatedCPUCycles = action * maxCPUCapacity; // TODO: Will need to round to the nearest int.
+
         // Constrain between the required cycles (minimum useful) and max capacity
-        allocatedCPUCycles = std::max((int)task->requiredCPUCycles,
-                             std::min(allocatedCPUCycles, (int)maxCPUCapacity));
+//        allocatedCPUCycles = std::max((int)task->requiredCPUCycles,
+//                             std::min(allocatedCPUCycles, (int)maxCPUCapacity));
 
         EV << "The RL Agent has decided to allocate " << action << " cycles as a ratio or "<< allocatedCPUCycles << " cycles." << endl;
 
         task->state = state;
         task->logProbability = logProbability;
-        task->rawAction = rawAction;
+        task->rawAction = action;
         return allocatedCPUCycles;
     } catch (py::error_already_set &e){
         throw cRuntimeError("Python Error: %s", e.what());
@@ -339,9 +340,11 @@ double ResourceAllocatorApp::calculateReward(double latency)
 //          );
 
     // just do latency at the minute
-    double baseline = 7279.0; // static allocator average
+    double baseline = 1000.0; // static allocator average
     double reward = (baseline - latency) / baseline;
-    return std::max(-1.0, std::min(1.0, reward)); // clip to [-1, 1]
+
+    return reward;
+    //return std::max(-1.0, std::min(1.0, reward)); // clip to [-1, 1]
 //    double reward = -normalisedLatency;
 //
 //    return reward;

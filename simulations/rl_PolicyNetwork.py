@@ -27,7 +27,7 @@ class PolicyNetwork(nn.Module):
         self.layer2 = nn.Linear(64, 64)
         self.layer3 = nn.Linear(64, action_space_dimensions)       
 
-        self.log_std = nn.Parameter(torch.zeros(action_space_dimensions)) # is the equivalent of a covariance matrix.
+        self.log_std = nn.Parameter(torch.zeros(action_space_dimensions)) # is the equivalent of a covariance matrix, but more time efficient as it doesn't produce a matrix (On^2 vs On).
         
     def forward(self, state):
         """
