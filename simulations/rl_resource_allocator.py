@@ -65,11 +65,17 @@ class RLResourceAllocator():
         # Apply a correction for the log probability using the 'Jacobian Correction'.
         correction = torch.log(1 - action.pow(2) + 1e-6)
         
+        # Correction B: for the linear scaling from width 2 to width 1
+        # Because we compress the range, log_prob increases by log(2)
+        scale_correction = torch.log(torch.tensor(0.5)) # which is -log(2)
+        
         # Calculate the proper log probability
-        log_probability = (raw_log_probability - correction).sum(dim=-1, keepdim=True)
+        log_probability = (raw_log_probability - correction - scale_correction).sum(dim=-1, keepdim=True)
         
         # Scale the action from [-1, 1] to [0,1]
         scaled_action = (action + 1) / 2
+        
+
         
         #assert action > 0 and action <= 1 
         #action = torch.clamp(action, 1e-6, 1.0)  # replaces your assert and the == 0 check
