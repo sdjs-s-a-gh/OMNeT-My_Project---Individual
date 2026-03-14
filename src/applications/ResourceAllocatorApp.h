@@ -100,6 +100,9 @@ class ResourceAllocatorApp : public ApplicationBase, UdpSocket::ICallback
 
     double calculateReward(double latency);
 
+    //void episodeDone();
+
+    virtual void finish() override;
     virtual void initialize(int stage) override;
     virtual void handleMessageWhenUp(cMessage *msg) override;
 

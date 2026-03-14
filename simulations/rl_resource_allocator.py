@@ -2,12 +2,13 @@ import torch
 import torch.optim as optim
 from torch.distributions import Normal
 import torch.nn as nn
+from pathlib import Path
 
 from rl_PolicyNetwork import PolicyNetwork
 from rl_ValueNetwork import ValueNetwork
 
 class RLResourceAllocator:
-    def __init__(self, state_space_dimensions, action_space_dimensions, batch_size=512) -> None:
+    def __init__(self, state_space_dimensions, action_space_dimensions) -> None:
         self.state_space_dimensions = state_space_dimensions
         self.action_space_dimensions = action_space_dimensions
         
@@ -16,7 +17,7 @@ class RLResourceAllocator:
         self.value_network = ValueNetwork(self.state_space_dimensions)
         
         # Default Hyperparameter Values
-        self.batch_size = batch_size           # Number of timesteps per episode.
+        self.batch_size = 512           # Number of timesteps per episode.
         self.updates_per_episode = 5    # Number of times to update the policy/actor and value/critic networks per episode.
         self.learning_rate = 0.005      # Learning Rate of the policy and value optimisers.
         self.gamma = 0.95               # Discount factor to be used for cal
@@ -35,7 +36,13 @@ class RLResourceAllocator:
         self.batch_states = []
         self.batch_log_probabilities = []
         self.batch_rewards = []
-        self.all_episode_rewards = []
+        
+        # Try to load the Existing Policy and Value networks for future episodes.
+        if Path("./ppo_policy.pth").is_file():
+            self.policy_network.load_state_dict(torch.load("ppo_policy.pth"))
+            self.value_network.load_state_dict(torch.load("ppo_value.pth"))
+            print("loaded .pth files")
+        
         
     def get_action(self, state):
         """
@@ -92,25 +99,12 @@ class RLResourceAllocator:
         self.batch_states.append(new_state)
         self.batch_rewards.append(reward)
 
-        # PPO Algorithm Step 2: Learn for some number of iterations. In this case,
-        # an interation's length = to the batch size, which itself is equal to the episode length.
-        if len(self.batch_actions) % self.batch_size == 0:
-            # Add the latest batch/episode rewards to the overall episodes.
-            self.all_episode_rewards.append(self.batch_rewards)
-            
-            # Update both the policy and value networks.
-            self.learn()
-
-            # Once the episode has ended, clear the batch to prepare for the new one.
-            self.clear()
-    
-    
     def learn(self):
         # PPO Algorithm Step 3: Collect trajectories/experiences from the most recent iteration/episode
         # and convert them into separate tensors.
         batch_actions = torch.tensor(self.batch_actions, dtype=torch.float)
         batch_states = torch.tensor(self.batch_states, dtype=torch.float)
-        batch_log_probablities = torch.tensor(self.log_probabilities, dtype=torch.float)
+        batch_log_probablities = torch.tensor(self.batch_log_probabilities, dtype=torch.float)
         batch_rewards = torch.tensor(self.batch_rewards, dtype=torch.float)
         
         # PPO Algorithm Step 4: Calculate Rewards to Go
@@ -149,11 +143,15 @@ class RLResourceAllocator:
             
             self.value_optimiser.zero_grad()
             value_loss.backward()
-            self.value_optimiser.step()          
+            self.value_optimiser.step()
+            
+            print("one update has happended.")    
             
     def compute_rewards_to_go(self, batch_rewards):
         batch_rewards_to_go = []
-            
+        
+        discounted_reward = 0
+        
         for reward in reversed(batch_rewards):
             discounted_reward = reward + discounted_reward * self.gamma
                 
@@ -169,4 +167,23 @@ class RLResourceAllocator:
         self.batch_log_probabilities = []
         self.batch_states = []
         self.batch_rewards = []
+        
+
+    def update_and_save(self):
+        """
+            A subroutine triggered whenever an episode ends.
+        """
+        # PPO Algorithm Step 2: Learn for some number of iterations. In this case,
+        # an interation's length = to the batch size, which itself is equal to the episode length.
+        
+            
+        # Update both the policy and value networks.
+        self.learn()            
+            
+        # Once the episode has ended, clear the batch to prepare for the new one.
+        self.clear()
+            
+        torch.save(self.policy_network.state_dict(), "./ppo_policy.pth")
+        torch.save(self.value_network.state_dict(), "./ppo_value.pth")
+        print("The files have been saved.")           
     

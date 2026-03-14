@@ -22,7 +22,6 @@ namespace py = pybind11;
 static py::object agent;
 static py::scoped_interpreter guard{}; // Start the interpreter
 static bool pythonAllocatorStarted = false;
-static int episodeLength = 512;
 
 //#include <pybind11/embed.h>
 // located at: home\opp_env\.venv\lib\python3.12 or /home/opp_env/.venv/lib/python3.12/site-packages
@@ -60,7 +59,7 @@ void ResourceAllocatorApp::initialize(int stage)
 
             int stateSpaceDimensions = 5;
             int actionSpaceDimensions = 1;
-            agent = rl_mod.attr("RLResourceAllocator")(stateSpaceDimensions, actionSpaceDimensions, episodeLength);
+            agent = rl_mod.attr("RLResourceAllocator")(stateSpaceDimensions, actionSpaceDimensions);
 
             py::print("Hello from Python inside OMNeT++!");
             pythonAllocatorStarted = true;
@@ -134,6 +133,7 @@ void ResourceAllocatorApp::allocateResources(Task *task)
     // int cpuCyclesToAllocate = task->requiredCPUCycles;
     task->allocatedCPUFrequency = cpuCyclesToAllocate;
     task->executionTime = getTimeToExecute(task->requiredCPUCycles, cpuCyclesToAllocate);
+
 }
 
 /**
@@ -181,6 +181,9 @@ int ResourceAllocatorApp::PPOAllocation(Task *task)
 
         int allocatedCPUCycles = action * maxCPUCapacity; // TODO: Will need to round to the nearest int.
 
+        if (allocatedCPUCycles <=0) {
+            allocatedCPUCycles = 1000;
+        }
         // Constrain between the required cycles (minimum useful) and max capacity
     //        allocatedCPUCycles = std::max((int)task->requiredCPUCycles,
     //                             std::min(allocatedCPUCycles, (int)maxCPUCapacity));
@@ -397,12 +400,6 @@ void ResourceAllocatorApp::socketDataArrived(UdpSocket *socket, Packet *packet)
 {
     packetsReceived++;
 
-    if (packetsReceived + 1 % episodeLength == 0) {
-        // End the episode, clearing the queue and resetting everything
-        endEpisode();
-    }
-
-
     EV << "========"<< endl << "socketDataArrived" << endl;
     EV << "Packet received: " << packet->getName() << ", size: " << packet->getByteLength() << " bytes" << endl;
 
@@ -435,12 +432,6 @@ void ResourceAllocatorApp::socketDataArrived(UdpSocket *socket, Packet *packet)
     allocateResources(task);
     EV << "CPU Cycles Allocated: " << task->allocatedCPUFrequency << endl;
     queue.insert(task); // enqueue the task
-}
-
-void ResourceAllocatorApp::endEpisode()
-{
-    // Clear the queue
-    //
 }
 
 void ResourceAllocatorApp::refreshDisplay() const
@@ -480,4 +471,18 @@ void ResourceAllocatorApp::handleStopOperation(LifecycleOperation *operation)
 void ResourceAllocatorApp::handleCrashOperation(LifecycleOperation *operation)
 {
 
+}
+
+void ResourceAllocatorApp::finish()
+{
+    try {
+        // Tell the Resource Allocator to update as the episode has ended.
+        agent.attr("update_and_save")();
+        EV << "The agent should have saved by now." << endl;
+
+    } catch (py::error_already_set &e){
+        throw cRuntimeError("Python Error: %s", e.what());
+    }
+
+    EV << "The Simulation has finished" << endl;
 }
