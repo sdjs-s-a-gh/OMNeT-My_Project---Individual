@@ -150,53 +150,48 @@ int ResourceAllocatorApp::staticAllocation(int requiredCycles)
  */
 int ResourceAllocatorApp::PPOAllocation(Task *task)
 {
-    // Get State
-    // requiredCycles
-    // Normalised the state to improve learning stability
+    // Get State, which has been normalised to improve learning stability.
     double requiredCycles = task->requiredCPUCycles / 500.0; // 500 = Max CPU cycles set in ini.
     double communicationLatency = (task->communicationDelay.dbl() * 1000) / 50; // Convert to milliseconds
     double queueLength = queue.getLength() / 100.0;
     double resourceUtilisation = getResourceUtilisation();
     double totalQueueCycles = getTotalCyclesInQueue() / 5000; // 5000 = Max CPU cycles set in ini * Max Queue Length
 
+    std::vector<double>state = {
+            requiredCycles,
+            communicationLatency,
+            resourceUtilisation,
+            queueLength,
+            totalQueueCycles
+    };
+
     EV << "State: " << requiredCycles << ", " << communicationLatency << ", "
        << resourceUtilisation << ", " << queueLength << ", " << totalQueueCycles << endl;
 
     try {
-        // int action = agent.attr("allocate_resources")(maxCPUCapacity, requiredCycles, resourceUtilisation).cast<double>();
-        //double action = agent.attr("allocate_resources")(requiredCycles, communicationLatency, resourceUtilisation, queueLength, totalQueueCycles).cast<double>();
-        EV << "The code has reached the Resource Allocator binding." << endl;
+        py::tuple result = agent.attr("get_action")(state);
+    } catch (py::error_already_set &e){
+        throw cRuntimeError("Python Error: %s", e.what());
+    };
 
-        std::vector<double>state = {
-                requiredCycles,
-                communicationLatency,
-                resourceUtilisation,
-                queueLength,
-                totalQueueCycles
-        };
-
-        py::tuple result = agent.attr("select_action")(state);
-        EV << "The code has surpassed the Resource Allocator binding." << endl;
         //double rawAction = result[0].cast<double>();
-        double action = result[0].cast<double>();
-        double logProbability = result[1].cast<double>();
+    double action = result[0].cast<double>();
+    double logProbability = result[1].cast<double>();
 
-        int allocatedCPUCycles = action * maxCPUCapacity; // TODO: Will need to round to the nearest int.
+    int allocatedCPUCycles = action * maxCPUCapacity; // TODO: Will need to round to the nearest int.
 
-        // Constrain between the required cycles (minimum useful) and max capacity
+    // Constrain between the required cycles (minimum useful) and max capacity
 //        allocatedCPUCycles = std::max((int)task->requiredCPUCycles,
 //                             std::min(allocatedCPUCycles, (int)maxCPUCapacity));
 
-        EV << "The RL Agent has decided to allocate " << action << " cycles as a ratio or "<< allocatedCPUCycles << " cycles." << endl;
+    EV << "The RL Agent has decided to allocate " << action << " cycles as a ratio or "<< allocatedCPUCycles << " cycles." << endl;
 
-        task->state = state;
-        task->logProbability = logProbability;
-        task->rawAction = action;
-        return allocatedCPUCycles;
-    } catch (py::error_already_set &e){
-        throw cRuntimeError("Python Error: %s", e.what());
-    }
+    // Save most of the trajectory in the task for future reference for when the new state is received.
+    task->state = state;
+    task->logProbability = logProbability;
+    task->rawAction = action;
 
+    return allocatedCPUCycles;
 }
 
 /**
@@ -277,15 +272,17 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
     double energyConsumption = completedTask->allocatedCPUFrequency * (maxCPUCapacity * maxCPUCapacity);
     completedTask->energyConsumption = energyConsumption;
 
+    double reward = calculateReward(completedTask->latency.dbl() * 1000);
+    std::vector state = completedTask->state;
+    double action = completedTask->rawAction;
+    double logProbability = completedTask->logProbability;
+
     // Send the details of the task back to the allocator
     try {
         // TODO
         //reward = calculateReward(state, action, newState);
-        double reward = calculateReward(completedTask->latency.dbl() * 1000);
-        std::vector state = completedTask->state;
-        double action = completedTask->rawAction;
-        double logProbability = completedTask->logProbability;
-        agent.attr("add_to_batch")(state, action, logProbability, reward);
+
+        agent.attr("add_trajectory")(action, logProbability, state, reward);
 
     } catch (py::error_already_set &e){
         throw cRuntimeError("Python Error: %s", e.what());

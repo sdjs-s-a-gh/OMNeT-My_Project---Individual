@@ -163,5 +163,5 @@ class PPO:
         self.batch_actions = []
         self.log_probabilities = []
         self.states = []
-        self.all_episode_rewards = []
+        self.all_episode_rewards = [] # Only needed if there are multiple episodes per batch.
     
