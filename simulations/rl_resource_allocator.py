@@ -7,7 +7,7 @@ from rl_PolicyNetwork import PolicyNetwork
 from rl_ValueNetwork import ValueNetwork
 
 class RLResourceAllocator:
-    def __init__(self, state_space_dimensions, action_space_dimensions) -> None:
+    def __init__(self, state_space_dimensions, action_space_dimensions, batch_size=512) -> None:
         self.state_space_dimensions = state_space_dimensions
         self.action_space_dimensions = action_space_dimensions
         
@@ -16,7 +16,7 @@ class RLResourceAllocator:
         self.value_network = ValueNetwork(self.state_space_dimensions)
         
         # Default Hyperparameter Values
-        self.batch_size = 512           # Number of timesteps per episode.
+        self.batch_size = batch_size           # Number of timesteps per episode.
         self.updates_per_episode = 5    # Number of times to update the policy/actor and value/critic networks per episode.
         self.learning_rate = 0.005      # Learning Rate of the policy and value optimisers.
         self.gamma = 0.95               # Discount factor to be used for cal
@@ -61,11 +61,13 @@ class RLResourceAllocator:
         # Query the Policy/Actor network for a mean action and the standard deviation.
         mean, std = self.policy_network(state)
 
-        # Create a distribution with the mean action and the standard deviation.
+        # Create a Gaussian distribution with the mean action and the standard deviation.
         distribution = Normal(mean, std)
-
+        
         # Sample an action from the distribution.
         action = distribution.sample()
+        
+        # clamp the action to between 0, 1?
 
         # Calculate the log probability for that action to be successful.
         log_probability = distribution.log_prob(action)

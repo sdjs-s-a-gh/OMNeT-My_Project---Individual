@@ -22,6 +22,7 @@ namespace py = pybind11;
 static py::object agent;
 static py::scoped_interpreter guard{}; // Start the interpreter
 static bool pythonAllocatorStarted = false;
+static int episodeLength = 512;
 
 //#include <pybind11/embed.h>
 // located at: home\opp_env\.venv\lib\python3.12 or /home/opp_env/.venv/lib/python3.12/site-packages
@@ -59,7 +60,7 @@ void ResourceAllocatorApp::initialize(int stage)
 
             int stateSpaceDimensions = 5;
             int actionSpaceDimensions = 1;
-            agent = rl_mod.attr("RLResourceAllocator")(stateSpaceDimensions, actionSpaceDimensions);
+            agent = rl_mod.attr("RLResourceAllocator")(stateSpaceDimensions, actionSpaceDimensions, episodeLength);
 
             py::print("Hello from Python inside OMNeT++!");
             pythonAllocatorStarted = true;
@@ -396,6 +397,12 @@ void ResourceAllocatorApp::socketDataArrived(UdpSocket *socket, Packet *packet)
 {
     packetsReceived++;
 
+    if (packetsReceived + 1 % episodeLength == 0) {
+        // End the episode, clearing the queue and resetting everything
+        endEpisode();
+    }
+
+
     EV << "========"<< endl << "socketDataArrived" << endl;
     EV << "Packet received: " << packet->getName() << ", size: " << packet->getByteLength() << " bytes" << endl;
 
@@ -428,6 +435,12 @@ void ResourceAllocatorApp::socketDataArrived(UdpSocket *socket, Packet *packet)
     allocateResources(task);
     EV << "CPU Cycles Allocated: " << task->allocatedCPUFrequency << endl;
     queue.insert(task); // enqueue the task
+}
+
+void ResourceAllocatorApp::endEpisode()
+{
+    // Clear the queue
+    //
 }
 
 void ResourceAllocatorApp::refreshDisplay() const
