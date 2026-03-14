@@ -83,8 +83,9 @@ class PPO:
         self.batch_states.append(new_state)
         self.all_episode_rewards.append(reward)
 
-        # PPO Algorithm Step 2: Learn for some number of iterations/episodes. In this case,
-        # an episode's length = to the batch size.
+        # PPO Algorithm Step 2: Learn for some number of iterations. In this case,
+        # an interation's length = to the batch size, which itself is equal to the episode length. 
+        # was - which itself is double the episode length.
         if len(self.batch_actions) % self.batch_size == 0:
             # Add the latest batch/episode rewards to the overall episodes.
             self.all_episode_rewards.append(self.batch_rewards)
@@ -148,7 +149,7 @@ class PPO:
         for episode_rewards in reversed(self.all_episode_rewards):
             discounted_reward = 0
             
-            for reward in reversed(batch_rewards):
+            for reward in reversed(episode_rewards):
                 discounted_reward = reward + discounted_reward * self.gamma
                 
                 batch_rewards_to_go.insert(0, discounted_reward)
