@@ -6,7 +6,7 @@ class PolicyNetwork(nn.Module):
     """
         A Class representing a 64-in-64-out Feed Forward Neural Network that will act as the 'actor'
         of the PPO resource allocator. This network will decided which action should be taken in 
-        the environment, which in this case would be the CPU to allocate.
+        the environment, which in this case would be the amount of CPU (as a percentage) to allocate.
     """
     def __init__(self, state_space_dimensions, action_space_dimensions) -> None:
         """
@@ -17,9 +17,6 @@ class PolicyNetwork(nn.Module):
                     this function to avoid hard-coding any value.
                 action_space_dimensions: the dimensions of the state space from the environment, which
                     is to be used as the output dimension.
-                
-            Return:
-                None
         """
         super(PolicyNetwork, self).__init__()
         
@@ -36,11 +33,11 @@ class PolicyNetwork(nn.Module):
             Parameters:
                 state: The state to use as an input.
             
-            Return:
+            Returns:
                 mean: The predicted CPU allocation for the forthcoming task.
                 log_std: The spread of the Gaussian distribution.
         """
-        # Tanh can be substituted for ReLu.
+        # Tanh can be substituted for ReLu or Sigmoid.
         activation1 = torch.tanh(self.layer1(state))
         activation2 = torch.tanh(self.layer2(activation1))     
         mean = self.layer3(activation2)
@@ -51,8 +48,12 @@ class PolicyNetwork(nn.Module):
     
     def evaluate(self, states, actions):
         """
-            Estimates the values of the each state and their corresponding log 
+            Estimates the values of each state and their corresponding log 
             probabilities.
+
+            Return:
+                log_probability: The log probability for the set of actions.
+                entropy: //TODO
         """
         mean, std = self.forward(states)
         distribution = Normal(mean, std)
