@@ -168,30 +168,36 @@ int ResourceAllocatorApp::PPOAllocation(Task *task)
     EV << "State: " << requiredCycles << ", " << communicationLatency << ", "
        << resourceUtilisation << ", " << queueLength << ", " << totalQueueCycles << endl;
 
+
     try {
         py::tuple result = agent.attr("get_action")(state);
+
+
+        double action = result[0].cast<double>();
+        double logProbability = result[1].cast<double>();
+
+        EV << "Action: " << action << "; Log Prob: " << logProbability << endl;
+
+        int allocatedCPUCycles = action * maxCPUCapacity; // TODO: Will need to round to the nearest int.
+
+        // Constrain between the required cycles (minimum useful) and max capacity
+    //        allocatedCPUCycles = std::max((int)task->requiredCPUCycles,
+    //                             std::min(allocatedCPUCycles, (int)maxCPUCapacity));
+
+        EV << "The RL Agent has decided to allocate " << action << " cycles as a ratio or "<< allocatedCPUCycles << " cycles." << endl;
+
+        // Save most of the trajectory in the task for future reference for when the task has finished executing (the time-step has finished).
+        task->state = state;
+        task->logProbability = logProbability;
+        task->rawAction = action;
+
+        return allocatedCPUCycles;
+
     } catch (py::error_already_set &e){
         throw cRuntimeError("Python Error: %s", e.what());
     };
 
-        //double rawAction = result[0].cast<double>();
-    double action = result[0].cast<double>();
-    double logProbability = result[1].cast<double>();
 
-    int allocatedCPUCycles = action * maxCPUCapacity; // TODO: Will need to round to the nearest int.
-
-    // Constrain between the required cycles (minimum useful) and max capacity
-//        allocatedCPUCycles = std::max((int)task->requiredCPUCycles,
-//                             std::min(allocatedCPUCycles, (int)maxCPUCapacity));
-
-    EV << "The RL Agent has decided to allocate " << action << " cycles as a ratio or "<< allocatedCPUCycles << " cycles." << endl;
-
-    // Save most of the trajectory in the task for future reference for when the new state is received.
-    task->state = state;
-    task->logProbability = logProbability;
-    task->rawAction = action;
-
-    return allocatedCPUCycles;
 }
 
 /**
@@ -277,6 +283,7 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
     double action = completedTask->rawAction;
     double logProbability = completedTask->logProbability;
 
+    EV << "Reward: " << reward << "; State: "  << "; Action: " << action << "; Log Prob: " << logProbability << endl;
     // Send the details of the task back to the allocator
     try {
         // TODO

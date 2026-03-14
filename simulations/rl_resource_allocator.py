@@ -6,7 +6,7 @@ import torch.nn as nn
 from rl_PolicyNetwork import PolicyNetwork
 from rl_ValueNetwork import ValueNetwork
 
-class PPO:
+class RLResourceAllocator:
     def __init__(self, state_space_dimensions, action_space_dimensions) -> None:
         self.state_space_dimensions = state_space_dimensions
         self.action_space_dimensions = action_space_dimensions
@@ -44,6 +44,12 @@ class PPO:
 
             Parameters:
                 state: The current state of the simulation at the time a task is set to be allocated some CPU resources.
+                The state space includes:
+                    1. Required CPU cycles to process the input task.
+                    2. Communication latency of that task.
+                    3. Resource (CPU) Utilisation.
+                    4. Queue length.
+                    5. Total combined CPU cycles from the queue.     
 
             Returns:
                 action (float): The percentage of CPU to be used to compute the input task given as a ratio.
@@ -51,6 +57,7 @@ class PPO:
                 log_probability (float): The log probability of the action taken, which is just the confidence the network
                 has of it being successful / maximising the reward.
         """
+        state = torch.tensor(state, dtype=torch.float)
         # Query the Policy/Actor network for a mean action and the standard deviation.
         mean, std = self.policy_network(state)
 
@@ -81,11 +88,10 @@ class PPO:
         self.batch_actions.append(action)
         self.batch_log_probabilities.append(log_probability)
         self.batch_states.append(new_state)
-        self.all_episode_rewards.append(reward)
+        self.batch_rewards.append(reward)
 
         # PPO Algorithm Step 2: Learn for some number of iterations. In this case,
-        # an interation's length = to the batch size, which itself is equal to the episode length. 
-        # was - which itself is double the episode length.
+        # an interation's length = to the batch size, which itself is equal to the episode length.
         if len(self.batch_actions) % self.batch_size == 0:
             # Add the latest batch/episode rewards to the overall episodes.
             self.all_episode_rewards.append(self.batch_rewards)
@@ -98,12 +104,12 @@ class PPO:
     
     
     def learn(self):
-        # PPO Algorithm Step 3: Collect trajectories/experiences from the most recent episode
+        # PPO Algorithm Step 3: Collect trajectories/experiences from the most recent iteration/episode
         # and convert them into separate tensors.
-        batch_actions = torch.tensor(self.batch_actions, dtype=float)
-        batch_states = torch.tensor(self.batch_states, dtype=float)
-        batch_log_probablities = torch.tensor(self.log_probabilities, dtype=float)
-        batch_rewards = torch.tensor(self.batch_rewards, dtype=float)
+        batch_actions = torch.tensor(self.batch_actions, dtype=torch.float)
+        batch_states = torch.tensor(self.batch_states, dtype=torch.float)
+        batch_log_probablities = torch.tensor(self.log_probabilities, dtype=torch.float)
+        batch_rewards = torch.tensor(self.batch_rewards, dtype=torch.float)
         
         # PPO Algorithm Step 4: Calculate Rewards to Go
         batch_rewards_to_go = self.compute_rewards_to_go(batch_rewards)
@@ -145,23 +151,20 @@ class PPO:
             
     def compute_rewards_to_go(self, batch_rewards):
         batch_rewards_to_go = []
-        
-        for episode_rewards in reversed(self.all_episode_rewards):
-            discounted_reward = 0
             
-            for reward in reversed(episode_rewards):
-                discounted_reward = reward + discounted_reward * self.gamma
+        for reward in reversed(batch_rewards):
+            discounted_reward = reward + discounted_reward * self.gamma
                 
-                batch_rewards_to_go.insert(0, discounted_reward)
+            batch_rewards_to_go.insert(0, discounted_reward)
         
-        batch_rewards_to_go = torch.tensor(batch_rewards_to_go, dtype=float)
+        batch_rewards_to_go = torch.tensor(batch_rewards_to_go, dtype=torch.float)
         
         return batch_rewards_to_go
 
 
     def clear(self):
         self.batch_actions = []
-        self.log_probabilities = []
-        self.states = []
-        self.all_episode_rewards = [] # Only needed if there are multiple episodes per batch.
+        self.batch_log_probabilities = []
+        self.batch_states = []
+        self.batch_rewards = []
     
