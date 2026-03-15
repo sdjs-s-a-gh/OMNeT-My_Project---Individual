@@ -174,17 +174,16 @@ int ResourceAllocatorApp::PPOAllocation(Task *task)
         py::tuple result = agent.attr("get_action")(state);
 
 
-        double rawAction = result[0].cast<double>();
+        double action = result[0].cast<double>();
         double logProbability = result[1].cast<double>();
-        double action = result[2].cast<double>();
 
-        EV << "Action: " << action << "; Log Prob: " << logProbability << "; Raw Action: " << rawAction << endl;
+        EV << "Action: " << action << "; Log Prob: " << logProbability << endl;
 
         int allocatedCPUCycles = action * maxCPUCapacity; // TODO: Will need to round to the nearest int.
 
-//        if (allocatedCPUCycles <=0 or allocatedCPUCycles >= maxCPUCapacity) {
-//            allocatedCPUCycles = 1000;
-//        }
+        if (allocatedCPUCycles <=0 or allocatedCPUCycles >= maxCPUCapacity) {
+            allocatedCPUCycles = 1000;
+        }
         // Constrain between the required cycles (minimum useful) and max capacity
     //        allocatedCPUCycles = std::max((int)task->requiredCPUCycles,
     //                             std::min(allocatedCPUCycles, (int)maxCPUCapacity));
@@ -194,7 +193,7 @@ int ResourceAllocatorApp::PPOAllocation(Task *task)
         // Save most of the trajectory in the task for future reference for when the task has finished executing (the time-step has finished).
         task->state = state;
         task->logProbability = logProbability;
-        task->rawAction = rawAction;
+        task->rawAction = action;
 
         return allocatedCPUCycles;
 
