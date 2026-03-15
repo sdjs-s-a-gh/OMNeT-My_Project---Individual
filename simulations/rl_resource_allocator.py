@@ -127,7 +127,7 @@ class RLResourceAllocator:
         advantages = batch_rewards_to_go - value.detach()
 
         # Normalise Advantages for improved stability.
-        advantages = (advantages - advantages.mean() / (advantages.std() + 1e-10))
+        advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-10)
 
         for epoch in range(self.updates_per_episode):
             # Calculate the Value and Current Log probabilities for the current epoch.
