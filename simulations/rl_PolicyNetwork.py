@@ -60,7 +60,7 @@ class PolicyNetwork(nn.Module):
         
         # Calculate the log probability for that action.
         log_probability = distribution.log_prob(actions).sum(-1)
-        entropy = distribution.entropy().sum()
+        entropy = distribution.entropy()
         
         return log_probability, entropy
         

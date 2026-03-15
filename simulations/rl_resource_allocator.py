@@ -133,7 +133,7 @@ class RLResourceAllocator:
             
             # PPO Algorithm Step 6: Update the Policy.
             policy_loss = (-torch.min(surr1, surr2)).mean()
-            # policy_loss =- self.entropy_coefficient * entropy.mean()
+            policy_loss =- self.entropy_coefficient * entropy.mean()
             
             self.policy_optimiser.zero_grad()
             policy_loss.backward(retain_graph = True)
