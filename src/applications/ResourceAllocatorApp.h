@@ -70,6 +70,8 @@ class ResourceAllocatorApp : public ApplicationBase, UdpSocket::ICallback
     cQueue queue;
     int resourceAllocatorAlgorithm = 0;
 
+    int episodeLength; // The number of time-steps the episode will take to finish.
+
     // Parameter
     int localPort = -1;
 

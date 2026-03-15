@@ -38,7 +38,7 @@ class RLResourceAllocator:
         self.batch_rewards = []
         
         # Try to load the Existing Policy and Value networks for future episodes.
-        if Path("./ppo_policy.pth").is_file():
+        if Path("./ppo_policy.pth").is_file() and Path("./ppo_policy.pth").is_file():
             self.policy_network.load_state_dict(torch.load("ppo_policy.pth"))
             self.value_network.load_state_dict(torch.load("ppo_value.pth"))
             print("loaded .pth files")
@@ -145,7 +145,13 @@ class RLResourceAllocator:
             value_loss.backward()
             self.value_optimiser.step()
             
-            print("one update has happended.")    
+        print("Average reward:", sum(self.batch_rewards)/len(self.batch_rewards))
+        print("Reward min/max:", min(self.batch_rewards), max(self.batch_rewards))
+        print("Advantage mean:", advantages.mean().item())
+        print("Advantage std:", advantages.std().item())
+        print("Policy loss:", policy_loss.item())
+        print("Value loss:", value_loss.item())
+        print("---- PPO Update Complete ----")    
             
     def compute_rewards_to_go(self, batch_rewards):
         batch_rewards_to_go = []

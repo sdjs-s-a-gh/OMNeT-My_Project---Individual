@@ -41,7 +41,7 @@ void ResourceAllocatorApp::initialize(int stage)
     maxCPUCapacity = par("maxCPUCapacity");
     currentCapacity = maxCPUCapacity;
     resourceAllocatorAlgorithm = par("resourceAllocatorAlgorithm");
-    //resourceAllocator = par("resourceAllocator");
+    episodeLength = par("episodeLength");
 
 
     if (pythonAllocatorStarted == false) {
@@ -181,7 +181,7 @@ int ResourceAllocatorApp::PPOAllocation(Task *task)
 
         int allocatedCPUCycles = action * maxCPUCapacity; // TODO: Will need to round to the nearest int.
 
-        if (allocatedCPUCycles <=0) {
+        if (allocatedCPUCycles <=0 or allocatedCPUCycles >= maxCPUCapacity) {
             allocatedCPUCycles = 1000;
         }
         // Constrain between the required cycles (minimum useful) and max capacity
@@ -324,6 +324,11 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
     emit(tasksProcessedSignal, tasksProcessed);
     emit(parallelTasksSignal, tasksProcessing);
     //delete completedTask;
+
+    if (tasksProcessed >= episodeLength) {
+        // End the Simulation
+        endSimulation();
+    }
 }
 
 double ResourceAllocatorApp::calculateReward(double latency)
@@ -475,14 +480,20 @@ void ResourceAllocatorApp::handleCrashOperation(LifecycleOperation *operation)
 
 void ResourceAllocatorApp::finish()
 {
-    try {
-        // Tell the Resource Allocator to update as the episode has ended.
-        agent.attr("update_and_save")();
-        EV << "The agent should have saved by now." << endl;
+    EV << "Tasks Processed: "<< tasksProcessed << endl;
+    if (tasksProcessed == episodeLength) {
+        try {
+            // Tell the Resource Allocator to update as the episode has ended.
+            agent.attr("update_and_save")();
+            EV << "The agent should have saved by now." << endl;
 
-    } catch (py::error_already_set &e){
-        throw cRuntimeError("Python Error: %s", e.what());
+        } catch (py::error_already_set &e){
+            throw cRuntimeError("Python Error: %s", e.what());
+        }
+
+        EV << "The Simulation has finished gracefully." << endl;
+    } else {
+        EV << "The Simulation has finished prematurely." << endl;
     }
 
-    EV << "The Simulation has finished" << endl;
 }
