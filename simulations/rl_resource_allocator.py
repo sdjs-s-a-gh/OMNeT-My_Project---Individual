@@ -22,6 +22,7 @@ class RLResourceAllocator:
         self.learning_rate = 0.005      # Learning Rate of the policy and value optimisers.
         self.gamma = 0.95               # Discount factor to be used for cal
         self.clip_parameter = 0.2       # Value to clip the ratio when calculating surrogate 2.
+        self.entropy_coefficient = 0.01 # Value to multiply the entropy loss by to encourage/disencourage exploration. The value is the same as that used in Mahimalmur (2025).
         
         
         
@@ -121,7 +122,7 @@ class RLResourceAllocator:
         for epoch in range(self.updates_per_episode):
             # Calculate the Value and Current Log probabilities for the current epoch.
             value = self.value_network(batch_states)            
-            current_log_probabilities, _ = self.policy_network.evaluate(batch_states, batch_actions)
+            current_log_probabilities, entropy = self.policy_network.evaluate(batch_states, batch_actions)
             
             # Calculate ratios for the surrogate losses.
             ratios = torch.exp(current_log_probabilities - batch_log_probablities)
@@ -132,6 +133,7 @@ class RLResourceAllocator:
             
             # PPO Algorithm Step 6: Update the Policy.
             policy_loss = (-torch.min(surr1, surr2)).mean()
+            # policy_loss =- self.entropy_coefficient * entropy.mean()
             
             self.policy_optimiser.zero_grad()
             policy_loss.backward(retain_graph = True)
@@ -145,10 +147,12 @@ class RLResourceAllocator:
             value_loss.backward()
             self.value_optimiser.step()
             
+        print("---- PPO Update Start ----")      
         print("Average reward:", sum(self.batch_rewards)/len(self.batch_rewards))
         print("Reward min/max:", min(self.batch_rewards), max(self.batch_rewards))
         print("Advantage mean:", advantages.mean().item())
         print("Advantage std:", advantages.std().item())
+        print("Entropy Loss: ", entropy.mean().item())
         print("Policy loss:", policy_loss.item())
         print("Value loss:", value_loss.item())
         print("---- PPO Update Complete ----")    
