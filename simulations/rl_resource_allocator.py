@@ -66,6 +66,9 @@ class RLResourceAllocator:
                 has of it being successful / maximising the reward.
         """
         state = torch.tensor(state, dtype=torch.float)
+        ACTION_SCALE = (1.0 - 0.01) / 2.0
+        ACTION_BIAS = (1.0 + 0.01) / 2.0
+        
         # Query the Policy/Actor network for a mean action and the standard deviation.
         mean, std = self.policy_network(state)
 
@@ -73,14 +76,21 @@ class RLResourceAllocator:
         distribution = Normal(mean, std)
 
         # Sample an action from the distribution.
-        action = distribution.sample()
-
-        # clamp the action to between 0, 1?
+        raw_action = distribution.sample()
+        
+        # Squash the action to fit onto a distribution of [-1,1].
+        squashed_action = torch.tanh(raw_action)
+        
+        # Constrain the action to be between [0, 1].
+        action = squashed_action * ACTION_SCALE + ACTION_BIAS
 
         # Calculate the log probability for that action to be successful.
-        log_probability = distribution.log_prob(action)
+        log_probability = distribution.log_prob(raw_action)
+        
+        # Alter the log probability to account for squashing and then constraining the action.
+        log_probability -= torch.log(ACTION_SCALE * (1 - squashed_action.pow(2)) + 1e-6)
 
-        return action.detach(), log_probability.detach()     
+        return raw_action.detach(), log_probability.detach(), action.detach()     
 
     def add_trajectory(self, action, log_probability, new_state, reward):
         """
