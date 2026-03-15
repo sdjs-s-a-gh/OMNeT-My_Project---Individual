@@ -149,13 +149,13 @@ class RLResourceAllocator:
             self.value_optimiser.step()
 
         print("---- PPO Update Start ----")      
-        print("Average reward:", sum(self.batch_rewards)/len(self.batch_rewards))
-        print("Reward min/max:", min(self.batch_rewards), max(self.batch_rewards))
-        print("Advantage mean:", advantages.mean().item())
-        print("Advantage std:", advantages.std().item())
-        print("Entropy Loss: ", entropy.mean().item())
-        print("Policy loss:", policy_loss.item())
-        print("Value loss:", value_loss.item())
+        print("Average reward:", round(sum(self.batch_rewards)/len(self.batch_rewards), 4))
+        print("Reward min/max:", round(min(self.batch_rewards), 4), round(max(self.batch_rewards), 4))
+        print("Advantage mean:", round(advantages.mean().item(), 4))
+        print("Advantage std:", round(advantages.std().item(), 4))
+        print("Entropy Loss: ", round(entropy.mean().item(), 4))
+        print("Policy loss:", round(policy_loss.item(), 4))
+        print("Value loss:", round(value_loss.item(), 4))
         print("---- PPO Update Complete ----")    
 
     def compute_rewards_to_go(self, batch_rewards):
