@@ -53,7 +53,8 @@ class PolicyNetwork(nn.Module):
 
             Return:
                 log_probability: The log probability for the set of actions.
-                entropy: //TODO
+                entropy: The entropy of the policy distribution, which is to be used for
+                    exploration.
         """
         mean, std = self.forward(states)
         distribution = Normal(mean, std)
