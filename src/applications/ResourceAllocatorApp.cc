@@ -21,7 +21,7 @@
 namespace py = pybind11;
 
 static py::scoped_interpreter* guard = nullptr;
-static py::object agent; // Keep this static so it persists
+static py::object agent;
 
 //#include <pybind11/embed.h>
 // located at: home\opp_env\.venv\lib\python3.12 or /home/opp_env/.venv/lib/python3.12/site-packages
@@ -46,6 +46,9 @@ void ResourceAllocatorApp::initialize(int stage)
 
     if (pythonAllocatorStarted == false) {
         try {
+            // Check to see if the interpreter is currently running, as it persists between simulation configurations.
+            // Originally, this code did not need to exist as the interpreter persisted as a static object, but that caused
+            // memory issues when increasing the number of mobile devices.
             if (!guard) {
                 guard = new py::scoped_interpreter();  // Start the interpreter
             }
@@ -67,6 +70,7 @@ void ResourceAllocatorApp::initialize(int stage)
 
             py::print("Hello from Python inside OMNeT++!");
             pythonAllocatorStarted = true;
+
         } catch (py::error_already_set &e) {
             throw cRuntimeError("Python Error: %s", e.what());
         }
@@ -490,8 +494,12 @@ void ResourceAllocatorApp::finish()
         try {
             // Tell the Resource Allocator to update as the episode has ended.
             agent.attr("update_and_save")();
-            EV << "The agent should have saved by now." << endl;
 
+            // Flush the print statements out since they don't carry over here automatically anymore.
+            py::exec("import sys; sys.stdout.flush(); sys.stderr.flush()");
+
+
+            EV << "The agent should have saved by now." << endl;
 
         } catch (py::error_already_set &e){
             throw cRuntimeError("Python Error: %s", e.what());
