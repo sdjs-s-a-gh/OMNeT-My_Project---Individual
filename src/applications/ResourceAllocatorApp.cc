@@ -19,9 +19,9 @@
 #include <pybind11/embed.h>
 #include <pybind11/stl.h>
 namespace py = pybind11;
-static py::object agent;
-static py::scoped_interpreter guard{}; // Start the interpreter
-static bool pythonAllocatorStarted = false;
+
+static py::scoped_interpreter* guard = nullptr;
+static py::object agent; // Keep this static so it persists
 
 //#include <pybind11/embed.h>
 // located at: home\opp_env\.venv\lib\python3.12 or /home/opp_env/.venv/lib/python3.12/site-packages
@@ -46,6 +46,10 @@ void ResourceAllocatorApp::initialize(int stage)
 
     if (pythonAllocatorStarted == false) {
         try {
+            if (!guard) {
+                guard = new py::scoped_interpreter();  // Start the interpreter
+            }
+
             // Import the Python File
 
             py::module_ sys = py::module_::import("sys");
@@ -488,6 +492,7 @@ void ResourceAllocatorApp::finish()
             agent.attr("update_and_save")();
             EV << "The agent should have saved by now." << endl;
 
+
         } catch (py::error_already_set &e){
             throw cRuntimeError("Python Error: %s", e.what());
         }
@@ -496,5 +501,6 @@ void ResourceAllocatorApp::finish()
     } else {
         EV << "The Simulation has finished prematurely." << endl;
     }
-
+    agent = py::none();
+    cSimpleModule::finish();
 }

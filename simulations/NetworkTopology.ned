@@ -70,7 +70,7 @@ network ResourceNetwork
             @display("p=230,291");
         }
 
-        mdAutonomousVehicle[2]: AutonomousVehicle {
+        mdAutonomousVehicle[1]: AutonomousVehicle {
             @display("p=428,289");
         }
 
