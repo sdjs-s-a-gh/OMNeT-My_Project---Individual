@@ -3,6 +3,7 @@ import torch.optim as optim
 from torch.distributions import Normal
 import torch.nn as nn
 from pathlib import Path
+import numpy as np
 
 from rl_PolicyNetwork import PolicyNetwork
 from rl_ValueNetwork import ValueNetwork
@@ -23,7 +24,10 @@ class RLResourceAllocator:
         self.gamma = 0.95               # Discount factor to be used for cal
         self.clip_parameter = 0.2       # Value to clip the ratio when calculating surrogate 2.
         self.entropy_coefficient = 0.01 # Value to multiply the entropy loss by to encourage/disencourage exploration. The value is the same as that used in Mahimalmur (2025).
-
+        self.number_of_mini_batches = 8
+        
+        # Check the mini-batch size is valid.
+        assert self.batch_size % self.number_of_mini_batches == 0, "The number of mini-batches must be a multiple of the batch size."
 
 
         # Optimisers for more stable convergence
@@ -77,12 +81,8 @@ class RLResourceAllocator:
         raw_action = distribution.sample()
 
         
-        # Constrain the action to be between [0, 1].
-        # action = squashed_action * ACTION_SCALE + ACTION_BIAS
-        # action = distribution.sample()
-        # Clip to [0.01, 1.0]
+        # Constrain the action to be between [0.01, 1.0].
         action = torch.clamp(raw_action, 0.1, 1.0)
-
 
         # Calculate the log probability for that action to be successful.
         log_probability = distribution.log_prob(raw_action)
@@ -125,35 +125,52 @@ class RLResourceAllocator:
 
         # Normalise Advantages for improved stability.
         advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-10)
+        
+        # Configure Mini-batches
+        mini_batch_step = batch_actions.size(0)
+        indices = np.arange(mini_batch_step)
+        mini_batch_size = mini_batch_step // self.number_of_mini_batches
+        print(mini_batch_size)
 
         for epoch in range(self.updates_per_episode):
-            # Calculate the Value and Current Log probabilities for the current epoch.
-            value = self.value_network(batch_states)            
-            current_log_probabilities, _ = self.policy_network.evaluate(batch_states, batch_actions)
-            current_log_probabilities, entropy = self.policy_network.evaluate(batch_states, batch_actions)
-
-            # Calculate ratios for the surrogate losses.
-            ratios = torch.exp(current_log_probabilities - batch_log_probablities)
-
-            # Calculate Surrogate Losses.
-            surr1 = ratios * advantages
-            surr2 = torch.clamp(ratios, 1 - self.clip_parameter, 1 + self.clip_parameter) * advantages   
-
-            # PPO Algorithm Step 6: Update the Policy.
-            policy_loss = (-torch.min(surr1, surr2)).mean()
-            policy_loss -= self.entropy_coefficient * entropy.mean()
-
-            self.policy_optimiser.zero_grad()
-            policy_loss.backward(retain_graph = True)
-            self.policy_optimiser.step()
-
-            # PPO Algorithm Step 7: Fit Value function by regression on MSE using the
-            # predicted values at the current epoch.
-            value_loss = nn.MSELoss()(value, batch_rewards_to_go)
-
-            self.value_optimiser.zero_grad()
-            value_loss.backward()
-            self.value_optimiser.step()
+            
+            # Randomly shuffle the indices for the mini-batch.
+            for mini_batch_i in range(0, mini_batch_step, mini_batch_size):
+                end = mini_batch_i + mini_batch_size
+                index = indices[mini_batch_i:end]
+                
+                mini_batch_states = batch_states[index]
+                mini_batch_actions = batch_actions[index]
+                mini_batch_log_probabilities = batch_log_probablities[index]
+                mini_batch_advantages = advantages[index]
+                mini_batch_rewards_to_go = batch_rewards_to_go[index]            
+            
+                # Calculate the Value and Current Log probabilities for the current epoch.
+                value = self.value_network(batch_states)
+                current_log_probabilities, entropy = self.policy_network.evaluate(mini_batch_states, mini_batch_actions)
+    
+                # Calculate ratios for the surrogate losses.
+                ratios = torch.exp(current_log_probabilities - mini_batch_log_probabilities)
+    
+                # Calculate Surrogate Losses.
+                surr1 = ratios * mini_batch_advantages
+                surr2 = torch.clamp(ratios, 1 - self.clip_parameter, 1 + self.clip_parameter) * mini_batch_advantages   
+    
+                # PPO Algorithm Step 6: Update the Policy.
+                policy_loss = (-torch.min(surr1, surr2)).mean()
+                policy_loss -= self.entropy_coefficient * entropy.mean()
+    
+                self.policy_optimiser.zero_grad()
+                policy_loss.backward(retain_graph = True)
+                self.policy_optimiser.step()
+    
+                # PPO Algorithm Step 7: Fit Value function by regression on MSE using the
+                # predicted values at the current epoch.
+                value_loss = nn.MSELoss()(value, batch_rewards_to_go)
+    
+                self.value_optimiser.zero_grad()
+                value_loss.backward()
+                self.value_optimiser.step()
 
         print("---- PPO Update Start ----")      
         print("Average reward:", round(sum(self.batch_rewards)/len(self.batch_rewards), 4))
