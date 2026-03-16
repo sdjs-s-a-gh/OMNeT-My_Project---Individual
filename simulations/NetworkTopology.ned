@@ -66,7 +66,7 @@ network ResourceNetwork
             @display("p=50,195");
         }
 
-        mdMobilePhone: MobilePhone {
+        mdMobilePhone[0]: MobilePhone {
             @display("p=230,291");
         }
 
