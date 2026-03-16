@@ -482,7 +482,7 @@ void ResourceAllocatorApp::handleCrashOperation(LifecycleOperation *operation)
 void ResourceAllocatorApp::finish()
 {
     EV << "Tasks Processed: "<< tasksProcessed << endl;
-    if (tasksProcessed == episodeLength) {
+    if (tasksProcessed == episodeLength && resourceAllocatorAlgorithm == 1) {
         try {
             // Tell the Resource Allocator to update as the episode has ended.
             agent.attr("update_and_save")();
