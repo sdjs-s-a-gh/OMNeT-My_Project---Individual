@@ -27,6 +27,7 @@ simple ResourceAllocatorApp like IApp
 	    int localPort;
 	    double maxCPUCapacity;
 	    int resourceAllocatorAlgorithm;
+	    int episodeLength;
 
         @signal[latency](type=double);
         @signal[resourceUtilisation](type=double);

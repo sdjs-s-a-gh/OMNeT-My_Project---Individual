@@ -30,9 +30,9 @@ using namespace inet;
  */
 struct Task : public cObject
 {
-    double requiredCPUCycles;
+    double requiredCPUCycles; // The number of CPU cycles required to process/compute a task.
     int deadlineLatency;
-    double allocatedCPUCycles;
+    double allocatedCPUFrequency; // The number of CPU cycles that will be processed in a single second - the speed of processing the task.
     double executionTime; // The time it will take for the task to be processed on the edge server. This variable is to be used for calculating when a self-message should be scheduled.
 
 
@@ -41,15 +41,20 @@ struct Task : public cObject
     simtime_t completionTime; // The time at which the task finished executing on the edge server.
 
     simtime_t arrivalTime; // The time at which the task entered the edge server - just before it is allocated resources.
-    simtime_t totalServiceTime; // The total duration of the task's queueing + execution/processing time.
-    simtime_t communicationDelay; // The difference in time between the task being created and arriving at the edge server.
+    simtime_t totalServiceTime; // In seconds, the total duration of the task's queueing + execution/processing time.
+    simtime_t communicationDelay; // In seconds, the difference in time between the task being created and arriving at the edge server.
 
     simtime_t startQueueTime; // The time at which the task entered the queue.
     simtime_t endQueueTime; // The time at which the task left the queue.
-    simtime_t totalQueueTime; // The total duration of time the task was in the queue.
+    simtime_t totalQueueTime; // In seconds, the total duration of time the task was in the queue.
 
-    simtime_t latency; // The difference in time between the task being sent to the edge server and it finishing being processed.
+    simtime_t latency; // In seconds, the difference in time between the task being sent to the edge server and it finishing being processed.
     double energyConsumption; // The amount of energy (in an undefined unit) that was consumed to process the task.
+
+    // Resource Allocation Specific
+    std::vector<double> state; // The state space used to inform the CPU frequency that was to be allocated to the task.
+    double logProbability; // The log probability given to the task for the action taken (CPU frequency allocated).
+    double rawAction; // The raw action PPO produced prior to constraints.
 };
 
 
@@ -64,6 +69,8 @@ class ResourceAllocatorApp : public ApplicationBase, UdpSocket::ICallback
     double currentCapacity = 0;
     cQueue queue;
     int resourceAllocatorAlgorithm = 0;
+
+    int episodeLength; // The number of time-steps the episode will take to finish.
 
     // Parameter
     int localPort = -1;
@@ -90,8 +97,14 @@ class ResourceAllocatorApp : public ApplicationBase, UdpSocket::ICallback
     void updateQueue();
     double getResourceUtilisation();
     int staticAllocation(int requiredCycles);
-    int PPOAllocation(int requiredCycles);
+    int PPOAllocation(Task *task);
+    int getTotalCyclesInQueue();
 
+    double calculateReward(double latency);
+
+    //void episodeDone();
+
+    virtual void finish() override;
     virtual void initialize(int stage) override;
     virtual void handleMessageWhenUp(cMessage *msg) override;
 
