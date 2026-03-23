@@ -24,6 +24,10 @@
 using namespace omnetpp;
 using namespace inet;
 
+#include <pybind11/pybind11.h>
+#include <pybind11/embed.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
 
 /**
  * Better than a class since I need to access and modify everything.
@@ -71,6 +75,11 @@ class ResourceAllocatorApp : public ApplicationBase, UdpSocket::ICallback
     int resourceAllocatorAlgorithm = 0;
 
     int episodeLength; // The number of time-steps the episode will take to finish.
+
+    // Python/Pybind-related
+    bool pythonAllocatorStarted = false;
+//    std::unique_ptr<py::scoped_interpreter> guard;
+//    py::object agent;
 
     // Parameter
     int localPort = -1;

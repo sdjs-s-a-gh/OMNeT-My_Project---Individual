@@ -37,14 +37,16 @@ import inet.node.ethernet.Eth10M;
 network ResourceNetwork
 {
     parameters:
-        @display("bgb=600,600");
+        @display("bgb=1000,1000");
+        int numberOfMobilePhones = default(15);
+        int numberOfAutonomousVehicles = default (10);
 
         // Statistics to be gathered during the simulation.
         // Main
         @statistic[latencyOverTime](source=latency; record=vector);
         @statistic[systemResourceUtilisationOverTime](source=resourceUtilisation; record=vector);
         @statistic[energyConsumptionOverTime](source=energyConsumption; record=vector);
-	
+
         // Complementary
         @statistic[tasksProcessedOverTime](source=tasksProcessed; record=vector);
         @statistic[maxQueueLengthOverTime](source=maxQueueLength; record=vector);
@@ -52,13 +54,13 @@ network ResourceNetwork
 
     submodules:
         visualizer: IntegratedCanvasVisualizer {
-            @display("p=62,475");
+            @display("p=62,870");
         }
         configurator: Ipv4NetworkConfigurator {
-            @display("p=62,553");
+            @display("p=62,943");
         }
         radioMedium: <default("ApskScalarRadioMedium")> like IRadioMedium {
-            @display("p=62,400");
+            @display("p=62,795");
         } // Will need to change to RadioMedium to configure bandwidth
 
         // User Layer
@@ -66,11 +68,11 @@ network ResourceNetwork
             @display("p=50,195");
         }
 
-        mdMobilePhone: MobilePhone {
-            @display("p=230,291");
+        mdMobilePhone[numberOfMobilePhones]: MobilePhone {
+            @display("p=250,250");	// The initial position of the node will be overridden in the .ini file.
         }
 
-        mdAutonomousVehicle[1]: AutonomousVehicle {
+        mdAutonomousVehicle[numberOfAutonomousVehicles]: AutonomousVehicle {
             @display("p=428,289");
         }
 
@@ -78,13 +80,13 @@ network ResourceNetwork
 
         // Edge Layer
         baseStation: WirelessHost {
-            @display("p=250,150");
+            @display("p=428,546");
         }
         coreRouter: Router {
-            @display("p=250,50");
+            @display("p=428,475");
         }
         edgeServer: EdgeServer {
-            @display("p=500,50");
+            @display("p=532,475");
         } // Was StandardHost
 
         // Cloud Layer
