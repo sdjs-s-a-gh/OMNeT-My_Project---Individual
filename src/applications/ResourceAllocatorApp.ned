@@ -25,6 +25,9 @@ simple ResourceAllocatorApp like IApp
 	parameters:
 	    @display("i=block/app");	
 	    int localPort;
+	    string destAddress;
+	    int destPort;
+	
 	    double maxCPUCapacity;
 	    int resourceAllocatorAlgorithm;
 	    int episodeLength;

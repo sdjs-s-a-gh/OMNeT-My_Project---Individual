@@ -81,8 +81,11 @@ class ResourceAllocatorApp : public ApplicationBase, UdpSocket::ICallback
 //    std::unique_ptr<py::scoped_interpreter> guard;
 //    py::object agent;
 
-    // Parameter
+    // Parameters
     int localPort = -1;
+    L3Address destAddress;
+    std::string destAddressStr;
+    int destPort = -1;
 
     // Statistics
     int packetsReceived = 0;
@@ -105,13 +108,16 @@ class ResourceAllocatorApp : public ApplicationBase, UdpSocket::ICallback
     void endTaskExecution(cMessage *msg);
     void updateQueue();
     double getResourceUtilisation();
-    int staticAllocation(int requiredCycles);
-    int PPOAllocation(Task *task);
     int getTotalCyclesInQueue();
 
     double calculateReward(double latency);
 
-    //void episodeDone();
+    void sendPacket(Packet * packet);
+
+    // Allocation Algorithms
+    int staticAllocation(int requiredCycles);
+    int PPOAllocation(Task *task);
+    int randomAllocation();
 
     virtual void finish() override;
     virtual void initialize(int stage) override;
