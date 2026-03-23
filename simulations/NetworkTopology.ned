@@ -69,11 +69,11 @@ network ResourceNetwork
         }
 
         mdMobilePhone[numberOfMobilePhones]: MobilePhone {
-            @display("p=0,0;is=s");	// The initial position of the node will be overridden in the .ini file.
+            @display("p=250,250");	// The initial position of the node will be overridden in the .ini file.
         }
 
         mdAutonomousVehicle[numberOfAutonomousVehicles]: AutonomousVehicle {
-            @display("p=428,289;is=s");
+            @display("p=428,289");
         }
 
         //hostB: WirelessHost { @display("p=450,195"); }
