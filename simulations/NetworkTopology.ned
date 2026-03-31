@@ -65,10 +65,6 @@ network ResourceNetwork
         } // Will need to change to RadioMedium to configure bandwidth
 
         // User Layer
-        hostA: WirelessHost {
-            @display("p=50,195");
-        }
-
         mdMobilePhone[numberOfMobilePhones]: MobilePhone {
             @display("p=250,250");	// The initial position of the node will be overridden in the .ini file.
         }
