@@ -15,6 +15,7 @@
 
 #include "ResourceAllocatorApp.h"
 #include "MyTaskChunk_m.h"
+#include "inet/networklayer/common/L3AddressResolver.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
 #include <pybind11/stl.h>
@@ -42,6 +43,7 @@ void ResourceAllocatorApp::initialize(int stage)
     currentCapacity = maxCPUCapacity;
     resourceAllocatorAlgorithm = par("resourceAllocatorAlgorithm");
     episodeLength = par("episodeLength");
+
 
 
     if (pythonAllocatorStarted == false) {
@@ -90,6 +92,18 @@ void ResourceAllocatorApp::initialize(int stage)
 
     if (stage == INITSTAGE_APPLICATION_LAYER) {
         localPort = par("localPort");
+        destPort = par("destPort");
+        destAddressStr = par("destAddress").stdstringValue();
+
+        EV << "Dest Address:" << destAddressStr << endl;
+        L3Address result;
+        L3AddressResolver().tryResolve(destAddressStr.c_str(), result);
+
+        EV << "Dest Address Again: " << result << endl;
+        destAddress = result;
+
+        EV << "My address: " << L3AddressResolver().resolve(getParentModule()->getFullPath().c_str()) << endl;
+
         socket.setOutputGate(gate("socketOut"));
         socket.bind(localPort);
         socket.setCallback(this);
@@ -133,6 +147,8 @@ void ResourceAllocatorApp::allocateResources(Task *task)
         cpuCyclesToAllocate = staticAllocation(requiredCycles);
     } else if (resourceAllocatorAlgorithm == 1) {
         cpuCyclesToAllocate = PPOAllocation(task);
+    } else if (resourceAllocatorAlgorithm == 2){
+        cpuCyclesToAllocate = randomAllocation();
     } else {
         throw cRuntimeError("You've given an invalid resource allocator algorithm: %d", resourceAllocatorAlgorithm);
     }
@@ -145,7 +161,8 @@ void ResourceAllocatorApp::allocateResources(Task *task)
 }
 
 /**
- * Returns the allocated CPU cycles of a given task based off a static ruleset.
+ * Returns the allocated CPU frequency of a given task based off a static ruleset. The algorithm achieves this by
+ * allocating the incoming task whatever cycles it needs.
  */
 int ResourceAllocatorApp::staticAllocation(int requiredCycles)
 {
@@ -154,7 +171,20 @@ int ResourceAllocatorApp::staticAllocation(int requiredCycles)
 }
 
 /**
- * Returns the allocated CPU cycles of a given task using the Reinforcement Learning method
+ * Returns a random CPU frequency for a given task completely irrespective of the size (CPU cycles are needed)
+ * to process the task. The number returned will be between 1% and 100% of the CPU's max capacity to avoid
+ * some tasks taking forever.
+ */
+int ResourceAllocatorApp::randomAllocation()
+{
+    int lowerBound = maxCPUCapacity * 0.01;
+    int randomCPUFrequency = intuniform(lowerBound, maxCPUCapacity);
+
+    return randomCPUFrequency;
+}
+
+/**
+ * Returns the allocated CPU frequency for a given task using the Reinforcement Learning method
  * of PPO.
  */
 int ResourceAllocatorApp::PPOAllocation(Task *task)
@@ -424,9 +454,13 @@ void ResourceAllocatorApp::socketDataArrived(UdpSocket *socket, Packet *packet)
     EV << "That was Packet " << packetsReceived << ". Required CPU Cycles: " << cpuCycles << "; Deadline Latency: " << deadlineLatency << endl;
 
     // TODO:
-    // If the queue is over 100 tasks long, delete/drop the incoming task.
-    if (queue.getLength() >= 100) {
+    // If the queue is over 50 tasks long, delete/drop the incoming task.
+    if (queue.getLength() >= 50) {
         EV << "Queue is too big. Dropped Task." << endl;
+
+        // Copy the packet as the original is destroyed at the end of the parent subroutine.
+        Packet *copy = packet->dup();
+        sendPacket(copy);
         return;
     }
 
@@ -446,6 +480,20 @@ void ResourceAllocatorApp::socketDataArrived(UdpSocket *socket, Packet *packet)
     allocateResources(task);
     EV << "CPU Cycles Allocated: " << task->allocatedCPUFrequency << endl;
     queue.insert(task); // enqueue the task
+}
+
+/**
+ * Forwards a packet to the cloud server - or whichever destination address has been set
+ * in the .ini file.
+ */
+void ResourceAllocatorApp::sendPacket(Packet *packet)
+{
+    EV << "Dest address to send to: " << destAddress << "; Port: " << destPort << endl;
+
+    packet->clearTags();
+    socket.sendTo(packet, destAddress, destPort);
+
+    // TODO: tasks offloaded ++;
 }
 
 void ResourceAllocatorApp::refreshDisplay() const

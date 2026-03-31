@@ -19,6 +19,7 @@ package myprojectandtutorial.simulations;
 import myprojectandtutorial.devices.EdgeServer;
 import myprojectandtutorial.devices.MobilePhone;
 import myprojectandtutorial.devices.AutonomousVehicle;
+import myprojectandtutorial.devices.CloudServer;
 
 // Wireless Connections
 import inet.node.inet.WirelessHost;
@@ -39,7 +40,7 @@ network ResourceNetwork
     parameters:
         @display("bgb=1000,1000");
         int numberOfMobilePhones = default(15);
-        int numberOfAutonomousVehicles = default (10);
+        int numberOfAutonomousVehicles = default(10);
 
         // Statistics to be gathered during the simulation.
         // Main
@@ -64,10 +65,6 @@ network ResourceNetwork
         } // Will need to change to RadioMedium to configure bandwidth
 
         // User Layer
-        hostA: WirelessHost {
-            @display("p=50,195");
-        }
-
         mdMobilePhone[numberOfMobilePhones]: MobilePhone {
             @display("p=250,250");	// The initial position of the node will be overridden in the .ini file.
         }
@@ -90,12 +87,15 @@ network ResourceNetwork
         } // Was StandardHost
 
         // Cloud Layer
-		// cloudServer: WirelessHost
+        cloudServer: CloudServer {
+            @display("p=920,44");
+        }
 
 
     // Physical Connections
     connections:
         baseStation.ethg++ <--> Eth10M <--> coreRouter.ethg++;
         coreRouter.ethg++ <--> Eth10M <--> edgeServer.ethg++;
+        coreRouter.ethg++ <--> Eth10M <--> cloudServer.ethg++;	// Backhaul connection to a data centre (which isn't realisistic as it would go through many networks first).
 
 }
