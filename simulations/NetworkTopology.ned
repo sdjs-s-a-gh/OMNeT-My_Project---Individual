@@ -41,8 +41,8 @@ network ResourceNetwork
 {
     parameters:
         @display("bgb=1000,1000");
-        int numberOfMobilePhones = default(15);
-        int numberOfAutonomousVehicles = default(10);
+        int numberOfMobilePhones = default(10);
+        int numberOfAutonomousVehicles = default(7);
         int numberOfIoTDevices = default(5);
         int numberOfARVRUsers = default(3);
 
