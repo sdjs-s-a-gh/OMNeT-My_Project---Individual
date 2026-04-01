@@ -43,8 +43,7 @@ void ResourceAllocatorApp::initialize(int stage)
     currentCapacity = maxCPUCapacity;
     resourceAllocatorAlgorithm = par("resourceAllocatorAlgorithm");
     episodeLength = par("episodeLength");
-
-
+    maxQueueLength = par("maxQueueLength");
 
     if (pythonAllocatorStarted == false) {
         try {
@@ -189,12 +188,12 @@ int ResourceAllocatorApp::randomAllocation()
  */
 int ResourceAllocatorApp::PPOAllocation(Task *task)
 {
-    // Get State, which has been normalised to improve learning stability.
-    double requiredCycles = task->requiredCPUCycles / 500.0; // 500 = Max CPU cycles set in ini.
-    double communicationLatency = (task->communicationDelay.dbl() * 1000) / 50; // Convert to milliseconds
-    double queueLength = queue.getLength() / 100.0;
+    // Get State and normalise to improve learning stability.
+    double requiredCycles = task->requiredCPUCycles / 700.0; // 700 = Max CPU cycles set in ini.
+    double communicationLatency = (task->communicationDelay.dbl() * 1000) / 50.0; // Convert to milliseconds
+    double queueLength = queue.getLength() / (double) maxQueueLength;
     double resourceUtilisation = getResourceUtilisation();
-    double totalQueueCycles = getTotalCyclesInQueue() / 5000; // 5000 = Max CPU cycles set in ini * Max Queue Length
+    double totalQueueCycles = getTotalCyclesInQueue() / (700.0 * (double) maxQueueLength);
 
     std::vector<double>state = {
             requiredCycles,
@@ -206,7 +205,6 @@ int ResourceAllocatorApp::PPOAllocation(Task *task)
 
     EV << "State: " << requiredCycles << ", " << communicationLatency << ", "
        << resourceUtilisation << ", " << queueLength << ", " << totalQueueCycles << endl;
-
 
     try {
         py::tuple result = agent.attr("get_action")(state);
@@ -321,6 +319,8 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
     double energyConsumption = completedTask->allocatedCPUFrequency * (maxCPUCapacity * maxCPUCapacity);
     completedTask->energyConsumption = energyConsumption;
 
+
+    // TODO: only if the allocation algorithm chosen is PPO
     double reward = calculateReward(completedTask->latency.dbl() * 1000);
     std::vector state = completedTask->state;
     double action = completedTask->rawAction;

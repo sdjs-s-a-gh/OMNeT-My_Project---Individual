@@ -87,6 +87,8 @@ class ResourceAllocatorApp : public ApplicationBase, UdpSocket::ICallback
     std::string destAddressStr;
     int destPort = -1;
 
+    int maxQueueLength = 50;
+
     // Statistics
     int packetsReceived = 0;
     int tasksProcessed = 0;
