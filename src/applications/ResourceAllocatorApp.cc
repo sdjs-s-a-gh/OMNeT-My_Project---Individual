@@ -87,7 +87,7 @@ void ResourceAllocatorApp::initialize(int stage)
     energyConsumptionSignal = registerSignal("energyConsumption");
 
     tasksProcessedSignal = registerSignal("tasksProcessed");
-    maxQueueLengthSignal = registerSignal("maxQueueLength");
+    queueLengthSignal = registerSignal("queueLength");
     parallelTasksSignal = registerSignal("parallelTasks");
 
     if (stage == INITSTAGE_APPLICATION_LAYER) {
@@ -425,12 +425,9 @@ void ResourceAllocatorApp::updateQueue()
             queue.pop();
             }
         EV << "The length of the queue is: " << queue.getLength() << endl;
-        emit(maxQueueLengthSignal, maxQueueLength);
+        emit(queueLengthSignal, queue.getLength());
         EV << "Resource Utilisation: " << getResourceUtilisation() << endl;
         emit(resourceUtilisationSignal, getResourceUtilisation());
-        if (queue.getLength() > maxQueueLength) {
-            maxQueueLength = queue.getLength();
-        }
     }
 
 }

@@ -91,13 +91,12 @@ class ResourceAllocatorApp : public ApplicationBase, UdpSocket::ICallback
     int packetsReceived = 0;
     int tasksProcessed = 0;
     int tasksProcessing = 0;
-    int maxQueueLength = 0;
 
     simsignal_t latencySignal;
     simsignal_t resourceUtilisationSignal;
     simsignal_t energyConsumptionSignal;
     simsignal_t tasksProcessedSignal;
-    simsignal_t maxQueueLengthSignal;
+    simsignal_t queueLengthSignal;
     simsignal_t parallelTasksSignal;
 
     UdpSocket socket; // Requires a socket to bind the application to.
