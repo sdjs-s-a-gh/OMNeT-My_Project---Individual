@@ -16,6 +16,7 @@
 #include "ResourceAllocatorApp.h"
 #include "MyTaskChunk_m.h"
 #include "inet/networklayer/common/L3AddressResolver.h"
+#include <algorithm>
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
 #include <pybind11/stl.h>
@@ -188,7 +189,7 @@ int ResourceAllocatorApp::randomAllocation()
  */
 int ResourceAllocatorApp::PPOAllocation(Task *task)
 {
-    // Get State and normalise to improve learning stability.
+    // Get State and normalise to improve learning stability. // TODO
     double requiredCycles = task->requiredCPUCycles / 700.0; // 700 = Max CPU cycles set in ini.
     double communicationLatency = (task->communicationDelay.dbl() * 1000) / 50.0; // Convert to milliseconds
     double queueLength = queue.getLength() / (double) maxQueueLength;
@@ -208,22 +209,15 @@ int ResourceAllocatorApp::PPOAllocation(Task *task)
 
     try {
         py::tuple result = agent.attr("get_action")(state);
-
-
         double rawAction = result[0].cast<double>();
         double logProbability = result[1].cast<double>();
-        double action = result[2].cast<double>();
+
+        // Clip/Constrain the action to be between [0.01, 1.0].
+        double action = std::clamp(rawAction, 0.1, 1.0);
 
         EV << "Action: " << action << "; Log Prob: " << logProbability << "; Raw Action: " << rawAction << endl;
 
         int allocatedCPUCycles = action * maxCPUCapacity; // TODO: Will need to round to the nearest int.
-
-//        if (allocatedCPUCycles <=0 or allocatedCPUCycles >= maxCPUCapacity) {
-//            allocatedCPUCycles = 1000;
-//        }
-        // Constrain between the required cycles (minimum useful) and max capacity
-    //        allocatedCPUCycles = std::max((int)task->requiredCPUCycles,
-    //                             std::min(allocatedCPUCycles, (int)maxCPUCapacity));
 
         EV << "The RL Agent has decided to allocate " << action << " cycles as a ratio or "<< allocatedCPUCycles << " cycles." << endl;
 
@@ -237,8 +231,6 @@ int ResourceAllocatorApp::PPOAllocation(Task *task)
     } catch (py::error_already_set &e){
         throw cRuntimeError("Python Error: %s", e.what());
     };
-
-
 }
 
 /**

@@ -80,14 +80,10 @@ class RLResourceAllocator:
         # Sample an action from the distribution.
         raw_action = distribution.sample()
 
-        
-        # Constrain the action to be between [0.01, 1.0].
-        action = torch.clamp(raw_action, 0.1, 1.0)
-
         # Calculate the log probability for that action to be successful.
         log_probability = distribution.log_prob(raw_action)
 
-        return raw_action.detach(), log_probability.detach(), action.detach()
+        return raw_action.detach(), log_probability.detach()
 
     def add_trajectory(self, action, log_probability, new_state, reward):
         """
