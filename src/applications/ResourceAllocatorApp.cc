@@ -308,7 +308,7 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
     completedTask->completionTime = simTime();
     completedTask->totalServiceTime = completedTask->completionTime - completedTask->arrivalTime;
     completedTask->latency = completedTask->completionTime - completedTask->creationTime;
-    double energyConsumption = completedTask->allocatedCPUFrequency * (maxCPUCapacity * maxCPUCapacity);
+    double energyConsumption = 1e-27 * completedTask->requiredCPUCycles * (completedTask->allocatedCPUFrequency * completedTask->allocatedCPUFrequency);
     completedTask->energyConsumption = energyConsumption;
 
     // TODO: only if the allocation algorithm chosen is PPO
