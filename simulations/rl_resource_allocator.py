@@ -105,9 +105,18 @@ class RLResourceAllocator:
         self.batch_rewards.append(reward)
     
     def compute_reward(self, latency):
+        latency_weight = 0.4
+        energy_consumption_weight = 0.3
+        resource_utilisation_weight = 0.3
+        
         baseline = 1000.0
         reward = (baseline - latency) / baseline;
         
+        # total_reward = (latency_weight * latency_reward +
+        #                 energy_consumption_weight * energy_consumption_reward +
+        #                 resource_utilisation_weight * resource_utilisation_reward)
+        #
+
         return reward;
     
     def learn(self):

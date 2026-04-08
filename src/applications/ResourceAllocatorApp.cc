@@ -40,7 +40,7 @@ void ResourceAllocatorApp::initialize(int stage)
     // app is yet to be on a socket.
 
 
-    maxCPUCapacity = par("maxCPUCapacity");
+    maxCPUCapacity = par("maxCPUCapacity").doubleValue() * 1e+6; // Scale the Max Capacity from MHz to Hz
     currentCapacity = maxCPUCapacity;
     resourceAllocatorAlgorithm = par("resourceAllocatorAlgorithm");
     episodeLength = par("episodeLength");
