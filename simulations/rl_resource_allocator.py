@@ -106,16 +106,19 @@ class RLResourceAllocator:
         self.batch_rewards.append(reward)
     
     def compute_reward(self, latency, energy_consumption, resource_utilisation):
-        latency_weight = 0.4
+        latency_weight = 0.7
         energy_consumption_weight = 0.3
-        resource_utilisation_weight = 0.3
+        #resource_utilisation_weight = 0.3
         
-        baseline = 1000.0
-        latency_reward = (baseline - latency) / baseline
+        latency_baseline = 1000.0
+        latency_reward = (latency_baseline - latency) / latency_baseline
         
-        print(f"Energy Consumption: {energy_consumption}")
+        #print(f"Energy Consumption: {energy_consumption}")
+        # TODO: Create a function that performs normalisation and takes two arguments.
         # Use the square root to normalise raising the CPU frequency to the power of 2.
-        energy_consumption_reward = sqrt(energy_consumption)
+        #energy_consumption_reward = 1 - sqrt(energy_consumption)
+        energy_baseline = 3
+        energy_consumption_reward = (energy_baseline - energy_consumption) / energy_baseline
         
         # energy_baseline = 1
         # energy_reward = (energy_reward - energy_consumption) / energy_reward;
@@ -127,8 +130,8 @@ class RLResourceAllocator:
         
         total_reward = (latency_weight * latency_reward +
                         energy_consumption_weight * energy_consumption_reward)
-        print(f"Energy Consumption Reward: {energy_consumption_reward}")
-        print(f"Total Reward: {total_reward}")
+        #print(f"Energy Consumption Reward: {energy_consumption_reward}")
+        #print(f"Total Reward: {total_reward}")
         
         return total_reward
     

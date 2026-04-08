@@ -303,9 +303,9 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
     completedTask->completionTime = simTime();
     completedTask->totalServiceTime = completedTask->completionTime - completedTask->arrivalTime;
     completedTask->latency = completedTask->completionTime - completedTask->creationTime;
-    int64_t scaledCPUCycles = completedTask->requiredCPUCycles * 1e+6;
-    int64_t scaledCPUFrequency = completedTask->allocatedCPUFrequency * 1e+6;
-    double energyConsumption = 1e-27 * scaledCPUCycles * (scaledCPUFrequency * scaledCPUFrequency);
+
+    double k_Scaled = 1e-27 * 1e+18;
+    double energyConsumption = k_Scaled * completedTask->requiredCPUCycles * (completedTask->allocatedCPUFrequency * completedTask->allocatedCPUFrequency);
     completedTask->energyConsumption = energyConsumption;
 
     if (resourceAllocatorAlgorithm == 1) {
@@ -316,6 +316,7 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
         double resourceUtilisation = getResourceUtilisation();
 
         EV << "Latency: " << latency << "; State: "  << "; Action: " << action << "; Log Prob: " << logProbability << endl;
+        EV << "Energy Consumption: " << energyConsumption << endl;
 
         // Send the details of the trajectory to the PPO agent.
         try {
