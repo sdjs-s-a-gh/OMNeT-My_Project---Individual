@@ -85,7 +85,7 @@ class RLResourceAllocator:
 
         return raw_action.detach(), log_probability.detach()
 
-    def add_trajectory(self, action, log_probability, new_state, reward):
+    def add_trajectory(self, action, log_probability, state, latency):
         """
             Adds the input trajectory to the current batch.
 
@@ -95,14 +95,21 @@ class RLResourceAllocator:
             Parameters:
                 action (float)
                 log_probability (float)
-                new_state (float)
-                reward (float)
+                state (array)
+                latency (float)
         """     
         self.batch_actions.append(action)
         self.batch_log_probabilities.append(log_probability)
-        self.batch_states.append(new_state)
+        self.batch_states.append(state)
+        reward = self.compute_reward(latency)
         self.batch_rewards.append(reward)
-
+    
+    def compute_reward(self, latency):
+        baseline = 1000.0
+        reward = (baseline - latency) / baseline;
+        
+        return reward;
+    
     def learn(self):
         # PPO Algorithm Step 3: Collect trajectories/experiences from the most recent iteration/episode
         # and convert them into separate tensors.

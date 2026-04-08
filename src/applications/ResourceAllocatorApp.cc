@@ -311,28 +311,22 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
     double energyConsumption = completedTask->allocatedCPUFrequency * (maxCPUCapacity * maxCPUCapacity);
     completedTask->energyConsumption = energyConsumption;
 
-
     // TODO: only if the allocation algorithm chosen is PPO
-    double reward = calculateReward(completedTask->latency.dbl() * 1000);
     std::vector state = completedTask->state;
     double action = completedTask->rawAction;
     double logProbability = completedTask->logProbability;
+    double latency = completedTask->latency.dbl() * 1000;
 
-    EV << "Reward: " << reward << "; State: "  << "; Action: " << action << "; Log Prob: " << logProbability << endl;
+    EV << "Latency: " << latency << "; State: "  << "; Action: " << action << "; Log Prob: " << logProbability << endl;
     // Send the details of the task back to the allocator
     try {
         // TODO
-        //reward = calculateReward(state, action, newState);
-
-        agent.attr("add_trajectory")(action, logProbability, state, reward);
+        agent.attr("add_trajectory")(action, logProbability, state, latency);
 
     } catch (py::error_already_set &e){
         throw cRuntimeError("Python Error: %s", e.what());
     }
 
-    // emit(msg->getTotalServiceTime);
-    // totalTime? = communication delay + queue time + computation time?
-    // update to file
     // Free up the CPU of the edge server by giving back the allocated CPU cycles.
     currentCapacity += completedTask->allocatedCPUFrequency;
     tasksProcessing--;
@@ -349,7 +343,7 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
     EV << "Task CPU Cycles Required: " << completedTask->requiredCPUCycles << "; Expected Execution Time: " << getTimeToExecute(completedTask->requiredCPUCycles, completedTask->requiredCPUCycles)
             << "; Actual Cycles Given: " << completedTask->allocatedCPUFrequency << "; Actual Execution Time: " << getTimeToExecute(completedTask->requiredCPUCycles,completedTask->allocatedCPUFrequency) << endl;
 
-    double latency = completedTask->latency.dbl() * 1000; // convert to milliseconds.
+    //double latency = completedTask->latency.dbl() * 1000; // convert to milliseconds.
     emit(latencySignal,latency);
     emit(energyConsumptionSignal, energyConsumption);
     emit(tasksProcessedSignal, tasksProcessed);
@@ -360,39 +354,6 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
         // End the Simulation
         endSimulation();
     }
-}
-
-double ResourceAllocatorApp::calculateReward(double latency)
-{
-    // Average System Task Latency, Average System Task Energy Consumption, Resource Utilisation
-    // Maybe just latency, energy consumption and resource utilisation
-
-    //TODO: normalise the rewards
-
-    // utilisation is fine as it is already between 0 and 1
-    //double normalisedLatency = latency / 5000; // 500 is just a random worst case; I've completely made it up.
-    // energy consumption = energy / max energy?
-
-//    latencyWeight = 0.4;
-//    energyConsumptionWeight = 0.2;
-//    resourceUtilisationWeight = 0.2;
-//
-//    double reward = (
-//            -latencyWeight * latency
-//            -energyConsumptionWeight * energyConsumption
-//            + resourceUtilisationWeight * resourceUtilisation
-//          );
-
-    // just do latency at the minute
-    double baseline = 1000.0; // static allocator average
-    double reward = (baseline - latency) / baseline;
-
-    return reward;
-    //return std::max(-1.0, std::min(1.0, reward)); // clip to [-1, 1]
-//    double reward = -normalisedLatency;
-//
-//    return reward;
-
 }
 
 /**
