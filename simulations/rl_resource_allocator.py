@@ -111,8 +111,9 @@ class RLResourceAllocator:
         resource_utilisation_weight = 0.3
         
         baseline = 1000.0
-        latency_reward = (baseline - latency) / baseline;
+        latency_reward = (baseline - latency) / baseline
         
+        print(f"Energy Consumption: {energy_consumption}")
         # Use the square root to normalise raising the CPU frequency to the power of 2.
         energy_consumption_reward = sqrt(energy_consumption)
         
@@ -129,7 +130,7 @@ class RLResourceAllocator:
         print(f"Energy Consumption Reward: {energy_consumption_reward}")
         print(f"Total Reward: {total_reward}")
         
-        return total_reward;
+        return total_reward
     
     def learn(self):
         # PPO Algorithm Step 3: Collect trajectories/experiences from the most recent iteration/episode

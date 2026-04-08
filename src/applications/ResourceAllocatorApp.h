@@ -34,8 +34,8 @@ namespace py = pybind11;
  */
 struct Task : public cObject
 {
-    double requiredCPUCycles; // The number of CPU cycles required to process/compute a task.
-    double allocatedCPUFrequency; // The number of CPU cycles that will be processed in a single second - the speed of processing the task.
+    int requiredCPUCycles; // The number of CPU cycles required to process/compute a task.
+    int allocatedCPUFrequency; // The number of CPU cycles that will be processed in a single second - the speed of processing the task.
     double executionTime; // The time it will take for the task to be processed on the edge server. This variable is to be used for calculating when a self-message should be scheduled.
 
 
@@ -68,8 +68,8 @@ class ResourceAllocatorApp : public ApplicationBase, UdpSocket::ICallback
 {
   protected:
     // Resource Allocation
-    double maxCPUCapacity = 10000; // in MHz currently
-    double currentCapacity = 0;
+    int64_t maxCPUCapacity = 10000; // in MHz currently
+    int64_t currentCapacity = 0;
     cQueue queue;
     int resourceAllocatorAlgorithm = 0;
 

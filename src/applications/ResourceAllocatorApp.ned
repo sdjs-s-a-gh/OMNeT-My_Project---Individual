@@ -28,7 +28,7 @@ simple ResourceAllocatorApp like IApp
 	    string destAddress;
 	    int destPort;
 	
-	    double maxCPUCapacity = default(10000);
+	    int maxCPUCapacity = default(10000);
 	    int maxQueueLength = default(50);
 	    int resourceAllocatorAlgorithm;
 	    int episodeLength;

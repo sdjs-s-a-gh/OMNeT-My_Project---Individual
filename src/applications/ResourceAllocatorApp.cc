@@ -39,7 +39,7 @@ void ResourceAllocatorApp::initialize(int stage)
     // indicates the incoming packet cannot reach the required socket - as the
     // app is yet to be on a socket.
 
-    maxCPUCapacity = par("maxCPUCapacity").doubleValue();
+    maxCPUCapacity = par("maxCPUCapacity").intValue(); // Scale from MHz to normal Hz.
     currentCapacity = maxCPUCapacity;
     resourceAllocatorAlgorithm = par("resourceAllocatorAlgorithm");
     episodeLength = par("episodeLength");
@@ -183,7 +183,7 @@ int ResourceAllocatorApp::randomAllocation()
 int ResourceAllocatorApp::PPOAllocation(Task *task)
 {
     // Get State and normalise to improve learning stability. // TODO
-    double requiredCycles = task->requiredCPUCycles / 700.0; // 700 = Max CPU cycles set in ini.
+    double requiredCycles = task->requiredCPUCycles / (700.0); // 700 = Max CPU cycles set in ini.
     double communicationLatency = (task->communicationDelay.dbl() * 1000) / 50.0; // Convert to milliseconds
     double queueLength = queue.getLength() / (double) maxQueueLength;
     double resourceUtilisation = getResourceUtilisation();
@@ -306,7 +306,6 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
     double energyConsumption = 1e-27 * completedTask->requiredCPUCycles * (completedTask->allocatedCPUFrequency * completedTask->allocatedCPUFrequency);
     completedTask->energyConsumption = energyConsumption;
 
-    // TODO: only if the allocation algorithm chosen is PPO
     if (resourceAllocatorAlgorithm == 1) {
         std::vector state = completedTask->state;
         double action = completedTask->rawAction;
