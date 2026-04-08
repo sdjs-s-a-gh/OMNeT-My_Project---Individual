@@ -24,8 +24,6 @@ simple TrafficGenerator extends UdpBasicApp
     parameters:
         double minRequiredCPUCycles @units(Hz) = default (-1);
         double maxRequiredCPUCycles @units(Hz) = default (-1);
-        double minDeadlineLatency @units(s) = default (-1);
-        double maxDeadlineLatency @units(s) = default (-1);
         @display("i=block/app");
 
     @class(TrafficGenerator);

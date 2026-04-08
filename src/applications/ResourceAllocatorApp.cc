@@ -400,9 +400,8 @@ void ResourceAllocatorApp::socketDataArrived(UdpSocket *socket, Packet *packet)
 
     auto taskRequirements =  packet->peekAtFront<MyTaskChunk>();
     auto cpuCycles = taskRequirements->getRequiredCPUCycles();
-    auto deadlineLatency = taskRequirements->getDeadlineLatency();
 
-    EV << "That was Packet " << packetsReceived << ". Required CPU Cycles: " << cpuCycles << "; Deadline Latency: " << deadlineLatency << endl;
+    EV << "That was Packet " << packetsReceived << ". Required CPU Cycles: " << cpuCycles << endl;
 
     // TODO:
     // If the queue is over 50 tasks long, delete/drop the incoming task.

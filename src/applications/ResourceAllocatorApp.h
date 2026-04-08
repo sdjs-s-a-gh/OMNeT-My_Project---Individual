@@ -35,7 +35,6 @@ namespace py = pybind11;
 struct Task : public cObject
 {
     double requiredCPUCycles; // The number of CPU cycles required to process/compute a task.
-    int deadlineLatency;
     double allocatedCPUFrequency; // The number of CPU cycles that will be processed in a single second - the speed of processing the task.
     double executionTime; // The time it will take for the task to be processed on the edge server. This variable is to be used for calculating when a self-message should be scheduled.
 
