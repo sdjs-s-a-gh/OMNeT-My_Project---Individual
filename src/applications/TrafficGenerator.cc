@@ -39,9 +39,6 @@ void TrafficGenerator::sendPacket()
             par("maxRequiredCPUCycles").doubleValue()
             );
 
-    // Scale the CPU cycles from Megacycles to normal cycles
-    cpuCycles = cpuCycles * 1e+6;
-
     payload->setRequiredCPUCycles(cpuCycles);
     payload->setCreationTime(simTime());
 

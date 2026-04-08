@@ -39,8 +39,7 @@ void ResourceAllocatorApp::initialize(int stage)
     // indicates the incoming packet cannot reach the required socket - as the
     // app is yet to be on a socket.
 
-
-    maxCPUCapacity = par("maxCPUCapacity").doubleValue() * 1e+6; // Scale the Max Capacity from MHz to Hz
+    maxCPUCapacity = par("maxCPUCapacity").doubleValue();
     currentCapacity = maxCPUCapacity;
     resourceAllocatorAlgorithm = par("resourceAllocatorAlgorithm");
     episodeLength = par("episodeLength");
@@ -78,9 +77,6 @@ void ResourceAllocatorApp::initialize(int stage)
         }
     }
 
-    //pybind11::scoped_interpreter guard{};
-    //EV << "Python version: " << Py_GetVersion() << endl;
-
     // Setup Statistics
     latencySignal = registerSignal("latency");
     resourceUtilisationSignal = registerSignal("resourceUtilisation");
@@ -110,8 +106,6 @@ void ResourceAllocatorApp::initialize(int stage)
         socket.setCallback(this);
         EV << "EdgeServerResourceAllocatorApp has been successfully set up on Port: " << localPort << endl;
     }
-
-
 }
 
 void ResourceAllocatorApp::handleMessageWhenUp(cMessage *msg)
@@ -154,8 +148,6 @@ void ResourceAllocatorApp::allocateResources(Task *task)
         throw cRuntimeError("You've given an invalid resource allocator algorithm: %d", resourceAllocatorAlgorithm);
     }
 
-    // Would need to get resource utilisation here before allocating resources.
-    // int cpuCyclesToAllocate = task->requiredCPUCycles;
     task->allocatedCPUFrequency = cpuCyclesToAllocate;
     task->executionTime = getTimeToExecute(task->requiredCPUCycles, cpuCyclesToAllocate);
 
@@ -191,7 +183,7 @@ int ResourceAllocatorApp::randomAllocation()
 int ResourceAllocatorApp::PPOAllocation(Task *task)
 {
     // Get State and normalise to improve learning stability. // TODO
-    double requiredCycles = task->requiredCPUCycles / 700.0 * 1e+6; // 700,000,000 = Max CPU cycles set in ini.
+    double requiredCycles = task->requiredCPUCycles / 700.0; // 700 = Max CPU cycles set in ini.
     double communicationLatency = (task->communicationDelay.dbl() * 1000) / 50.0; // Convert to milliseconds
     double queueLength = queue.getLength() / (double) maxQueueLength;
     double resourceUtilisation = getResourceUtilisation();
@@ -219,6 +211,8 @@ int ResourceAllocatorApp::PPOAllocation(Task *task)
         EV << "Action: " << action << "; Log Prob: " << logProbability << "; Raw Action: " << rawAction << endl;
 
         int allocatedCPUCycles = action * maxCPUCapacity; // TODO: Will need to round to the nearest int.
+
+        EV << "Max CPU Capacity: " << maxCPUCapacity << endl;
 
         EV << "The RL Agent has decided to allocate " << action << " cycles as a ratio or "<< allocatedCPUCycles << " cycles." << endl;
 
@@ -318,12 +312,13 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
         double action = completedTask->rawAction;
         double logProbability = completedTask->logProbability;
         double latency = completedTask->latency.dbl() * 1000;
+        double resourceUtilisation = getResourceUtilisation();
 
         EV << "Latency: " << latency << "; State: "  << "; Action: " << action << "; Log Prob: " << logProbability << endl;
 
         // Send the details of the trajectory to the PPO agent.
         try {
-            agent.attr("add_trajectory")(action, logProbability, state, latency);
+            agent.attr("add_trajectory")(action, logProbability, state, latency, energyConsumption, resourceUtilisation);
 
         } catch (py::error_already_set &e){
             throw cRuntimeError("Python Error: %s", e.what());

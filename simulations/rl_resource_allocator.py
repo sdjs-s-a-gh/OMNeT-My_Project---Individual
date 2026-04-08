@@ -7,6 +7,7 @@ import numpy as np
 
 from rl_PolicyNetwork import PolicyNetwork
 from rl_ValueNetwork import ValueNetwork
+from math import sqrt
 
 class RLResourceAllocator:
     def __init__(self, state_space_dimensions, action_space_dimensions) -> None:
@@ -85,7 +86,7 @@ class RLResourceAllocator:
 
         return raw_action.detach(), log_probability.detach()
 
-    def add_trajectory(self, action, log_probability, state, latency):
+    def add_trajectory(self, action, log_probability, state, latency, energy_consumption, resource_utilisation):
         """
             Adds the input trajectory to the current batch.
 
@@ -101,23 +102,34 @@ class RLResourceAllocator:
         self.batch_actions.append(action)
         self.batch_log_probabilities.append(log_probability)
         self.batch_states.append(state)
-        reward = self.compute_reward(latency)
+        reward = self.compute_reward(latency, energy_consumption, resource_utilisation)
         self.batch_rewards.append(reward)
     
-    def compute_reward(self, latency):
+    def compute_reward(self, latency, energy_consumption, resource_utilisation):
         latency_weight = 0.4
         energy_consumption_weight = 0.3
         resource_utilisation_weight = 0.3
         
         baseline = 1000.0
-        reward = (baseline - latency) / baseline;
+        latency_reward = (baseline - latency) / baseline;
+        
+        # Use the square root to normalise raising the CPU frequency to the power of 2.
+        energy_consumption_reward = sqrt(energy_consumption)
+        
+        # energy_baseline = 1
+        # energy_reward = (energy_reward - energy_consumption) / energy_reward;
         
         # total_reward = (latency_weight * latency_reward +
         #                 energy_consumption_weight * energy_consumption_reward +
         #                 resource_utilisation_weight * resource_utilisation_reward)
         #
-
-        return reward;
+        
+        total_reward = (latency_weight * latency_reward +
+                        energy_consumption_weight * energy_consumption_reward)
+        print(f"Energy Consumption Reward: {energy_consumption_reward}")
+        print(f"Total Reward: {total_reward}")
+        
+        return total_reward;
     
     def learn(self):
         # PPO Algorithm Step 3: Collect trajectories/experiences from the most recent iteration/episode
