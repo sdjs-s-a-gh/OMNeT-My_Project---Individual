@@ -243,7 +243,7 @@ double ResourceAllocatorApp::getTimeToExecute(double cpuCyclesRequired, double a
  */
 double ResourceAllocatorApp::getResourceUtilisation()
 {
-    return 1.0 - (currentCapacity / maxCPUCapacity);
+    return 1.0 - ((double) currentCapacity / (double) maxCPUCapacity);
 }
 
 /**
@@ -303,7 +303,9 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
     completedTask->completionTime = simTime();
     completedTask->totalServiceTime = completedTask->completionTime - completedTask->arrivalTime;
     completedTask->latency = completedTask->completionTime - completedTask->creationTime;
-    double energyConsumption = 1e-27 * completedTask->requiredCPUCycles * (completedTask->allocatedCPUFrequency * completedTask->allocatedCPUFrequency);
+    int64_t scaledCPUCycles = completedTask->requiredCPUCycles * 1e+6;
+    int64_t scaledCPUFrequency = completedTask->allocatedCPUFrequency * 1e+6;
+    double energyConsumption = 1e-27 * scaledCPUCycles * (scaledCPUFrequency * scaledCPUFrequency);
     completedTask->energyConsumption = energyConsumption;
 
     if (resourceAllocatorAlgorithm == 1) {
