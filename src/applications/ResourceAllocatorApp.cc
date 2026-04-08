@@ -89,6 +89,7 @@ void ResourceAllocatorApp::initialize(int stage)
     tasksProcessedSignal = registerSignal("tasksProcessed");
     queueLengthSignal = registerSignal("queueLength");
     parallelTasksSignal = registerSignal("parallelTasks");
+    cloudOffloadedTasksSignal = registerSignal("cloudOffloadedTasks");
 
     if (stage == INITSTAGE_APPLICATION_LAYER) {
         localPort = par("localPort");
@@ -318,9 +319,9 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
     double latency = completedTask->latency.dbl() * 1000;
 
     EV << "Latency: " << latency << "; State: "  << "; Action: " << action << "; Log Prob: " << logProbability << endl;
-    // Send the details of the task back to the allocator
+
+    // Send the details of the trajectory to the PPO agent.
     try {
-        // TODO
         agent.attr("add_trajectory")(action, logProbability, state, latency);
 
     } catch (py::error_already_set &e){
@@ -444,6 +445,8 @@ void ResourceAllocatorApp::sendPacket(Packet *packet)
     socket.sendTo(packet, destAddress, destPort);
 
     // TODO: tasks offloaded ++;
+    cloudOffloadedTasks++;
+    emit(cloudOffloadedTasksSignal,cloudOffloadedTasks);
 }
 
 void ResourceAllocatorApp::refreshDisplay() const

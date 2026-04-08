@@ -93,6 +93,7 @@ class ResourceAllocatorApp : public ApplicationBase, UdpSocket::ICallback
     int packetsReceived = 0;
     int tasksProcessed = 0;
     int tasksProcessing = 0;
+    int cloudOffloadedTasks = 0;
 
     simsignal_t latencySignal;
     simsignal_t resourceUtilisationSignal;
@@ -100,6 +101,7 @@ class ResourceAllocatorApp : public ApplicationBase, UdpSocket::ICallback
     simsignal_t tasksProcessedSignal;
     simsignal_t queueLengthSignal;
     simsignal_t parallelTasksSignal;
+    simsignal_t cloudOffloadedTasksSignal;
 
     UdpSocket socket; // Requires a socket to bind the application to.
 

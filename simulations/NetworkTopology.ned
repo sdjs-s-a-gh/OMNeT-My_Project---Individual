@@ -56,6 +56,7 @@ network ResourceNetwork
         @statistic[tasksProcessedOverTime](source=tasksProcessed; record=vector);
         @statistic[queueLengthOverTime](source=queueLength; record=vector);
         @statistic[parallelTasksOverTime](source=parallelTasks; record=vector);
+        @statistic[cloudOffloadedTasksOverTime](source=cloudOffloadedTasks; record=vector);
 
     submodules:
         visualizer: IntegratedCanvasVisualizer {

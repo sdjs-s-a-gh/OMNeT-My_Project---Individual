@@ -39,6 +39,7 @@ simple ResourceAllocatorApp like IApp
         @signal[tasksProcessed](type=int);
         @signal[maxQueueLength](type=int);
         @signal[parallelTasks](type=int);
+        @signal[cloudOffloadedTasks](type=int);
 	
 	gates:
 	    input socketIn;
