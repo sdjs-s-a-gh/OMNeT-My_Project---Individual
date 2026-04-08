@@ -46,7 +46,7 @@ void ResourceAllocatorApp::initialize(int stage)
     episodeLength = par("episodeLength");
     maxQueueLength = par("maxQueueLength");
 
-    if (pythonAllocatorStarted == false) {
+    if (resourceAllocatorAlgorithm == 1 && pythonAllocatorStarted == false) {
         try {
             // Check to see if the interpreter is currently running, as it persists between simulation configurations.
             // Originally, this code did not need to exist as the interpreter persisted as a static object, but that caused
@@ -191,7 +191,7 @@ int ResourceAllocatorApp::randomAllocation()
 int ResourceAllocatorApp::PPOAllocation(Task *task)
 {
     // Get State and normalise to improve learning stability. // TODO
-    double requiredCycles = task->requiredCPUCycles / 700.0; // 700 = Max CPU cycles set in ini.
+    double requiredCycles = task->requiredCPUCycles / 700.0 * 1e+6; // 700,000,000 = Max CPU cycles set in ini.
     double communicationLatency = (task->communicationDelay.dbl() * 1000) / 50.0; // Convert to milliseconds
     double queueLength = queue.getLength() / (double) maxQueueLength;
     double resourceUtilisation = getResourceUtilisation();
@@ -313,19 +313,21 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
     completedTask->energyConsumption = energyConsumption;
 
     // TODO: only if the allocation algorithm chosen is PPO
-    std::vector state = completedTask->state;
-    double action = completedTask->rawAction;
-    double logProbability = completedTask->logProbability;
-    double latency = completedTask->latency.dbl() * 1000;
+    if (resourceAllocatorAlgorithm == 1) {
+        std::vector state = completedTask->state;
+        double action = completedTask->rawAction;
+        double logProbability = completedTask->logProbability;
+        double latency = completedTask->latency.dbl() * 1000;
 
-    EV << "Latency: " << latency << "; State: "  << "; Action: " << action << "; Log Prob: " << logProbability << endl;
+        EV << "Latency: " << latency << "; State: "  << "; Action: " << action << "; Log Prob: " << logProbability << endl;
 
-    // Send the details of the trajectory to the PPO agent.
-    try {
-        agent.attr("add_trajectory")(action, logProbability, state, latency);
+        // Send the details of the trajectory to the PPO agent.
+        try {
+            agent.attr("add_trajectory")(action, logProbability, state, latency);
 
-    } catch (py::error_already_set &e){
-        throw cRuntimeError("Python Error: %s", e.what());
+        } catch (py::error_already_set &e){
+            throw cRuntimeError("Python Error: %s", e.what());
+        }
     }
 
     // Free up the CPU of the edge server by giving back the allocated CPU cycles.
@@ -344,12 +346,10 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
     EV << "Task CPU Cycles Required: " << completedTask->requiredCPUCycles << "; Expected Execution Time: " << getTimeToExecute(completedTask->requiredCPUCycles, completedTask->requiredCPUCycles)
             << "; Actual Cycles Given: " << completedTask->allocatedCPUFrequency << "; Actual Execution Time: " << getTimeToExecute(completedTask->requiredCPUCycles,completedTask->allocatedCPUFrequency) << endl;
 
-    //double latency = completedTask->latency.dbl() * 1000; // convert to milliseconds.
-    emit(latencySignal,latency);
+    emit(latencySignal,completedTask->latency * 1000);
     emit(energyConsumptionSignal, energyConsumption);
     emit(tasksProcessedSignal, tasksProcessed);
     emit(parallelTasksSignal, tasksProcessing);
-    //delete completedTask;
 
     if (tasksProcessed >= episodeLength) {
         // End the Simulation
@@ -443,7 +443,6 @@ void ResourceAllocatorApp::sendPacket(Packet *packet)
     packet->clearTags();
     socket.sendTo(packet, destAddress, destPort);
 
-    // TODO: tasks offloaded ++;
     cloudOffloadedTasks++;
     emit(cloudOffloadedTasksSignal,cloudOffloadedTasks);
 }
@@ -490,25 +489,31 @@ void ResourceAllocatorApp::handleCrashOperation(LifecycleOperation *operation)
 void ResourceAllocatorApp::finish()
 {
     EV << "Tasks Processed: "<< tasksProcessed << endl;
-    if (tasksProcessed == episodeLength && resourceAllocatorAlgorithm == 1) {
-        try {
-            // Tell the Resource Allocator to update as the episode has ended.
-            agent.attr("update_and_save")();
 
-            // Flush the print statements out since they don't carry over here automatically anymore.
-            py::exec("import sys; sys.stdout.flush(); sys.stderr.flush()");
+    if (tasksProcessed == episodeLength) {
+        if (resourceAllocatorAlgorithm == 1) {
+            try {
+                 // Tell the Resource Allocator to update as the episode has ended.
+                 agent.attr("update_and_save")();
+
+                 // Flush the print statements out since they don't carry over here automatically anymore.
+                 py::exec("import sys; sys.stdout.flush(); sys.stderr.flush()");
 
 
-            EV << "The agent should have saved by now." << endl;
+                 EV << "The agent should have saved by now." << endl;
 
-        } catch (py::error_already_set &e){
-            throw cRuntimeError("Python Error: %s", e.what());
+             } catch (py::error_already_set &e){
+                 throw cRuntimeError("Python Error: %s", e.what());
+             }
+             EV << "The Simulation has finished gracefully." << endl;
         }
-
-        EV << "The Simulation has finished gracefully." << endl;
+        else {
+            EV << "The Simulation has finished gracefully." << endl;
+        }
     } else {
         EV << "The Simulation has finished prematurely." << endl;
     }
+
     agent = py::none();
     cSimpleModule::finish();
 }
