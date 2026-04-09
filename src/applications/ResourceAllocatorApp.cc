@@ -185,9 +185,9 @@ int ResourceAllocatorApp::PPOAllocation(Task *task)
     // Get State and normalise to improve learning stability. // TODO
     double requiredCycles = task->requiredCPUCycles / (700.0); // 700 = Max CPU cycles set in ini.
     double communicationLatency = (task->communicationDelay.dbl() * 1000) / 50.0; // Convert to milliseconds
-    double queueLength = queue.getLength() / (double) maxQueueLength;
     double resourceUtilisation = getResourceUtilisation();
-    double totalQueueCycles = getTotalCyclesInQueue() / (700.0 * (double) maxQueueLength);
+    double queueLength = (double) queue.getLength() / (double) maxQueueLength;
+    double totalQueueCycles = (double) getTotalCyclesInQueue() / (700.0 * (double) maxQueueLength);
 
     std::vector<double>state = {
             requiredCycles,

@@ -22,7 +22,7 @@ class RLResourceAllocator:
         # Default Hyperparameter Values
         self.batch_size = 512           # Number of timesteps per episode.
         self.updates_per_episode = 5    # Number of times to update the policy/actor and value/critic networks per episode.
-        self.learning_rate = 0.005      # Learning Rate of the policy and value optimisers.
+        self.learning_rate = 0.003      # Learning Rate of the policy and value optimisers.
         self.gamma = 0.95               # Discount factor to be used for cal
         self.clip_parameter = 0.2       # Value to clip the ratio when calculating surrogate 2.
         self.entropy_coefficient = 0.01 # Value to multiply the entropy loss by to encourage/disencourage exploration. The value is the same as that used in Mahimalmur (2025).
@@ -110,10 +110,11 @@ class RLResourceAllocator:
         latency_weight = 0.7
         energy_consumption_weight = 0.3
         
-        latency_baseline = 1000.0
-        latency_reward = (latency_baseline - latency) / latency_baseline
+        #latency_baseline = 1000.0
+        latency_baseline = 2000
+        #latency_reward = (latency_baseline - latency) / latency_baseline        
+        latency_reward = -(latency/latency_baseline)
         
-
         # TODO: Create a function that performs normalisation and takes two arguments.
         energy_baseline = 3
         energy_consumption_reward = (energy_baseline - energy_consumption) / energy_baseline
@@ -164,7 +165,7 @@ class RLResourceAllocator:
                 mini_batch_rewards_to_go = batch_rewards_to_go[index]            
             
                 # Calculate the Value and Current Log probabilities for the current epoch.
-                value = self.value_network(batch_states)
+                value = self.value_network(mini_batch_states)
                 current_log_probabilities, entropy = self.policy_network.evaluate(mini_batch_states, mini_batch_actions)
     
                 # Calculate ratios for the surrogate losses.
@@ -176,7 +177,7 @@ class RLResourceAllocator:
     
                 # PPO Algorithm Step 6: Update the Policy.
                 policy_loss = (-torch.min(surr1, surr2)).mean()
-                policy_loss -= self.entropy_coefficient * entropy.mean()
+                #policy_loss -= self.entropy_coefficient * entropy.mean()
     
                 self.policy_optimiser.zero_grad()
                 policy_loss.backward(retain_graph = True)
@@ -184,7 +185,7 @@ class RLResourceAllocator:
     
                 # PPO Algorithm Step 7: Fit Value function by regression on MSE using the
                 # predicted values at the current epoch.
-                value_loss = nn.MSELoss()(value, batch_rewards_to_go)
+                value_loss = nn.MSELoss()(value, mini_batch_rewards_to_go)
     
                 self.value_optimiser.zero_grad()
                 value_loss.backward()
