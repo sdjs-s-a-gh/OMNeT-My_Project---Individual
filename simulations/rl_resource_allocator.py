@@ -4,6 +4,7 @@ from torch.distributions import Normal
 import torch.nn as nn
 from pathlib import Path
 import numpy as np
+import csv
 
 from rl_PolicyNetwork import PolicyNetwork
 from rl_ValueNetwork import ValueNetwork
@@ -108,32 +109,21 @@ class RLResourceAllocator:
     def compute_reward(self, latency, energy_consumption, resource_utilisation):
         latency_weight = 0.7
         energy_consumption_weight = 0.3
-        #resource_utilisation_weight = 0.3
         
         latency_baseline = 1000.0
         latency_reward = (latency_baseline - latency) / latency_baseline
         
-        #print(f"Energy Consumption: {energy_consumption}")
+
         # TODO: Create a function that performs normalisation and takes two arguments.
-        # Use the square root to normalise raising the CPU frequency to the power of 2.
-        #energy_consumption_reward = 1 - sqrt(energy_consumption)
         energy_baseline = 3
         energy_consumption_reward = (energy_baseline - energy_consumption) / energy_baseline
         
-        # energy_baseline = 1
-        # energy_reward = (energy_reward - energy_consumption) / energy_reward;
-        
-        # total_reward = (latency_weight * latency_reward +
-        #                 energy_consumption_weight * energy_consumption_reward +
-        #                 resource_utilisation_weight * resource_utilisation_reward)
-        #
-        
+        # Weighted sum of the two reward components.
         total_reward = (latency_weight * latency_reward +
                         energy_consumption_weight * energy_consumption_reward)
-        #print(f"Energy Consumption Reward: {energy_consumption_reward}")
-        #print(f"Total Reward: {total_reward}")
         
-        return total_reward
+        return latency_reward
+        #return total_reward
     
     def learn(self):
         # PPO Algorithm Step 3: Collect trajectories/experiences from the most recent iteration/episode
@@ -199,16 +189,49 @@ class RLResourceAllocator:
                 self.value_optimiser.zero_grad()
                 value_loss.backward()
                 self.value_optimiser.step()
-
+        
+        average_reward = round(sum(self.batch_rewards)/len(self.batch_rewards), 4)
+        min_reward = round(min(self.batch_rewards), 4)
+        max_reward = round(max(self.batch_rewards), 4)
+        average_advantage = round(advantages.mean().item(), 4)
+        std_advantage = round(advantages.std().item(), 4)
+        entropy_loss = round(entropy.mean().item(), 4)
+        policy_loss = round(policy_loss.item(), 4)
+        value_loss = round(value_loss.item(), 4)
         print("---- PPO Update Start ----")      
-        print("Average reward:", round(sum(self.batch_rewards)/len(self.batch_rewards), 4))
-        print("Reward min/max:", round(min(self.batch_rewards), 4), round(max(self.batch_rewards), 4))
-        print("Advantage mean:", round(advantages.mean().item(), 4))
-        print("Advantage std:", round(advantages.std().item(), 4))
-        print("Entropy Loss: ", round(entropy.mean().item(), 4))
-        print("Policy loss:", round(policy_loss.item(), 4))
-        print("Value loss:", round(value_loss.item(), 4))
-        print("---- PPO Update Complete ----")    
+        print("Average reward:", average_reward)
+        print("Reward min/max:", min_reward, max_reward)
+        print("Advantage mean:", average_advantage)
+        print("Advantage std:", std_advantage)
+        print("Entropy Loss: ", entropy_loss)
+        print("Policy loss:", policy_loss)
+        print("Value loss:", value_loss)
+        print("---- PPO Update Complete ----")
+        
+        row = [
+            average_reward,
+            min_reward,
+            max_reward,
+            average_advantage,
+            std_advantage,
+            entropy_loss,
+            policy_loss,
+            value_loss
+            ]
+        
+        # Print to CSV for testing
+        filename = "1_PPOTrainingData.csv"
+        file_exists = Path(f"./{filename}").is_file()
+        with open(filename, "a", newline="") as f:
+            writer = csv.writer(f)
+            print(file_exists)
+            
+            # Write the header if the file doesn't exist.
+            if not file_exists:
+                writer.writerow(["Average Reward","Reward Min","Reward Max", "Advantage Mean", "Advantage Std", "Entropy Loss", "Policy Loss", "Value Loss"])
+            
+            writer.writerow(row) 
+  
 
     def compute_rewards_to_go(self, batch_rewards):
         batch_rewards_to_go = []
