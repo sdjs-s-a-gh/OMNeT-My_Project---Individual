@@ -24,7 +24,7 @@ class PolicyNetwork(nn.Module):
         self.layer2 = nn.Linear(64, 64)
         self.layer3 = nn.Linear(64, action_space_dimensions)       
 
-        self.log_std = nn.Parameter(torch.zeros(action_space_dimensions)) # is the equivalent of a covariance matrix, but more time efficient as it doesn't produce a matrix (On^2 vs On).
+        #self.log_std = nn.Parameter(torch.zeros(action_space_dimensions)) # is the equivalent of a covariance matrix, but more time efficient as it doesn't produce a matrix (On^2 vs On).
 
     def forward(self, state):
         """
@@ -42,8 +42,10 @@ class PolicyNetwork(nn.Module):
         activation2 = torch.tanh(self.layer2(activation1))     
         mean = self.layer3(activation2)
 
-        std = torch.exp(self.log_std) # Exponentiate out the log_std, ensuring that the std is > 0 to not cause any errors.
-
+        #std = torch.exp(self.log_std) # Exponentiate out the log_std, ensuring that the std is > 0 to not cause any errors.
+        cov_mar = torch.full(size=(1,), fill_value=0.5)
+        std = torch.diag(cov_mar)
+        
         return mean, std
 
     def evaluate(self, states, actions):
@@ -62,6 +64,6 @@ class PolicyNetwork(nn.Module):
 
         # Calculate the log probability for that action.
         log_probability = distribution.log_prob(actions).sum(-1)
-        entropy = distribution.entropy()
+        entropy = distribution.entropy().sum(-1)
 
         return log_probability, entropy

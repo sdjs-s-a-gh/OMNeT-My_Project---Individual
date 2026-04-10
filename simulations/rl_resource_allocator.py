@@ -279,6 +279,7 @@ class RLResourceAllocator:
         mean, std = self.policy_network(debug_state)
         print("DEBUG POLICY:", mean.item(), std.item())
         
+        #print("log_std grad:", self.policy_network.log_std.grad)
         
         print("RAW ACTION: ", last_action)
         print("CLIPPED ACTION: ", min(1, max(0.01, last_action)))
