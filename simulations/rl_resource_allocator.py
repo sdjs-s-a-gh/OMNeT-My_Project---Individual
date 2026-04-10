@@ -22,8 +22,8 @@ class RLResourceAllocator:
         # Default Hyperparameter Values
         self.batch_size = 512           # Number of timesteps per episode.
         self.updates_per_episode = 5    # Number of times to update the policy/actor and value/critic networks per episode.
-        self.learning_rate = 0.003      # Learning Rate of the policy and value optimisers.
-        self.gamma = 0.95               # Discount factor to be used for cal
+        self.learning_rate = 0.005      # Learning Rate of the policy and value optimisers.
+        self.gamma = 0.95               # Discount factor to be used for calculating rewards-to-go.
         self.clip_parameter = 0.2       # Value to clip the ratio when calculating surrogate 2.
         self.entropy_coefficient = 0.01 # Value to multiply the entropy loss by to encourage/disencourage exploration. The value is the same as that used in Mahimalmur (2025).
         self.number_of_mini_batches = 8
@@ -37,7 +37,7 @@ class RLResourceAllocator:
         self.value_optimiser = optim.Adam(self.value_network.parameters(), lr=self.learning_rate)
 
         # Set a seed value for reproducible results.
-        torch.manual_seed(1)
+        #torch.manual_seed(1)
 
         self.batch_actions = []
         self.batch_states = []
@@ -78,6 +78,7 @@ class RLResourceAllocator:
 
         # Create a Gaussian distribution with the mean action and the standard deviation.
         distribution = Normal(mean, std)
+        #print("Mean:", mean.mean().item(), "Std:", std.mean().item())
 
         # Sample an action from the distribution.
         raw_action = distribution.sample()
@@ -110,10 +111,11 @@ class RLResourceAllocator:
         latency_weight = 0.7
         energy_consumption_weight = 0.3
         
-        #latency_baseline = 1000.0
-        latency_baseline = 2000
-        #latency_reward = (latency_baseline - latency) / latency_baseline        
-        latency_reward = -(latency/latency_baseline)
+        latency_baseline = 1000.0
+        latency_reward = (latency_baseline - latency) / latency_baseline
+        
+        #latency_baseline2 = 2000        
+        #latency_reward = -(latency/latency_baseline2)
         
         # TODO: Create a function that performs normalisation and takes two arguments.
         energy_baseline = 3
@@ -152,7 +154,7 @@ class RLResourceAllocator:
         print(mini_batch_size)
 
         for epoch in range(self.updates_per_episode):
-            
+                       
             # Randomly shuffle the indices for the mini-batch.
             for mini_batch_i in range(0, mini_batch_step, mini_batch_size):
                 end = mini_batch_i + mini_batch_size
@@ -265,10 +267,26 @@ class RLResourceAllocator:
 
 
         # Update both the policy and value networks.
-        self.learn()            
+        self.learn()
+        
+        last_action = self.batch_actions[-1]        
 
         # Once the episode has ended, clear the batch to prepare for the new one.
         self.clear()
+        
+        print("---- Debugging ----")
+        debug_state = torch.tensor([0.5, 0.5, 0.5, 0.5, 0.5], dtype=torch.float)
+        mean, std = self.policy_network(debug_state)
+        print("DEBUG POLICY:", mean.item(), std.item())
+        
+        
+        print("RAW ACTION: ", last_action)
+        print("CLIPPED ACTION: ", min(1, max(0.01, last_action)))
+            
+        for name, param in self.policy_network.named_parameters():
+            print("WEIGHT CHECK:", name, param.mean().item())
+            if param.grad is not None:
+                print(name, param.grad.abs().mean().item())
 
         torch.save(self.policy_network.state_dict(), "./ppo_policy.pth")
         torch.save(self.value_network.state_dict(), "./ppo_value.pth")
