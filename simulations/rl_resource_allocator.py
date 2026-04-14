@@ -76,7 +76,7 @@ class PPO:
             " on this episode will start from scratch instead.")
 
     def get_action(self, state) -> tuple:
-        print(f"State: {state}")
+        #print(f"State: {state}")
         # Query the policy network for a mean action.
         # Create the Multivariate Normal distribution for using an action space > 1.
         distribution = self.policy_network.get_distribution(state)
@@ -193,21 +193,30 @@ class PPO:
         self.buffer_log_probabilities.append(log_probability)
 
         # Compute the reward for the given timestep.
-        reward: float | int = self.compute_reward(latency, queue_utilisation)
+        reward: float | int = self.compute_reward(latency, energy_consumption, queue_utilisation)
 
         self.buffer_rewards.append(reward)
 
-    def compute_reward(self, latency: float | int, queue_utilisation) -> float | int:
+    def compute_reward(self, latency: float | int, energy_consumption, queue_utilisation) -> float | int:
         """
             Calculates the reward for the outcome of a given timestep.
         """
         #reward = outcome * 5 # TODO: remove this temporary reward.
         latency_baseline = 1000.0
-        reward = (latency_baseline - latency) / latency_baseline
-        reward = reward - queue_utilisation * 2
+        latency_reward = (latency_baseline - latency) / latency_baseline
+        
+        energy_baseline = 2.0
+        energy_consumption_reward = (energy_baseline - energy_consumption) / energy_baseline
+        
+        reward = (0.7 * latency_reward +
+                  0.3 * energy_consumption_reward)
+        #reward = reward - queue_utilisation * 2
          
-        print(f"Queue Utilisation: {queue_utilisation}; Utilisation Punishment: {queue_utilisation * 2}")
-
+        #print(f"Queue Utilisation: {queue_utilisation}; Utilisation Punishment: {queue_utilisation * 2}")
+        #print(f"Latency Reward: {latency_reward}")
+        #print(f"Energy Consumption: {energy_consumption_reward}")
+        #print(f"Reward: {reward}")
+        
         return reward
 
     def compute_rewards_to_go(self, buffer_rewards: list[float | int]) -> torch.Tensor:
