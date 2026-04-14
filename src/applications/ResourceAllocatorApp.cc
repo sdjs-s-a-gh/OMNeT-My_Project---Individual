@@ -315,12 +315,17 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
         double latency = completedTask->latency.dbl() * 1000;
         double resourceUtilisation = getResourceUtilisation();
 
+        // Get the current queue utilisation to punish for being too big and offloading tasks.
+        // TODO: Create a function to return the queue utilisation considering I already use this when
+        // getting an action from the PPO agent.
+        double queueUtilisation = (double) queue.getLength() / (double) maxQueueLength;
+
         EV << "Latency: " << latency << "; State: "  << "; Action: " << action << "; Log Prob: " << logProbability << endl;
         EV << "Energy Consumption: " << energyConsumption << endl;
 
         // Send the details of the trajectory to the PPO agent.
         try {
-            agent.attr("add_trajectory")(state, action, logProbability, latency, energyConsumption);
+            agent.attr("add_trajectory")(state, action, logProbability, latency, energyConsumption, queueUtilisation);
 
         } catch (py::error_already_set &e){
             throw cRuntimeError("Python Error: %s", e.what());

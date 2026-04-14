@@ -76,6 +76,7 @@ class PPO:
             " on this episode will start from scratch instead.")
 
     def get_action(self, state) -> tuple:
+        print(f"State: {state}")
         # Query the policy network for a mean action.
         # Create the Multivariate Normal distribution for using an action space > 1.
         distribution = self.policy_network.get_distribution(state)
@@ -180,7 +181,7 @@ class PPO:
         self.logger["std_advantage"] = round(advantages.std().item(), 4)
         self._log_summary()
 
-    def add_trajectory(self, state: list, raw_action: float | int, log_probability: float | int, latency: float | int, energy_consumption) -> None:
+    def add_trajectory(self, state: list, raw_action: float | int, log_probability: float | int, latency: float | int, energy_consumption, queue_utilisation) -> None:
         """
             Collects a trajectory for a single timestep in the OMNeT++
             MEC environment and appends the data to the buffer. The
@@ -192,17 +193,20 @@ class PPO:
         self.buffer_log_probabilities.append(log_probability)
 
         # Compute the reward for the given timestep.
-        reward: float | int = self.compute_reward(latency)
+        reward: float | int = self.compute_reward(latency, queue_utilisation)
 
         self.buffer_rewards.append(reward)
 
-    def compute_reward(self, latency: float | int) -> float | int:
+    def compute_reward(self, latency: float | int, queue_utilisation) -> float | int:
         """
             Calculates the reward for the outcome of a given timestep.
         """
         #reward = outcome * 5 # TODO: remove this temporary reward.
         latency_baseline = 1000.0
         reward = (latency_baseline - latency) / latency_baseline
+        reward = reward - queue_utilisation * 2
+         
+        print(f"Queue Utilisation: {queue_utilisation}; Utilisation Punishment: {queue_utilisation * 2}")
 
         return reward
 
