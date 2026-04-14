@@ -217,7 +217,7 @@ class PPO:
         #print(f"Energy Consumption: {energy_consumption_reward}")
         #print(f"Reward: {reward}")
         
-        return reward
+        return energy_consumption_reward
 
     def compute_rewards_to_go(self, buffer_rewards: list[float | int]) -> torch.Tensor:
         buffer_rewards_to_go = []
