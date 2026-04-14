@@ -95,7 +95,7 @@ class PPO:
         buffer_log_probabilities = torch.tensor(np.array(self.buffer_log_probabilities), dtype=torch.float)
 
         self.logger["buffer_rewards"].append(self.buffer_rewards)
-        print(self.buffer_rewards)
+        #print(self.buffer_rewards)
 
         buffer_rewards_to_go = self.compute_rewards_to_go(self.buffer_rewards)
 

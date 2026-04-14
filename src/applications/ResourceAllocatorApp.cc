@@ -206,7 +206,7 @@ int ResourceAllocatorApp::PPOAllocation(Task *task)
         double logProbability = result[1].cast<double>();
 
         // Clip/Constrain the action to be between [0.01, 1.0].
-        double action = std::clamp(rawAction, 0.01, 1.0);
+        double action = std::clamp(abs(rawAction), 0.01, 1.0);
 
         EV << "Action: " << action << "; Log Prob: " << logProbability << "; Raw Action: " << rawAction << endl;
 
