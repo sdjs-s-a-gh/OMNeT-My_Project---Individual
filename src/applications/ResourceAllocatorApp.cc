@@ -67,7 +67,7 @@ void ResourceAllocatorApp::initialize(int stage)
 
             int stateSpaceDimensions = 5;
             int actionSpaceDimensions = 1;
-            agent = rl_mod.attr("RLResourceAllocator")(stateSpaceDimensions, actionSpaceDimensions);
+            agent = rl_mod.attr("PPO")(stateSpaceDimensions, actionSpaceDimensions);
 
             py::print("Hello from Python inside OMNeT++!");
             pythonAllocatorStarted = true;
@@ -320,7 +320,7 @@ void ResourceAllocatorApp::endTaskExecution(cMessage *msg)
 
         // Send the details of the trajectory to the PPO agent.
         try {
-            agent.attr("add_trajectory")(action, logProbability, state, latency, energyConsumption, resourceUtilisation);
+            agent.attr("add_trajectory")(state, action, logProbability, latency, energyConsumption);
 
         } catch (py::error_already_set &e){
             throw cRuntimeError("Python Error: %s", e.what());
@@ -485,19 +485,19 @@ void ResourceAllocatorApp::handleCrashOperation(LifecycleOperation *operation)
 
 void ResourceAllocatorApp::finish()
 {
+    // TODO: Tidy this subroutine up.
     EV << "Tasks Processed: "<< tasksProcessed << endl;
 
     if (tasksProcessed == episodeLength) {
         if (resourceAllocatorAlgorithm == 1) {
             try {
+                // Flush the print statements out since they don't carry over here automatically anymore.
+                py::exec("import sys; sys.stdout.flush(); sys.stderr.flush()");
+
                  // Tell the Resource Allocator to update as the episode has ended.
-                 agent.attr("update_and_save")();
+                agent.attr("update_and_save")();
 
-                 // Flush the print statements out since they don't carry over here automatically anymore.
-                 py::exec("import sys; sys.stdout.flush(); sys.stderr.flush()");
-
-
-                 EV << "The agent should have saved by now." << endl;
+                EV << "The agent should have saved by now." << endl;
 
              } catch (py::error_already_set &e){
                  throw cRuntimeError("Python Error: %s", e.what());
