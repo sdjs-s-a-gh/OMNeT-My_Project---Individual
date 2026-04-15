@@ -54,7 +54,7 @@ class PPO:
         self.clip_threshold = 0.2      # The clip threshold used in the surrogate losses.
         self.learning_rate = 0.00025      
         self.mini_batch_size = 64
-        self.entropy_coefficient = 0.01
+        self.entropy_coefficient = 0.001
         
         #print(f"mini-batch size: {self.mini_batch_size}; entropy coefficient: {self.entropy_coefficient}")
         #print(f"updates: {self.updates_per_iteration}; lr: {self.learning_rate}; gamma: {self.gamma}; clip: {self.clip_threshold}")
@@ -201,23 +201,11 @@ class PPO:
         """
             Calculates the reward for the outcome of a given timestep.
         """
-        #reward = outcome * 5 # TODO: remove this temporary reward.
+        
         latency_baseline = 1000.0
-        latency_reward = (latency_baseline - latency) / latency_baseline
-        
-        energy_baseline = 3
-        energy_consumption_reward = (energy_baseline - energy_consumption) / energy_baseline
-        
-        reward = (0.7 * latency_reward +
-                  0.3 * energy_consumption_reward)
-        #reward = reward - queue_utilisation * 2
-         
-        #print(f"Queue Utilisation: {queue_utilisation}; Utilisation Punishment: {queue_utilisation * 2}")
-        #print(f"Latency Reward: {latency_reward}")
-        #print(f"Energy Consumption: {energy_consumption_reward}")
-        #print(f"Reward: {reward}")
-        
-        return energy_consumption_reward
+        reward = (latency_baseline - latency) / latency_baseline
+
+        return reward
 
     def compute_rewards_to_go(self, buffer_rewards: list[float | int]) -> torch.Tensor:
         buffer_rewards_to_go = []
