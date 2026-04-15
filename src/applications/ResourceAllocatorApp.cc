@@ -500,7 +500,7 @@ void ResourceAllocatorApp::finish()
                 py::exec("import sys; sys.stdout.flush(); sys.stderr.flush()");
 
                  // Tell the Resource Allocator to update as the episode has ended.
-                agent.attr("update_and_save")();
+                //agent.attr("update_and_save")();
 
                 EV << "The agent should have saved by now." << endl;
 
